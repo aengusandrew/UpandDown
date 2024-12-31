@@ -16,7 +16,7 @@ const VALUES = [
 ]
 
 export default class Deck {
-    constructor(cards) {
+    constructor(cards = newDeck()) {
         this.cards = cards;
     }
 
@@ -37,7 +37,7 @@ class Card {
 }
 
 function newDeck() {
-    return SUITS.flatMap(suits => {
+    return SUITS.flatMap(suit => {
         return VALUES.map(value => {
             return new Card(suit, value);
         })
