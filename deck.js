@@ -25,7 +25,12 @@ export default class Deck {
     }
 
     shuffle() {
-        
+        for(let i = this.numCards - 1; i > 0; i--) {
+            const newIndex = Math.floor(Math.random() * (i + 1))
+            const oldVal = this.cards[newIndex];
+            this.cards[newIndex] = this.cards[i];
+            this.cards[i] = oldVal;
+        }
     }
 }
 
