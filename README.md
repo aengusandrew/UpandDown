@@ -4,11 +4,13 @@
 
 Author: [Aengus Andrew](https://github.com/aengusandrew)
 
+<hr>
+
 This repo is meant to contain a .js based game of Up and Down the Street (more commonly called Up and Down the River, for the purposes of this README I will always refer to it as Up and Down the Street). The game rules can be seen in a subsection below, this is a first entry into game dev for me, this game is very important to my family and we only get to play when we are together which happens less often now.
 
 
 ## Game Rules
-
+<hr>
 Up and Down the street is fundamentally a game of bidding. Gameplay involves players making a bid on how many "tricks" they think they can capture, and then if they succeed in that they receive a bonus on their point total. The game flows as follows:
 
 1. The game starts with each player being dealt *up to* 10 cards, as you increase the number of players the number of initial cards must decrease to ensure there is always at least 1 card remaining in the deck after dealing. 
@@ -30,6 +32,9 @@ b. If a player throws a card of the **Trump** suit, they automatically win the *
 7. A player *always* receives as many points as tricks they collected, and in addition receive a bonus if they made their bid from step 3 (see bonus structures below).
 
 8. After all points have been tallied, you return to step 1 playing each subsequent round with 1 less card (10, 9, 8, 7...), until you get to 1 card. Play the 1 card round twice, then begin climbing back up to your original number (3, 2, 1, 1, 2, 3, ... 8, 9, 10). At the end tally total final scores for who wins the game.
+
+<br>
+<hr>
 
 The 3 different game types alter how a player is rewarded for making their bid.
 
