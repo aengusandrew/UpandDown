@@ -32,6 +32,23 @@ export default class Deck {
             this.cards[i] = oldVal;
         }
     }
+
+    getCard(index) {
+        return this.cards[index];
+    }
+
+    deal(num_players, num_cards) {
+        let dealout = new Array(num_players);
+
+        dealout.fill(new Array(num_cards));
+
+        for(let i = 0; i < num_players; i++) {
+            for(let j = 0; j < num_cards; j++) {
+                dealout[j][i] = this.cards.pop();
+            }
+        }
+        return dealout;
+    }
 }
 
 class Card {
