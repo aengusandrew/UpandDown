@@ -1,3 +1,5 @@
+import Hand from "/hand.js"
+
 const SUITS = ["SPADES", "CLUBS", "HEARTS", "DIAMONDS"]
 const VALUES = [
     "A",
@@ -40,11 +42,11 @@ export default class Deck {
     deal(num_players, num_cards) {
         let dealout = new Array(num_players);
 
-        dealout.fill(new Array(num_cards));
+        dealout.fill(new Hand());
 
-        for(let i = 0; i < num_players; i++) {
-            for(let j = 0; j < num_cards; j++) {
-                dealout[j][i] = this.cards.pop();
+        for(let i = 0; i < num_cards; i++) {
+            for(let j = 0; j < num_players; j++) {
+                dealout[j].addCard(this.cards.pop());
             }
         }
         return dealout;
