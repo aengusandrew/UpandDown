@@ -1,18 +1,5 @@
-import Deck from "/deck.js"
-import Hand from "/deck.js"
+import UpandDown from "/upndown.js";
 
-const deck = new Deck();
+let game = new UpandDown();
 
-console.log(deck);
-
-deck.shuffle();
-
-console.log(deck);
-
-const hand = new Hand();
-
-console.log(hand);
-
-console.log(deck.deal(5,2));
-
-console.log(deck);
+console.log(game.getID());
