@@ -1,7 +1,7 @@
 import Deck from "/deck.js"
 
 export default class UpandDown {
-    constructor(gameId = generateId(32)) {
+    constructor(gameId = new ID(32)) {
         this.gameID = gameId;
         this.deck = new Deck();
         this.players = new Array();
