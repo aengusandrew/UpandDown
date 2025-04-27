@@ -16,6 +16,14 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
     })
+
+    socket.on('createRoom', (roomCode) => {
+        console.log(socket.id, "has requested to open a room with code", roomCode);
+    });
+
+    socket.on('joinRoom', (roomCode) => {
+        console.log(socket.id, "has requested to join room", roomCode);
+    });
 });
 
 server.listen(3000, () => {
