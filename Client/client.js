@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io('http://localhost:3000');
 
 function createRoom() {
     const roomCode = prompt("Enter a room code:");
