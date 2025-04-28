@@ -65,10 +65,39 @@ class GameManager {
 
         this.trickCards.push(card);
 
-        if(this.trickCards.length === this.roundNumber.length) {
-            this.phase = 'scoring';
+        if(this.trickCards.length === this.players.length) {
             this.scoreTrick(); //Needs implementing
         }
+    }
+
+    scoreTrick() {
+        const leadSuit = this.trickCards[0].suit;
+        let trumpThrown = false;
+        let leadingCard = null;
+
+        for(let card of this.trickCards) {
+            switch(card.suit) {
+                case leadSuit:
+                    if(!trumpThrown && card.value > leadingCard.value) leadingCard = card;
+                    break;
+                
+                case this.trumpSuit:
+                    if(!trumpThrown) { leadingCard = card; trumpThrown = true; }
+                    else if (card.value > leadingCard.value) leadingCard = card;
+                    break;
+            }
+        }
+        
+        const trickWinner = this.players[this.trickCards.indexOf(leadingCard) % this.players.length].id;
+        
+        trickWinner.tricksWon += 1;
+
+        this.trickCards = [];
+
+        if(this.players[0].hand.length > 0) {
+            this.playerIndex = this.players.indexOf(trickWinner);
+            this.phase = 'playing';
+        } else this.phase = 'scoring';
     }
 }
 
