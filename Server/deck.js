@@ -52,5 +52,3 @@ function newDeck() {
         })
     })
 }
-
-module.exports = Deck;

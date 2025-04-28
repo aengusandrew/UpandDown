@@ -66,7 +66,7 @@ class GameManager {
         this.trickCards.push(card);
 
         if(this.trickCards.length === this.players.length) {
-            this.scoreTrick(); //Needs implementing
+            this.scoreTrick();
         }
     }
 
@@ -97,7 +97,27 @@ class GameManager {
         if(this.players[0].hand.length > 0) {
             this.playerIndex = this.players.indexOf(trickWinner);
             this.phase = 'playing';
-        } else this.phase = 'scoring';
+        } else {
+            this.phase = 'scoring';
+            scoreRound();
+        }
+    }
+
+    scoreRound() {
+        for(let player in this.players) {
+            player.score += player.tricksWon;
+            if(player.tricksWon === player.bid) player.score += 5;
+            player.hand = [];
+            player.tricksWon = 0;
+            player.bid = -1;
+        }
+
+        if(this.roundNumber === 1 && !this.direction) this.direction = true;
+        else if(this.roundNumber === (52 % this.players.length) && this.direction) endGame(); // TODO
+        else if(this.direction) this.roundNumber += 1;
+        else if (!this.direction) this.roundNumber -= 1;
+        this.phase = 'waiting';
+        this.startNewRound();
     }
 }
 
@@ -108,5 +128,6 @@ class Player {
         this.hand = new Array();
         this.tricksWon = 0;
         this.bid = -1;
+        this.score = 0;
     }
 }
