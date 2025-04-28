@@ -41,8 +41,8 @@ class GameManager {
         this.phase = 'bidding';
     }
 
-    handleBid(Player, bidValue) {
-        const player = this.players.find(p === Player);
+    handleBid(playerID, bidValue) {
+        const player = this.players.find(p => p.id === playerID);
         if(!player || this.phase !== 'bidding' || this.players.indexOf(player) !== this.playerIndex) return;
 
         player.bid = bidValue;
@@ -52,6 +52,22 @@ class GameManager {
         if(this.players.every(p => p.bid !== -1)) {
             this.phase = 'playing';
             this.playerIndex = 1;
+        }
+    }
+
+    handePlayCard(playerID, card) {
+        const player = this.players.find(p => p.id === playerID);
+        if(!player || this.phase !== 'playing' || this.players.indexOf(player) !== this.playerIndex) return;
+
+        const cardIndex = player.hand.indexOf(card);
+        if (cardIndex === -1) return; // Player does not have the card they attempted to play
+        player.hand.splice(cardIndex, 1);
+
+        this.trickCards.push(card);
+
+        if(this.trickCards.length === this.roundNumber.length) {
+            this.phase = 'scoring';
+            this.scoreTrick(); //Needs implementing
         }
     }
 }
