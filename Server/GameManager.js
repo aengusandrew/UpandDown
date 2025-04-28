@@ -34,10 +34,26 @@ class GameManager {
             console.log(player.name, player.hand);
         }
 
+        // Assign trump suit as suit of card on top of deck
+        this.trumpSuit = deck.cards[0].suit;
+        console.log(this.trumpSuit);
 
+        this.phase = 'bidding';
     }
 
+    handleBid(Player, bidValue) {
+        const player = this.players.find(p === Player);
+        if(!player || this.phase !== 'bidding' || this.players.indexOf(player) !== this.playerIndex) return;
 
+        player.bid = bidValue;
+
+        this.playerIndex = (this.playerIndex + 1) % this.players.length;
+
+        if(this.players.every(p => p.bid !== -1)) {
+            this.phase = 'playing';
+            this.playerIndex = 1;
+        }
+    }
 }
 
 class Player {
