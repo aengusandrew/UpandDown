@@ -5,12 +5,12 @@ class GameManager {
         this.roomCode = roomCode;
         this.players = new Array();
         this.dealerIndex = 0;
-        this.playerIndex = (this.dealerIndex + 1) % this.players.length;
+        this.playerIndex = null;
         this.roundNumber = -1;
         this.phase = 'waiting'; // waiting, bidding, playing, scoring
         this.trickCards = new Array();
         this.trumpSuit = null;
-        this.direction = false; // False when going down the street, true when going up
+        this.direction = false; // TODO: Check this is working? False when going down the street, true when going up
     }
 
     addPlayer(Player) {
@@ -37,6 +37,8 @@ class GameManager {
         // Assign trump suit as suit of card on top of deck
         this.trumpSuit = deck.cards[0].suit;
         console.log(this.trumpSuit);
+
+        this.playerIndex = (this.dealerIndex + 1) % this.players.length;
 
         this.phase = 'bidding';
     }
@@ -70,18 +72,18 @@ class GameManager {
 
     scoreTrick() {
         const leadSuit = this.trickCards[0].card.suit;
-        let trumpThrown = false;
-        let leadingPlay = null;
+        let leadingPlay = this.trickCards[0];
+        let trumpThrown = this.trickCards[0].card.suit === this.trumpSuit;
 
         for(const { playerID, card } of this.trickCards) {
             switch(card.suit) {
                 case leadSuit:
-                    if(!trumpThrown && cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card };
+                    if(!trumpThrown && this.cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card };
                     break;
                 
                 case this.trumpSuit:
-                    if(!trumpThrown) { leadingPlay.card = { playerID, card }; trumpThrown = true; }
-                    else if (cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card }; //TODO: Implement cardBeats
+                    if(!trumpThrown) { leadingPlay = { playerID, card }; trumpThrown = true; }
+                    else if (this.cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card }; //TODO: Implement cardBeats
                     break;
                 default: break;
             }
@@ -98,12 +100,12 @@ class GameManager {
             this.phase = 'playing';
         } else {
             this.phase = 'scoring';
-            scoreRound();
+            this.scoreRound();
         }
     }
 
     scoreRound() {
-        for(let player in this.players) {
+        for(let player of this.players) {
             player.score += player.tricksWon;
             if(player.tricksWon === player.bid) player.score += 5;
             player.hand = [];
@@ -112,7 +114,7 @@ class GameManager {
         }
 
         if(this.roundNumber === 1 && !this.direction) this.direction = true;
-        else if(this.roundNumber === (52 % this.players.length) && this.direction) endGame(); // TODO
+        else if(this.roundNumber === (52 % this.players.length) && this.direction) this.endGame(); // TODO: Implement endGame()
         else if(this.direction) this.roundNumber += 1;
         else if (!this.direction) this.roundNumber -= 1;
         this.phase = 'waiting';
