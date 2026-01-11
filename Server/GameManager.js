@@ -5,7 +5,7 @@ class GameManager {
         this.roomCode = roomCode;
         this.players = new Array();
         this.dealerIndex = 0;
-        this.playerIndex = 1;
+        this.playerIndex = (this.dealerIndex + 1) % this.players.length;
         this.roundNumber = -1;
         this.phase = 'waiting'; // waiting, bidding, playing, scoring
         this.trickCards = new Array();
@@ -78,12 +78,12 @@ class GameManager {
         for(const { playerID, card } of this.trickCards) {
             switch(card.suit) {
                 case leadSuit:
-                    if(!trumpThrown && card.value > leadingPlay.card.value) leadingPlay = { playerID, card };
+                    if(!trumpThrown && cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card };
                     break;
                 
                 case this.trumpSuit:
                     if(!trumpThrown) { leadingPlay.card = { playerID, card }; trumpThrown = true; }
-                    else if (card.value > leadingPlay.card.value) leadingPlay = { playerID, card };
+                    else if (cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card }; //TODO: Implement cardBeats
                     break;
                 default: break;
             }
