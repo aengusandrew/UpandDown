@@ -47,12 +47,10 @@ class GameManager {
 
         player.bid = bidValue;
 
+        if(this.playerIndex === 0) this.phase = 'playing';
+
         this.playerIndex = (this.playerIndex + 1) % this.players.length;
 
-        if(this.players.every(p => p.bid !== -1)) {
-            this.phase = 'playing';
-            this.playerIndex = 1;
-        }
     }
 
     handlePlayCard(playerID, card) {
