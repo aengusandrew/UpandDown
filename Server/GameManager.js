@@ -1,4 +1,4 @@
-const Deck = require('deck.js')
+const Deck = require('./deck')
 
 class GameManager {
     constructor(roomCode) {
@@ -23,7 +23,7 @@ class GameManager {
     }
     
     startNewRound() {
-        deck = new Deck();
+        const deck = new Deck();
         console.log(deck);
 
         deck.shuffle();
@@ -55,7 +55,7 @@ class GameManager {
         }
     }
 
-    handePlayCard(playerID, card) {
+    handlePlayCard(playerID, card) {
         const player = this.players.find(p => p.id === playerID);
         if(!player || this.phase !== 'playing' || this.players.indexOf(player) !== this.playerIndex) return;
 
@@ -63,7 +63,7 @@ class GameManager {
         if (cardIndex === -1) return; // Player does not have the card they attempted to play
         player.hand.splice(cardIndex, 1);
 
-        this.trickCards.push(card);
+        this.trickCards.push( {playerID, card} );
 
         if(this.trickCards.length === this.players.length) {
             this.scoreTrick();
@@ -71,24 +71,25 @@ class GameManager {
     }
 
     scoreTrick() {
-        const leadSuit = this.trickCards[0].suit;
+        const leadSuit = this.trickCards[0].card.suit;
         let trumpThrown = false;
-        let leadingCard = null;
+        let leadingPlay = null;
 
-        for(let card of this.trickCards) {
+        for(const { playerID, card } of this.trickCards) {
             switch(card.suit) {
                 case leadSuit:
-                    if(!trumpThrown && card.value > leadingCard.value) leadingCard = card;
+                    if(!trumpThrown && card.value > leadingPlay.card.value) leadingPlay = { playerID, card };
                     break;
                 
                 case this.trumpSuit:
-                    if(!trumpThrown) { leadingCard = card; trumpThrown = true; }
-                    else if (card.value > leadingCard.value) leadingCard = card;
+                    if(!trumpThrown) { leadingPlay.card = { playerID, card }; trumpThrown = true; }
+                    else if (card.value > leadingPlay.card.value) leadingPlay = { playerID, card };
                     break;
+                default: break;
             }
         }
         
-        const trickWinner = this.players[this.trickCards.indexOf(leadingCard) % this.players.length].id;
+        const trickWinner = this.players.find(p => p.id === leadingPlay.playerID);
         
         trickWinner.tricksWon += 1;
 
