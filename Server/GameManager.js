@@ -83,7 +83,7 @@ class GameManager {
                 
                 case this.trumpSuit:
                     if(!trumpThrown) { leadingPlay = { playerID, card }; trumpThrown = true; }
-                    else if (this.cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card }; //TODO: Implement cardBeats
+                    else if (this.cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card };
                     break;
                 default: break;
             }
@@ -120,7 +120,29 @@ class GameManager {
         this.phase = 'waiting';
         this.startNewRound();
     }
+
+    cardBeats(card1, card2) {
+
+        const RANKS = {
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "J": 11,
+            "Q": 12,
+            "K": 13,
+            "A": 14
+        };
+
+        return RANKS[card1.value] > RANKS [card2.value];
+    }
 }
+    
 
 class Player {
     constructor(id, name) {
