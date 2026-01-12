@@ -24,7 +24,6 @@ class GameManager {
     
     startNewRound() {
         const deck = new Deck();
-        console.log(deck);
 
         deck.shuffle();
         
