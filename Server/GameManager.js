@@ -30,12 +30,10 @@ class GameManager {
         // Deal
         for(let player of this.players) {
             player.hand = deck.cards.splice(0, this.roundNumber);
-            console.log(player.name, player.hand);
         }
 
         // Assign trump suit as suit of card on top of deck
         this.trumpSuit = deck.cards[0].suit;
-        console.log(this.trumpSuit);
 
         this.playerIndex = (this.dealerIndex + 1) % this.players.length;
 
