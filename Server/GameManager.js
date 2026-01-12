@@ -54,16 +54,26 @@ class GameManager {
 
     handlePlayCard(playerID, card) {
         const player = this.players.find(p => p.id === playerID);
-        if(!player || this.phase !== 'playing' || this.players.indexOf(player) !== this.playerIndex) return;
+        if(!player || this.phase !== 'playing' || this.players.indexOf(player) !== this.playerIndex) return 'error'; //TODO: make this error handling more specific
 
-        const cardIndex = player.hand.indexOf(card);
-        if (cardIndex === -1) return; // Player does not have the card they attempted to play
+        const cardIndex = player.hand.findIndex(
+            c => c.suit === card.suit && c.value === card.value
+        );
+        if (cardIndex === -1) return 'not_in_hand'; // Player does not have the card they attempted to play
+
+        if(this.trickCards.length > 0) {
+            const leadSuit = this.trickCards[0].card.suit;
+            if(player.hand.some(c => c.suit === leadSuit) && card.suit != leadSuit) return 'follow_lead';
+        }
+
         player.hand.splice(cardIndex, 1);
 
         this.trickCards.push( {playerID, card} );
 
         if(this.trickCards.length === this.players.length) {
             this.scoreTrick();
+        } else {
+            this.playerIndex = (this.playerIndex + 1) % this.players.length;
         }
     }
 
