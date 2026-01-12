@@ -111,6 +111,31 @@ io.on('connection', (socket) => {
 
         console.log(`Game started in room ${roomCode}`);
     })
+
+    socket.on('place_bid', bidValue => {
+        const roomCode = socket.roomCode;
+        console.log(roomCode);
+        if (!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        console.log(game);
+        if (!game) return;
+
+        const result = game.handleBid(socket.id, bidValue);
+        if(result === 'error') {
+            socket.emit('game_error', 'invalid_bid');
+            return;
+        }
+
+        console.log(bidValue);
+
+        for (const player of game.players) {
+            io.to(player.id).emit(
+               'game_state',
+               game.getPublicGameState(player.id)
+            );
+        }
+    })
 });
 
 server.listen(3000, () => {

@@ -65,6 +65,22 @@ function renderGame(state) {
             `).join('')}
         </ul>
     `;
+
+    if (state.canBid) {
+    gameDiv.innerHTML += `
+        <h3>Your Bid</h3>
+        <div>
+            ${Array.from({ length: state.roundNumber + 1 }, (_, i) => `
+                <button onclick="submitBid(${i})">${i}</button>
+            `).join('')}
+        </div>
+    `;
+}
+}
+
+window.submitBid = function (value) {
+    console.log("Bid emitted");
+    socket.emit('place_bid', value);
 }
 
 function playCard(suit, value) {

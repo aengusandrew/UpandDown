@@ -43,14 +43,15 @@ class GameManager {
 
     handleBid(playerID, bidValue) {
         const player = this.players.find(p => p.id === playerID);
-        if(!player || this.phase !== 'bidding' || this.players.indexOf(player) !== this.playerIndex) return;
+        if(!player || this.phase !== 'bidding' || this.players.indexOf(player) !== this.playerIndex) return 'error';
 
         player.bid = bidValue;
 
-        if(this.playerIndex === 0) this.phase = 'playing';
-
         this.playerIndex = (this.playerIndex + 1) % this.players.length;
 
+        if(this.playerIndex === this.dealerIndex) this.phase = 'playing';
+
+        return 'ok';
     }
 
     handlePlayCard(playerID, card) {
@@ -161,7 +162,11 @@ class GameManager {
             canStartGame:
                 this.phase === 'waiting' &&
                 forPlayerID === this.hostId &&
-                this.players.length >=2
+                this.players.length >=2,
+
+            canBid:
+            this.phase === 'bidding' &&
+            this.players[this.playerIndex]?.id === forPlayerID
         }
     }
 
