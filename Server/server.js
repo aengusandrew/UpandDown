@@ -18,13 +18,14 @@ io.on('connection', (socket) => {
         console.log('A user disconnected:', socket.id);
     })
 
-    socket.on('createRoom', (roomCode) => {
+    socket.on('createRoom', (roomCode, playerName) => {
         if(rooms.has(roomCode)) {
             socket.emit('room_error', 'room_exists');
             return;
         }
 
         const game = new GameManager(roomCode);
+        rooms.set(roomCode, game);
 
         game.addPlayer({
             id: socket.id,
