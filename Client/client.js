@@ -16,10 +16,21 @@ socket.on('game_state', state => {
     renderGame(state);
 });
 
+socket.on('game_error', err => {
+    alert(err);
+})
+
+function startGame() {
+    socket.emit('start_game');
+}
+
 function renderGame(state) {
     gameDiv.innerHTML = `
         <h2>Room: ${state.roomCode}</h2>
         <p>Phase: ${state.phase}</p>
+        ${state.canStartGame ? `
+            <button onclick="startGame()">Start Game</button>
+            ` : ''}
         <p>Trump Suit: ${state.trumpSuit ?? 'N/A'}</p>
         <p>Current Turn: ${state.currentTurn ?? 'N/A'}</p>
 

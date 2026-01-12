@@ -11,6 +11,7 @@ class GameManager {
         this.trickCards = new Array();
         this.trumpSuit = null;
         this.direction = false; // TODO: Check this is working? False when going down the street, true when going up
+        this.hostID = null;
     }
 
     addPlayer(Player) {
@@ -18,7 +19,7 @@ class GameManager {
     }
 
     startGame() {
-        this.roundNumber = 52 % this.players.length;
+        this.roundNumber = Math.min(52 / this.players.length, 10);
         this.startNewRound();
     }
     
@@ -155,7 +156,12 @@ class GameManager {
             trickCards: this.trickCards.map(t => ({
                 playerID: t.playerID,
                 card: t.card
-            }))
+            })),
+
+            canStartGame:
+                this.phase === 'waiting' &&
+                forPlayerID === this.hostId &&
+                this.players.length >=2
         }
     }
 

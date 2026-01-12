@@ -25,6 +25,7 @@ io.on('connection', (socket) => {
         }
 
         const game = new GameManager(roomCode);
+        game.hostId = socket.id;
         rooms.set(roomCode, game);
 
         game.addPlayer({
@@ -82,6 +83,34 @@ io.on('connection', (socket) => {
         console.log(`${socket.id} joined room ${roomCode}`);
     });
 
+    socket.on('start_game', () => {
+        const roomCode = socket.roomCode;
+        if(!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        if (!game) return;
+
+        if (socket.id !== game.hostId) {
+            socket.emit('game_error', 'not_host');
+            return;
+        }
+
+        if (game.phase !== 'waiting') {
+            socket.emit('game_error', 'game_already_started');
+            return;
+        }
+
+        game.startGame();
+
+        for (const player of game.players) {
+            io.to(player.id).emit(
+                'game_state',
+                game.getPublicGameState(player.id)
+            );
+        }
+
+        console.log(`Game started in room ${roomCode}`);
+    })
 });
 
 server.listen(3000, () => {
