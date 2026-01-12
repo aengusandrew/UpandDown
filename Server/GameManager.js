@@ -54,7 +54,10 @@ class GameManager {
 
     handlePlayCard(playerID, card) {
         const player = this.players.find(p => p.id === playerID);
-        if(!player || this.phase !== 'playing' || this.players.indexOf(player) !== this.playerIndex) return 'error'; //TODO: make this error handling more specific
+
+        if(!player) return 'player_not_found';
+        if(this.phase !== 'playing') return 'wrong_phase';
+        if(this.players.indexOf(player) !== this.playerIndex) return 'not_your_turn';
 
         const cardIndex = player.hand.findIndex(
             c => c.suit === card.suit && c.value === card.value
