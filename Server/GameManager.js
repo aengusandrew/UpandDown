@@ -131,6 +131,34 @@ class GameManager {
         this.startNewRound();
     }
 
+    getPublicGameState(forPlayerID) {
+        const you = this.players.find(p => p.id === forPlayerID);
+
+        return {
+            roomCode: this.roomCode,
+            phase: this.phase,
+            roundNumber: this.roundNumber,
+            direction: this.direction,
+            trumpSuit: this.trumpSuit,
+            currentTurn: this.players[this.playerIndex]?.id || null,
+
+            players: this.players.map(p => ({
+                ID: p.ID,
+                name: p.name,
+                handSize: p.hand.length,
+                tricksWon: p.tricksWon,
+                bid: p.bid,
+                score: p.score
+            })),
+
+            yourHand: you ? you.hand : [],
+            trickCards: this.trickCards.map(t => ({
+                playerID: t.playerID,
+                card: t.card
+            }))
+        }
+    }
+
     cardBeats(card1, card2) {
 
         const RANKS = {
@@ -155,8 +183,8 @@ class GameManager {
     
 
 class Player {
-    constructor(id, name) {
-        this.id = id;
+    constructor(ID, name) {
+        this.ID = ID;
         this.name = name;
         this.hand = new Array();
         this.tricksWon = 0;
