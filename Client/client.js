@@ -1,23 +1,61 @@
 const socket = io('http://localhost:3000');
 
-function createRoom() {
-    const roomCode = prompt("Enter a room code:");
-    socket.emit('createRoom', roomCode);
+const gameDiv = document.getElementById('game');
+const nameInput = document.getElementById('nameInput');
+const roomInput = document.getElementById('roomInput')
+
+document.getElementById('createBtn').onclick = () => {
+    socket.emit('createRoom', roomInput.value, nameInput.value)
+};
+
+document.getElementById('joinBtn').onclick = () => {
+    socket.emit('joinRoom', roomInput.value, nameInput.value);
+};
+
+socket.on('game_state', state => {
+    renderGame(state);
+});
+
+function renderGame(state) {
+    gameDiv.innerHTML = `
+        <h2>Room: ${state.roomCode}</h2>
+        <p>Phase: ${state.phase}</p>
+        <p>Trump Suit: ${state.trumpSuit ?? 'N/A'}</p>
+        <p>Current Turn: ${state.currentTurn ?? 'N/A'}</p>
+
+        <h3>Players</h3>
+        <ul>
+            ${state.players.map(p => `
+                <li>
+                    ${p.name} —
+                    Hand: ${p.handSize},
+                    Tricks: ${p.tricksWon},
+                    Bid: ${p.bid},
+                    Score: ${p.score}
+                </li>
+            `).join('')}
+        </ul>
+
+        <h3>Your Hand</h3>
+        <div>
+            ${state.yourHand.map(card => `
+                <button onclick="playCard('${card.suit}', '${card.value}')">
+                    ${card.value} of ${card.suit}
+                </button>
+            `).join('')}
+        </div>
+
+        <h3>Trick</h3>
+        <ul>
+            ${state.trickCards.map(t => `
+                <li>
+                    ${t.playerId}: ${t.card.value} of ${t.card.suit}
+                </li>
+            `).join('')}
+        </ul>
+    `;
 }
 
-function joinRoom() {
-    const roomCode = prompt("Enter a room code to join:");
-    socket.emit('joinRoom', roomCode);
+function playCard(suit, value) {
+    socket.emit('play_card', { suit, value });
 }
-
-socket.on('roomUpdate', (room) =>{
-    console.log('Room updated:', room);
-});
-
-socket.on('gameUpdate', (data) => {
-    console.log('Game update:', data)
-});
-
-socket.on('errorMessage', (message) => {
-    alert(message);
-});

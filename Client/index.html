@@ -2,13 +2,25 @@
 <html lang="en">
 <head>
     <title>Up and Down the Street</title>
-    <script src="/socket.io/socket.io.js"></script>
 </head>
-<body>
-    <h1>Up and Down the River</h1>
-    <button onclick="createRoom()">Create Room</button>
-    <button onclick="joinRoom()">Join Room</button>
 
-    <script src="client.js"></script>
+<body>
+
+<h1>Up and Down the Street</h1>
+
+<div>
+    <input id="nameInput" placeholder="Name">
+    <input id="roomInput" placehodler="Room Code">
+    <button id="createBtn">Create Room</button>
+    <button id="joinBtn">Join Room</button>
+</div>
+
+<hr>
+
+<div id="game"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js"></script>
+
 </body>
 </html>
