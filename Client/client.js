@@ -1,6 +1,11 @@
+alert("client.js Loaded");
+
 const socket = io('http://localhost:3000');
 
-const gameDiv = document.getElementById('game');
+document.body.onclick = () => {
+    console.log('clicked');
+}
+
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
 
@@ -25,6 +30,20 @@ function startGame() {
 }
 
 function renderGame(state) {
+
+    console.log("renderGame ran");
+
+    const gameDiv = document.getElementById('game');
+
+    const leadSuit = 
+        state.trickCards.length > 0
+        ? state.trickCards[0].card.suit :
+        null;
+    
+    const hasLeadSuit =
+        leadSuit &&
+        state.yourHand.some(c => c.suit === leadSuit);
+
     gameDiv.innerHTML = `
         <h2>Room: ${state.roomCode}</h2>
         <p>Phase: ${state.phase}</p>
@@ -37,23 +56,38 @@ function renderGame(state) {
         <h3>Players</h3>
         <ul>
             ${state.players.map(p => `
-                <li>
+                <li style="${state.currentTurn === p.id ? 'font-weight:bold;' : ''}">
                     ${p.name} —
-                    Hand: ${p.handSize},
                     Tricks: ${p.tricksWon},
-                    Bid: ${p.bid},
+                    Bid: ${p.bid ?? '-'},
                     Score: ${p.score}
+                    ${state.currentTurn === p.id ? ' ← turn' : ''}
                 </li>
             `).join('')}
         </ul>
 
         <h3>Your Hand</h3>
-        <div>
-            ${state.yourHand.map(card => `
-                <button onclick="playCard('${card.suit}', '${card.value}')">
+        <div id="hand">
+            ${state.yourHand.map(card => {
+                const mustFollow = leadSuit && hasLeadSuit;
+                const isPlayable =
+                    state.canPlayCard &&
+                    (!mustFollow || card.suit === leadSuit);
+                
+                return `
+                <button
+                    data-suit="${card.suit}"
+                    data-value="${card.value}"
+                    ${isPlayable ? '' : 'disabled'}
+                    style="
+                        opacity: ${isPlayable ? '1' : '0.5'}
+                        cursor: ${isPlayable ? 'pointer' : 'not-allowed'}
+                    "
+                >
                     ${card.value} of ${card.suit}
                 </button>
-            `).join('')}
+                `;
+            }).join('')}
         </div>
 
         <h3>Trick</h3>
@@ -65,8 +99,31 @@ function renderGame(state) {
             `).join('')}
         </ul>
     `;
-}
 
-function playCard(suit, value) {
-    socket.emit('play_card', { suit, value });
+    if (state.canBid) {
+        gameDiv.innerHTML += `
+        <h3>Your Bid</h3>
+        <div id="bid-buttons">
+            ${Array.from({length: state.roundNumber + 1}, (_, i) => `
+                <button data-bid="${i}">${i}</button>
+            `).join('')}
+        </div>
+    `;
+    }
+
+    gameDiv.onclick = e => {
+        if(e.target.dataset.suit && e.target.dataset.value) {
+            socket.emit('play_card', {
+                suit: e.target.dataset.suit,
+                value: e.target.dataset.value
+            });
+            return;
+        }
+
+        if(e.target.dataset.bid) {
+            socket.emit('place_bid', Number(e.target.dataset.bid));
+            return;
+        }
+    };
+
 }

@@ -43,14 +43,24 @@ class GameManager {
 
     handleBid(playerID, bidValue) {
         const player = this.players.find(p => p.id === playerID);
-        if(!player || this.phase !== 'bidding' || this.players.indexOf(player) !== this.playerIndex) return;
+
+        if(!player) return 'no_player';
+        if(this.phase !== 'bidding') return 'wrong_phase';
+        if(this.players[this.playerIndex].id !== playerID) return 'not_turn';
+        if(bidValue < 0 || bidValue > this.roundNumber) return 'invalid_bid';
 
         player.bid = bidValue;
 
-        if(this.playerIndex === 0) this.phase = 'playing';
-
         this.playerIndex = (this.playerIndex + 1) % this.players.length;
 
+        const allBid = this.players.every(p => p.bid !== -1);
+        if(allBid) {
+            this.phase = 'playing';
+
+            this.playerIndex = (this.dealerIndex + 1) % this.players.length;
+        }
+
+        return 'ok';
     }
 
     handlePlayCard(playerID, card) {
@@ -79,6 +89,8 @@ class GameManager {
         } else {
             this.playerIndex = (this.playerIndex + 1) % this.players.length;
         }
+
+        return 'ok';
     }
 
     scoreTrick() {
@@ -141,14 +153,14 @@ class GameManager {
             roundNumber: this.roundNumber,
             direction: this.direction,
             trumpSuit: this.trumpSuit,
-            currentTurn: this.players[this.playerIndex]?.id || null,
+            currentTurn: this.players[this.playerIndex]?.id,
 
             players: this.players.map(p => ({
-                ID: p.ID,
+                id: p.id,
                 name: p.name,
                 handSize: p.hand.length,
                 tricksWon: p.tricksWon,
-                bid: p.bid,
+                bid: p.bid === -1 ? null : p.bid,
                 score: p.score
             })),
 
@@ -161,7 +173,15 @@ class GameManager {
             canStartGame:
                 this.phase === 'waiting' &&
                 forPlayerID === this.hostId &&
-                this.players.length >=2
+                this.players.length >=2,
+
+            canBid:
+            this.phase === 'bidding' &&
+            this.players[this.playerIndex]?.id === forPlayerID,
+
+            canPlayCard:
+                this.phase === 'playing' &&
+                this.players[this.playerIndex]?.id === forPlayerID
         }
     }
 
@@ -189,8 +209,8 @@ class GameManager {
     
 
 class Player {
-    constructor(ID, name) {
-        this.ID = ID;
+    constructor(id, name) {
+        this.id = id;
         this.name = name;
         this.hand = new Array();
         this.tricksWon = 0;
