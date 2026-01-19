@@ -24,6 +24,15 @@ function startGame() {
     socket.emit('start_game');
 }
 
+gameDiv.addEventListener('click', e => {
+    if (e.target.dataset.bid !== undefined) {
+        const bid = Number(e.target.dataset.bid);
+        console.log('Submitting bid:', bid);
+        socket.emit('place_bid', bid);
+    }
+});
+
+
 function renderGame(state) {
     gameDiv.innerHTML = `
         <h2>Room: ${state.roomCode}</h2>
@@ -37,20 +46,24 @@ function renderGame(state) {
         <h3>Players</h3>
         <ul>
             ${state.players.map(p => `
-                <li>
+                <li style="${state.currentTurn === p.id ? 'font-weight:bold;' : ''}">
                     ${p.name} —
-                    Hand: ${p.handSize},
                     Tricks: ${p.tricksWon},
-                    Bid: ${p.bid},
+                    Bid: ${p.bid ?? '-'},
                     Score: ${p.score}
+                    ${state.currentTurn === p.id ? ' ← turn' : ''}
                 </li>
             `).join('')}
         </ul>
 
         <h3>Your Hand</h3>
-        <div>
+        <div id="hand">
             ${state.yourHand.map(card => `
-                <button onclick="playCard('${card.suit}', '${card.value}')">
+                <button
+                    data-suit="${card.suit}"
+                    data-value="${card.value}"
+                    ${state.canPlayCard ? '' : 'disabled'}
+                >
                     ${card.value} of ${card.suit}
                 </button>
             `).join('')}
@@ -69,20 +82,11 @@ function renderGame(state) {
     if (state.canBid) {
     gameDiv.innerHTML += `
         <h3>Your Bid</h3>
-        <div>
+        <div id="bid-buttons">
             ${Array.from({ length: state.roundNumber + 1 }, (_, i) => `
-                <button onclick="submitBid(${i})">${i}</button>
+                <button data-bid="${i}">${i}</button>
             `).join('')}
         </div>
     `;
 }
-}
-
-window.submitBid = function (value) {
-    console.log("Bid emitted");
-    socket.emit('place_bid', value);
-}
-
-function playCard(suit, value) {
-    socket.emit('play_card', { suit, value });
 }
