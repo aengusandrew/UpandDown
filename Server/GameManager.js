@@ -155,10 +155,6 @@ class GameManager {
             trumpSuit: this.trumpSuit,
             currentTurn: this.players[this.playerIndex]?.id,
 
-            canPlayCard:
-                this.phase === 'playing' &&
-                this.players[this.playerIndex]?.id === forPlayerID,
-
             players: this.players.map(p => ({
                 id: p.id,
                 name: p.name,
@@ -181,7 +177,11 @@ class GameManager {
 
             canBid:
             this.phase === 'bidding' &&
-            this.players[this.playerIndex]?.id === forPlayerID
+            this.players[this.playerIndex]?.id === forPlayerID,
+
+            canPlayCard:
+                this.phase === 'playing' &&
+                this.players[this.playerIndex]?.id === forPlayerID
         }
     }
 

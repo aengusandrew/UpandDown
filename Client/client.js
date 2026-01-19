@@ -1,6 +1,9 @@
 const socket = io('http://localhost:3000');
 
-const gameDiv = document.getElementById('game');
+document.body.onclick = () => {
+    console.log('clicked');
+}
+
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
 
@@ -24,16 +27,21 @@ function startGame() {
     socket.emit('start_game');
 }
 
-gameDiv.addEventListener('click', e => {
-    if (e.target.dataset.bid !== undefined) {
-        const bid = Number(e.target.dataset.bid);
-        console.log('Submitting bid:', bid);
-        socket.emit('place_bid', bid);
-    }
-});
-
-
 function renderGame(state) {
+
+    console.log("renderGame ran");
+
+    const gameDiv = document.getElementById('game');
+
+    const leadSuit = 
+        state.trickCards.length > 0
+        ? state.trickCards[0].card.suit :
+        null;
+    
+    const hasLeadSuit =
+        leadSuit &&
+        state.yourHand.some(c => c.suit === leadSuit);
+
     gameDiv.innerHTML = `
         <h2>Room: ${state.roomCode}</h2>
         <p>Phase: ${state.phase}</p>
@@ -58,15 +66,26 @@ function renderGame(state) {
 
         <h3>Your Hand</h3>
         <div id="hand">
-            ${state.yourHand.map(card => `
+            ${state.yourHand.map(card => {
+                const mustFollow = leadSuit && hasLeadSuit;
+                const isPlayable =
+                    state.canPlayCard &&
+                    (!mustFollow || card.suit === leadSuit);
+                
+                return `
                 <button
                     data-suit="${card.suit}"
                     data-value="${card.value}"
-                    ${state.canPlayCard ? '' : 'disabled'}
+                    ${isPlayable ? '' : 'disabled'}
+                    style="
+                        opacity: ${isPlayable ? '1' : '0.5'}
+                        cursor: ${isPlayable ? 'pointer' : 'not-allowed'}
+                    "
                 >
                     ${card.value} of ${card.suit}
                 </button>
-            `).join('')}
+                `;
+            }).join('')}
         </div>
 
         <h3>Trick</h3>
@@ -88,5 +107,19 @@ function renderGame(state) {
             `).join('')}
         </div>
     `;
+
+    gameDiv.onclick = e => {
+        if(e.target.dataset.suit && e.target.dataset.value) {
+            socket.emit('play_card', {
+                suit: e.target.dataset.suit,
+                value: e.target.dataset.value
+            });
+            return;
+        }
+
+        if(e.target.dataset.bid) {
+            socket.emit('bid', Number(e.target.dataset.bid));
+        }
+    };
 }
 }
