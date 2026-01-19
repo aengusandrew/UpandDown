@@ -1,10 +1,4 @@
-alert("client.js Loaded");
-
 const socket = io('http://localhost:3000');
-
-document.body.onclick = () => {
-    console.log('clicked');
-}
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -31,8 +25,6 @@ function startGame() {
 
 function renderGame(state) {
 
-    console.log("renderGame ran");
-
     const gameDiv = document.getElementById('game');
 
     const leadSuit = 
@@ -43,6 +35,28 @@ function renderGame(state) {
     const hasLeadSuit =
         leadSuit &&
         state.yourHand.some(c => c.suit === leadSuit);
+
+    const trickComplete =
+        state.trickCards.length === state.players.length;
+
+    let lastCompletedTrick = null;
+
+    const trickJustCompleted =
+        state.phase === 'playing' &&
+        state.trickCards.length === 0 &&
+        lastCompletedTrick;
+
+    if(state.trickCards.length === state.players.length) {
+        lastCompletedTrick = [...state.trickCards];
+    }
+
+    const trickToRender =
+        state.trickCards.length > 0
+            ? state.trickCards
+            : lastCompletedTrick || [];
+
+    console.log(state.trickCards.length);
+    console.log(trickToRender);
 
     gameDiv.innerHTML = `
         <h2>Room: ${state.roomCode}</h2>
@@ -91,14 +105,16 @@ function renderGame(state) {
         </div>
 
         <h3>Trick</h3>
-        <ul>
-            ${state.trickCards.map(t => `
-                <li>
-                    ${t.playerId}: ${t.card.value} of ${t.card.suit}
-                </li>
+        <div id="trick-area">
+            ${trickToRender.map(t => `
+                <div class="trick-card">
+                    ${t.card.value} of ${t.card.suit}
+                </div>
             `).join('')}
-        </ul>
+        </div>
     `;
+
+
 
     if (state.canBid) {
         gameDiv.innerHTML += `
@@ -126,4 +142,13 @@ function renderGame(state) {
         }
     };
 
+    if(trickComplete) {
+        setTimeout(() => {
+            document
+                .querySelectorAll('.trick-card')
+                .forEach(card => card.classList.add('fade-out'));
+
+            lastCompletedTrick = null;
+        }, 300);
+    }
 }
