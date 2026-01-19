@@ -1,3 +1,5 @@
+alert("client.js Loaded");
+
 const socket = io('http://localhost:3000');
 
 document.body.onclick = () => {
@@ -99,14 +101,15 @@ function renderGame(state) {
     `;
 
     if (state.canBid) {
-    gameDiv.innerHTML += `
+        gameDiv.innerHTML += `
         <h3>Your Bid</h3>
         <div id="bid-buttons">
-            ${Array.from({ length: state.roundNumber + 1 }, (_, i) => `
+            ${Array.from({length: state.roundNumber + 1}, (_, i) => `
                 <button data-bid="${i}">${i}</button>
             `).join('')}
         </div>
     `;
+    }
 
     gameDiv.onclick = e => {
         if(e.target.dataset.suit && e.target.dataset.value) {
@@ -118,8 +121,9 @@ function renderGame(state) {
         }
 
         if(e.target.dataset.bid) {
-            socket.emit('bid', Number(e.target.dataset.bid));
+            socket.emit('place_bid', Number(e.target.dataset.bid));
+            return;
         }
     };
-}
+
 }
