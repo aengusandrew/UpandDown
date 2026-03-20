@@ -140,7 +140,7 @@ class GameManager {
             if(player.tricksWon === player.bid) player.score += 5;
 
             roundResult.results.push({
-                name: player.name,
+                playerID: player.id,
                 bid: player.bid,
                 tricks: player.tricksWon,
                 score: player.score
