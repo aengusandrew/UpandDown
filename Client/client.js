@@ -1,10 +1,4 @@
-alert("client.js Loaded");
-
 const socket = io('http://localhost:3000');
-
-document.body.onclick = () => {
-    console.log('clicked');
-}
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -29,9 +23,11 @@ function startGame() {
     socket.emit('start_game');
 }
 
-function renderGame(state) {
+let lastCompletedTrick = null;
+let fadingTrick = false;
+let previousTrickCards = [];
 
-    console.log("renderGame ran");
+function renderGame(state) {
 
     const gameDiv = document.getElementById('game');
 
@@ -43,6 +39,10 @@ function renderGame(state) {
     const hasLeadSuit =
         leadSuit &&
         state.yourHand.some(c => c.suit === leadSuit);
+
+    const trickToRender =
+        state.trickCards;
+
 
     gameDiv.innerHTML = `
         <h2>Room: ${state.roomCode}</h2>
@@ -91,14 +91,16 @@ function renderGame(state) {
         </div>
 
         <h3>Trick</h3>
-        <ul>
-            ${state.trickCards.map(t => `
-                <li>
-                    ${t.playerId}: ${t.card.value} of ${t.card.suit}
-                </li>
+        <div id="trick-area">
+            ${trickToRender.map(t => `
+                <div class="trick-card">
+                    ${t.card.value} of ${t.card.suit}
+                </div>
             `).join('')}
-        </ul>
+        </div>
     `;
+
+
 
     if (state.canBid) {
         gameDiv.innerHTML += `
@@ -122,8 +124,6 @@ function renderGame(state) {
 
         if(e.target.dataset.bid) {
             socket.emit('place_bid', Number(e.target.dataset.bid));
-            return;
         }
     };
-
 }
