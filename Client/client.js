@@ -23,9 +23,6 @@ function startGame() {
     socket.emit('start_game');
 }
 
-let lastCompletedTrick = null;
-let fadingTrick = false;
-let previousTrickCards = [];
 
 function renderGame(state) {
 
@@ -52,6 +49,20 @@ function renderGame(state) {
             ` : ''}
         <p>Trump Suit: ${state.trumpSuit ?? 'N/A'}</p>
         <p>Current Turn: ${state.currentTurn ?? 'N/A'}</p>
+        
+        <h3>Scoreboard</h3>
+        <ul>
+            ${state.scoreboard.map(r => `
+                <li>
+                    ${r.roundNumber}:
+                    ${r.results.map(p => `
+                        ${p.name}
+                        (${p.tricks}/${p.bid})
+                        ${p.score}
+                    `)}
+                </li>
+            `).join('')}
+        </ul>
 
         <h3>Players</h3>
         <ul>
@@ -103,6 +114,8 @@ function renderGame(state) {
 
 
     if (state.canBid) {
+        console.log(state.scoreboard);
+        console.log(state.scoreboard.results);
         gameDiv.innerHTML += `
         <h3>Your Bid</h3>
         <div id="bid-buttons">
@@ -114,7 +127,7 @@ function renderGame(state) {
     }
 
     gameDiv.onclick = e => {
-        if(e.target.dataset.suit && e.target.dataset.value) {
+        if (e.target.dataset.suit && e.target.dataset.value) {
             socket.emit('play_card', {
                 suit: e.target.dataset.suit,
                 value: e.target.dataset.value
@@ -122,8 +135,8 @@ function renderGame(state) {
             return;
         }
 
-        if(e.target.dataset.bid) {
+        if (e.target.dataset.bid) {
             socket.emit('place_bid', Number(e.target.dataset.bid));
         }
-    };
+    }
 }

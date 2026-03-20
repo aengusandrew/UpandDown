@@ -3,15 +3,16 @@ const Deck = require('./deck')
 class GameManager {
     constructor(roomCode) {
         this.roomCode = roomCode;
-        this.players = new Array();
+        this.players = [];
         this.dealerIndex = 0;
         this.playerIndex = null;
         this.roundNumber = -1;
         this.phase = 'waiting'; // waiting, bidding, playing, scoring
-        this.trickCards = new Array();
+        this.trickCards = [];
         this.trumpSuit = null;
         this.direction = false; // TODO: Check this is working? False when going down the street, true when going up
         this.hostID = null;
+        this.scoreHistory = [];
     }
 
     addPlayer(Player) {
@@ -128,13 +129,29 @@ class GameManager {
     }
 
     scoreRound() {
+
+        const roundResult = {
+            roundNumber: this.roundNumber,
+            results: []
+        };
+
         for(let player of this.players) {
             player.score += player.tricksWon;
             if(player.tricksWon === player.bid) player.score += 5;
+
+            roundResult.results.push({
+                name: player.name,
+                bid: player.bid,
+                tricks: player.tricksWon,
+                score: player.score
+            });
+
             player.hand = [];
             player.tricksWon = 0;
             player.bid = -1;
         }
+
+        this.scoreHistory.push(roundResult);
 
         if(this.roundNumber === 1 && !this.direction) this.direction = true;
         else if(this.roundNumber === (52 % this.players.length) && this.direction) this.endGame(); // TODO: Implement endGame()
@@ -181,7 +198,9 @@ class GameManager {
 
             canPlayCard:
                 this.phase === 'playing' &&
-                this.players[this.playerIndex]?.id === forPlayerID
+                this.players[this.playerIndex]?.id === forPlayerID,
+
+            scoreboard: this.scoreHistory
         }
     }
 
