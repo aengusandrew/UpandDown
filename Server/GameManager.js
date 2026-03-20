@@ -86,7 +86,7 @@ class GameManager {
 
         if(this.trickCards.length > 0) {
             const leadSuit = this.trickCards[0].card.suit;
-            if(player.hand.some(c => c.suit === leadSuit) && card.suit != leadSuit) return 'follow_lead';
+            if(player.hand.some(c => c.suit === leadSuit) && card.suit !== leadSuit) return 'follow_lead';
         }
 
         player.hand.splice(cardIndex, 1);
