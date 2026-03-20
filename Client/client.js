@@ -23,6 +23,10 @@ function startGame() {
     socket.emit('start_game');
 }
 
+let lastCompletedTrick = null;
+let fadingTrick = false;
+let previousTrickCards = [];
+
 function renderGame(state) {
 
     const gameDiv = document.getElementById('game');
@@ -36,27 +40,9 @@ function renderGame(state) {
         leadSuit &&
         state.yourHand.some(c => c.suit === leadSuit);
 
-    const trickComplete =
-        state.trickCards.length === state.players.length;
-
-    let lastCompletedTrick = null;
-
-    const trickJustCompleted =
-        state.phase === 'playing' &&
-        state.trickCards.length === 0 &&
-        lastCompletedTrick;
-
-    if(state.trickCards.length === state.players.length) {
-        lastCompletedTrick = [...state.trickCards];
-    }
-
     const trickToRender =
-        state.trickCards.length > 0
-            ? state.trickCards
-            : lastCompletedTrick || [];
+        state.trickCards;
 
-    console.log(state.trickCards.length);
-    console.log(trickToRender);
 
     gameDiv.innerHTML = `
         <h2>Room: ${state.roomCode}</h2>
@@ -138,17 +124,6 @@ function renderGame(state) {
 
         if(e.target.dataset.bid) {
             socket.emit('place_bid', Number(e.target.dataset.bid));
-            return;
         }
     };
-
-    if(trickComplete) {
-        setTimeout(() => {
-            document
-                .querySelectorAll('.trick-card')
-                .forEach(card => card.classList.add('fade-out'));
-
-            lastCompletedTrick = null;
-        }, 300);
-    }
 }
