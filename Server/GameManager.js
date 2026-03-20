@@ -225,17 +225,5 @@ class GameManager {
         return RANKS[card1.value] > RANKS [card2.value];
     }
 }
-    
-
-class Player {
-    constructor(id, name) {
-        this.id = id;
-        this.name = name;
-        this.hand = new Array();
-        this.tricksWon = 0;
-        this.bid = -1;
-        this.score = 0;
-    }
-}
 
 module.exports = GameManager;
