@@ -62,18 +62,28 @@ function renderGame(state) {
         
         <button onclick="toggleScoreboard()">Scoreboard</button>
         <div id="scoreboard" style="display: none">
-            <ul>
+            <table>
+                <tr>
+                    <th>Round</th>
+                    ${state.players.map(p => `<th colspan="2">${p.name}</th>`).join('')}
+                </tr>
                 ${state.scoreboard.map(r => `
-                    <li>
-                        ${r.roundNumber}:
-                        ${r.results.map(p => `
-                            ${p.name}
-                            (${p.tricks}/${p.bid})
-                            ${p.score}
-                        `)}
-                    </li>
+                        <tr>
+                            <td>${r.roundNumber}</td>
+                            ${state.players.map(p => {
+                                const playerResult = r.results.find(q => q.playerID === p.id);
+                                return `
+                                    <td>
+                                        ${playerResult ? `(${playerResult.tricks}/${playerResult.bid})` : '-'}
+                                    </td>
+                                    <td>
+                                        ${playerResult ? `${playerResult.score}` : '-'}
+                                    </td>
+                                    `;
+                            }).join('')}
+                        </tr>     
                 `).join('')}
-            </ul>
+            </table>
         </div>
 
         <h3>Players</h3>
