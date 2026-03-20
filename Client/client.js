@@ -23,6 +23,16 @@ function startGame() {
     socket.emit('start_game');
 }
 
+function toggleScoreboard() {
+    let x = document.getElementById('scoreboard');
+    console.log(x);
+    if(x.style.display === 'none') {
+        x.style.display = 'flex';
+    } else {
+        x.style.display = 'none';
+    }
+}
+
 
 function renderGame(state) {
 
@@ -50,19 +60,21 @@ function renderGame(state) {
         <p>Trump Suit: ${state.trumpSuit ?? 'N/A'}</p>
         <p>Current Turn: ${state.currentTurn ?? 'N/A'}</p>
         
-        <h3>Scoreboard</h3>
-        <ul>
-            ${state.scoreboard.map(r => `
-                <li>
-                    ${r.roundNumber}:
-                    ${r.results.map(p => `
-                        ${p.name}
-                        (${p.tricks}/${p.bid})
-                        ${p.score}
-                    `)}
-                </li>
-            `).join('')}
-        </ul>
+        <button onclick="toggleScoreboard()">Scoreboard</button>
+        <div id="scoreboard" style="display: none">
+            <ul>
+                ${state.scoreboard.map(r => `
+                    <li>
+                        ${r.roundNumber}:
+                        ${r.results.map(p => `
+                            ${p.name}
+                            (${p.tricks}/${p.bid})
+                            ${p.score}
+                        `)}
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
 
         <h3>Players</h3>
         <ul>
