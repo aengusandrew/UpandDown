@@ -10,7 +10,7 @@
     border: 1px solid #333;
     background: #ddd;
     opacity: 0;
-    animation: fadeIn 200ms forwards;
+    animation: fadeIn 400ms forwards;
 }
 
 @keyframes fadeIn {
@@ -20,7 +20,7 @@
 }
 
 .trick-card.fade-out {
-    animation: fadeOut 400ms forwards;
+    animation: fadeOut 800ms forwards;
 }
 
 @keyframes fadeOut {

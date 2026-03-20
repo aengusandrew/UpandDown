@@ -13,6 +13,7 @@ class GameManager {
         this.direction = false; // TODO: Check this is working? False when going down the street, true when going up
         this.hostID = null;
         this.scoreHistory = [];
+        this.trickEnded = true;
     }
 
     addPlayer(Player) {
@@ -43,6 +44,8 @@ class GameManager {
     }
 
     handleBid(playerID, bidValue) {
+        this.trickCards = [];
+
         const player = this.players.find(p => p.id === playerID);
 
         if(!player) return 'no_player';
@@ -65,6 +68,11 @@ class GameManager {
     }
 
     handlePlayCard(playerID, card) {
+        if(this.trickEnded) {
+            this.trickCards = [];
+            this.trickEnded = false;
+        }
+
         const player = this.players.find(p => p.id === playerID);
 
         if(!player) return 'player_not_found';
@@ -117,7 +125,7 @@ class GameManager {
         
         trickWinner.tricksWon += 1;
 
-        this.trickCards = [];
+        this.trickEnded = true;
 
         if(this.players[0].hand.length > 0) {
             this.playerIndex = this.players.indexOf(trickWinner);
@@ -171,6 +179,7 @@ class GameManager {
             direction: this.direction,
             trumpSuit: this.trumpSuit,
             currentTurn: this.players[this.playerIndex]?.id,
+            trickEnded: this.trickEnded,
 
             players: this.players.map(p => ({
                 id: p.id,

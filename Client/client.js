@@ -39,7 +39,7 @@ function renderGame(state) {
     const gameDiv = document.getElementById('game');
 
     const leadSuit = 
-        state.trickCards.length > 0
+        state.trickEnded === false
         ? state.trickCards[0].card.suit :
         null;
     
