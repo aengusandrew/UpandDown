@@ -3,6 +3,12 @@ const socket = io('http://localhost:3000');
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
 
+const titleScreen = document.getElementById('title-screen');
+const gameScreen = document.getElementById('game-screen');
+const controls = document.getElementById('controls');
+const scoreboard = document.getElementById('scoreboard');
+const playTable = document.getElementById('playTable');
+
 document.getElementById('createBtn').onclick = () => {
     socket.emit('createRoom', roomInput.value, nameInput.value)
 };
@@ -11,8 +17,19 @@ document.getElementById('joinBtn').onclick = () => {
     socket.emit('joinRoom', roomInput.value, nameInput.value);
 };
 
+let hasJoined = false;
+
 socket.on('game_state', state => {
-    console.log(state);
+    if(!hasJoined) {
+        hasJoined = true;
+
+        titleScreen.classList.add('fade-out');
+
+        setTimeout(() => {
+            titleScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+        }, 500);
+    }
     renderGame(state);
 });
 
@@ -25,7 +42,7 @@ function startGame() {
 }
 
 function toggleScoreboard() {
-    let x = document.getElementById('scoreboard');
+    let x = document.getElementById('scoreboard-table');
     if(x.style.display === 'none') {
         x.style.display = 'flex';
     } else {
@@ -46,9 +63,6 @@ function toCID(card) {
 
 
 function renderGame(state) {
-
-    const controls = document.getElementById('controls');
-    const playTable = document.getElementById('playTable');
 
     const leadSuit = 
         state.trickEnded === false
@@ -150,13 +164,13 @@ function renderGame(state) {
     </div>
         `;
 
-    controls.innerHTML = `
+    scoreboard.innerHTML = `
         ${state.canStartGame ? `
             <button onclick="startGame()">Start Game</button>
             ` : ''}
         
         <button onclick="toggleScoreboard()">Scoreboard</button>
-        <div id="scoreboard" style="display: none">
+        <div id="scoreboard-table" style="display: none">
             <table>
                 <tr>
                     <th>Round</th>

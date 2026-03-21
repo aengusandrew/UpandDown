@@ -19,5 +19,30 @@
     font-size: 36px;
     margin-bottom: 16px;
     background: white;
-    padding: 16px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#title-screen input {
+    padding: 10px;
+    font-size: 16px;
+}
+
+#title-screen button {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#title-screen.fadeout {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#title-screen button {
+    border: none;
+}
+
+#title-screen button:hover {
+    background-color: lightblue;
 }
