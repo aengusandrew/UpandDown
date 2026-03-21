@@ -1,22 +1,37 @@
-#scoreboard table {
+#scoreboard-table table {
     border-collapse: collapse;
     width: 100%;
+    background: white;
+    border-radius: 5px;
 }
 
-#scoreboard tr {
+#scoreboard-table tr {
     border-bottom: 1px solid black;
     text-align: center;
 }
 
-#scoreboard th, #scoreboard td {
+#scoreboard-table th, #scoreboard td {
     padding: 10px;
 }
 
-#scoreboard td {
+#scoreboard-table td {
     border-left: 1px solid black;
     border-right: 1px solid black;
 }
 
-#scoreboard tr:hover {
+#scoreboard-table tr:hover {
     background-color: lightgray;
+}
+
+#scoreboard {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+
+    position: fixed;
+    z-index: 99;
+    pointer-events: none;
+    background: rgba(0,0,0,0.6);
 }

@@ -19,16 +19,32 @@ html, body {
     flex: 0 0 auto;
 }
 
+#game-screen {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, green, black);
+}
+
 #playTable {
     flex: 1;
+    position: absolute;
+    inset: 0;
+    /*padding-bottom: 30px;*/
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#scoreboard-button {
     position: relative;
-    margin-bottom: 30px;
-    border: 1px solid red;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
 }
 
 #hand {
     position: relative;
-    height: 140px;
+    min-height: 50px;
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -63,7 +79,46 @@ playing-card {
     padding: 0;
     font-family: "Caveat", cursive;
     font-optical-sizing: auto;
-    font-weight: 600;
+    font-weight: 700;
     font-style: normal;
-    font-size: 20px;
+    font-size: 40px;
+    color: white;
+}
+
+#trick-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    gap: 12px;
+    min-height: 60px;
+    margin: 10px 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.trick-card {
+    padding: 8px 12px;
+    border: 1px solid #333;
+    background: #ddd;
+    opacity: 0;
+    animation: fadeIn 400ms forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.trick-card.fade-out {
+    animation: fadeOut 800ms forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
 }
