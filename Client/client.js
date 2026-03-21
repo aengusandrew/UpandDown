@@ -80,10 +80,54 @@ function renderGame(state) {
         div.style.top = `${y}px`;
         div.style.transform = 'translate(-50%, -50%)';
 
-        div.innerHTML = `<strong>${player.name}</strong>`;
+        if(i === 0) {
+            div.innerHTML = `<div id="hand">
+                ${state.yourHand.map(card => {
+                const mustFollow = leadSuit && hasLeadSuit;
+                const isPlayable =
+                    state.canPlayCard &&
+                    (!mustFollow || card.suit === leadSuit);
 
-        playTable.appendChild(div);
-    });
+                return `
+                    <button
+                        data-suit="${card.suit}"
+                        data-value="${card.value}"
+                        ${isPlayable ? '' : 'disabled'}
+                        style="
+                            opacity: ${isPlayable ? '1' : '0.5'}
+                            cursor: ${isPlayable ? 'pointer' : 'not-allowed'}
+                        "
+                        class="card-button"
+                    >
+                        ${card.value} <br> ${card.suit}
+                    </button>
+                    `;
+            }).join('')}
+            </div>`
+        }
+
+            div.innerHTML += `<strong class="player-name">${player.name}</strong>`;
+
+            if (i === 0 && state.canBid) div.innerHTML += `
+            <div id="bid-buttons">
+                ${Array.from({length: state.roundNumber + 1}, (_, i) => `
+                    <button data-bid="${i}">${i}</button>
+                `).join('')}
+            </div>
+            `;
+
+            playTable.appendChild(div);
+        });
+
+    playTable.innerHTML +=
+    `<div id="trick-area">
+        ${trickToRender.map(t => `
+                <div class="trick-card">
+                    ${t.card.value} of ${t.card.suit}
+                </div>
+            `).join('')}
+    </div>
+        `;
 
     gameDiv.innerHTML = `
         ${state.canStartGame ? `
@@ -115,43 +159,10 @@ function renderGame(state) {
                 `).join('')}
             </table>
         </div>
-
-        <h3>Your Hand</h3>
-        <div id="hand">
-            ${state.yourHand.map(card => {
-                const mustFollow = leadSuit && hasLeadSuit;
-                const isPlayable =
-                    state.canPlayCard &&
-                    (!mustFollow || card.suit === leadSuit);
-                
-                return `
-                <button
-                    data-suit="${card.suit}"
-                    data-value="${card.value}"
-                    ${isPlayable ? '' : 'disabled'}
-                    style="
-                        opacity: ${isPlayable ? '1' : '0.5'}
-                        cursor: ${isPlayable ? 'pointer' : 'not-allowed'}
-                    "
-                >
-                    ${card.value} of ${card.suit}
-                </button>
-                `;
-            }).join('')}
-        </div>
-
-        <h3>Trick</h3>
-        <div id="trick-area">
-            ${trickToRender.map(t => `
-                <div class="trick-card">
-                    ${t.card.value} of ${t.card.suit}
-                </div>
-            `).join('')}
-        </div>
     `;
 
 
-
+    /*
     if (state.canBid) {
         gameDiv.innerHTML += `
         <h3>Your Bid</h3>
@@ -163,7 +174,9 @@ function renderGame(state) {
     `;
     }
 
-    gameDiv.onclick = e => {
+     */
+
+    playTable.onclick = e => {
         if (e.target.dataset.suit && e.target.dataset.value) {
             socket.emit('play_card', {
                 suit: e.target.dataset.suit,

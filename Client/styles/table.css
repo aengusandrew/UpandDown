@@ -5,3 +5,24 @@
     margin: auto;
     border-radius: 40%;
 }
+
+.bid-buttons {
+
+}
+
+.player {
+    text-align: center;
+}
+
+.player-name {
+    padding: 0px;
+}
+
+.card-button {
+    margin: 5px;
+    border: none;
+}
+
+.card-button:hover {
+    background-color: lightgray;
+}
