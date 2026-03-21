@@ -164,7 +164,10 @@ function renderGame(state) {
     playTable.innerHTML +=
         `<div id="scoreboard-button">
             <button onclick="toggleScoreboard()">Scoreboard</button>
-        </div>`;
+        </div>
+        ${state.canStartGame ? `
+            <button onclick="startGame()">Start Game</button>
+        ` : ''}`;
 
     playTable.innerHTML +=
     `<div id="trick-area">
@@ -177,9 +180,6 @@ function renderGame(state) {
         `;
 
     scoreboard.innerHTML = `
-        ${state.canStartGame ? `
-            <button onclick="startGame()">Start Game</button>
-            ` : ''}
         
         <div id="scoreboard-table">
             <table>
