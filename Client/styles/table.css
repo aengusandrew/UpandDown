@@ -19,14 +19,27 @@ html, body {
     flex: 0 0 auto;
 }
 
+#game-screen {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, green, black);
+}
+
 #playTable {
     flex: 1;
     position: absolute;
     inset: 0;
     /*padding-bottom: 30px;*/
     min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
 
-    background: radial-gradient(ellipse at center, green, black);
+#scoreboard-button {
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
 }
 
 #hand {

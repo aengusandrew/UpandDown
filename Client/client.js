@@ -1,6 +1,6 @@
 const socket = io('http://localhost:3000');
 
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -23,23 +23,23 @@ let hasJoined = false;
 if(DEV_MODE) {
     titleScreen.style.display = 'none';
     gameScreen.style.display = 'block';
+    renderGame(getMockState());
+} else {
+    socket.on('game_state', state => {
+        if(!hasJoined) {
+            hasJoined = true;
 
-    renderGame(getMockState())
+            titleScreen.classList.add('fade-out');
+
+            setTimeout(() => {
+                titleScreen.style.display = 'none';
+                gameScreen.style.display = 'block';
+            }, 500);
+        }
+        renderGame(state);
+    });
 }
 
-socket.on('game_state', state => {
-    if(!hasJoined) {
-        hasJoined = true;
-
-        titleScreen.classList.add('fade-out');
-
-        setTimeout(() => {
-            titleScreen.style.display = 'none';
-            gameScreen.style.display = 'block';
-        }, 500);
-    }
-    renderGame(state);
-});
 
 socket.on('game_error', err => {
     alert(err);
@@ -50,11 +50,10 @@ function startGame() {
 }
 
 function toggleScoreboard() {
-    let x = document.getElementById('scoreboard-table');
-    if(x.style.display === 'none') {
-        x.style.display = 'flex';
+    if(scoreboard.style.display === 'none') {
+        scoreboard.style.display = 'flex';
     } else {
-        x.style.display = 'none';
+        scoreboard.style.display = 'none';
     }
 }
 
@@ -163,6 +162,11 @@ function renderGame(state) {
         });
 
     playTable.innerHTML +=
+        `<div id="scoreboard-button">
+            <button onclick="toggleScoreboard()">Scoreboard</button>
+        </div>`;
+
+    playTable.innerHTML +=
     `<div id="trick-area">
         ${trickToRender.map(t => `
                 <div>
@@ -177,8 +181,7 @@ function renderGame(state) {
             <button onclick="startGame()">Start Game</button>
             ` : ''}
         
-        <button id="scoreboard-button" onclick="toggleScoreboard()">Scoreboard</button>
-        <div id="scoreboard-table" style="display: none">
+        <div id="scoreboard-table">
             <table>
                 <tr>
                     <th>Round</th>
@@ -258,6 +261,45 @@ function getMockState() {
         canPlayCard: true,
         canBid: false,
         canStartGame: false,
-        roundNumber: 5
+        roundNumber: 5,
+
+        scoreboard: [
+            {
+                roundNumber: 1,
+                results: [
+                    { playerID: "p1", bid: 2, tricks: 2, score: 7 },
+                    { playerID: "p2", bid: 1, tricks: 0, score: 0 },
+                    { playerID: "p3", bid: 1, tricks: 2, score: 2 },
+                    { playerID: "p4", bid: 3, tricks: 3, score: 8 }
+                ]
+            },
+            {
+                roundNumber: 2,
+                results: [
+                    { playerID: "p1", bid: 3, tricks: 2, score: 9 },
+                    { playerID: "p2", bid: 2, tricks: 2, score: 7 },
+                    { playerID: "p3", bid: 0, tricks: 1, score: 3 },
+                    { playerID: "p4", bid: 1, tricks: 1, score: 10 }
+                ]
+            },
+            {
+                roundNumber: 3,
+                results: [
+                    { playerID: "p1", bid: 1, tricks: 1, score: 15 },
+                    { playerID: "p2", bid: 2, tricks: 3, score: 10 },
+                    { playerID: "p3", bid: 2, tricks: 1, score: 4 },
+                    { playerID: "p4", bid: 2, tricks: 2, score: 15 }
+                ]
+            },
+            {
+                roundNumber: 4,
+                results: [
+                    { playerID: "p1", bid: 2, tricks: 0, score: 15 },
+                    { playerID: "p2", bid: 1, tricks: 1, score: 16 },
+                    { playerID: "p3", bid: 1, tricks: 1, score: 10 },
+                    { playerID: "p4", bid: 3, tricks: 2, score: 17 }
+                ]
+            }
+        ]
     };
 }
