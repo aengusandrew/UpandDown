@@ -36,7 +36,7 @@ function toggleScoreboard() {
 
 function renderGame(state) {
 
-    const gameDiv = document.getElementById('game');
+    const gameDiv = document.getElementById('controls');
     const playTable = document.getElementById('playTable');
 
     const leadSuit = 
@@ -129,7 +129,7 @@ function renderGame(state) {
     </div>
         `;
 
-    gameDiv.innerHTML = `
+    controls.innerHTML = `
         ${state.canStartGame ? `
             <button onclick="startGame()">Start Game</button>
             ` : ''}
@@ -160,21 +160,6 @@ function renderGame(state) {
             </table>
         </div>
     `;
-
-
-    /*
-    if (state.canBid) {
-        gameDiv.innerHTML += `
-        <h3>Your Bid</h3>
-        <div id="bid-buttons">
-            ${Array.from({length: state.roundNumber + 1}, (_, i) => `
-                <button data-bid="${i}">${i}</button>
-            `).join('')}
-        </div>
-    `;
-    }
-
-     */
 
     playTable.onclick = e => {
         if (e.target.dataset.suit && e.target.dataset.value) {
