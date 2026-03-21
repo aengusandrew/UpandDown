@@ -1,7 +1,14 @@
 const socket = io();
 
+const DEV_MODE = false;
+
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
+
+const titleScreen = document.getElementById('title-screen');
+const gameScreen = document.getElementById('game-screen');
+const scoreboard = document.getElementById('scoreboard');
+const playTable = document.getElementById('playTable');
 
 document.getElementById('createBtn').onclick = () => {
     socket.emit('createRoom', roomInput.value, nameInput.value)
@@ -11,10 +18,28 @@ document.getElementById('joinBtn').onclick = () => {
     socket.emit('joinRoom', roomInput.value, nameInput.value);
 };
 
-socket.on('game_state', state => {
-    console.log(state);
-    renderGame(state);
-});
+let hasJoined = false;
+
+if(DEV_MODE) {
+    titleScreen.style.display = 'none';
+    gameScreen.style.display = 'block';
+    renderGame(getMockState());
+} else {
+    socket.on('game_state', state => {
+        if(!hasJoined) {
+            hasJoined = true;
+
+            titleScreen.classList.add('fade-out');
+
+            setTimeout(() => {
+                titleScreen.style.display = 'none';
+                gameScreen.style.display = 'block';
+            }, 500);
+        }
+        renderGame(state);
+    });
+}
+
 
 socket.on('game_error', err => {
     alert(err);
@@ -25,11 +50,10 @@ function startGame() {
 }
 
 function toggleScoreboard() {
-    let x = document.getElementById('scoreboard');
-    if(x.style.display === 'none') {
-        x.style.display = 'flex';
+    if(scoreboard.style.display === 'none') {
+        scoreboard.style.display = 'flex';
     } else {
-        x.style.display = 'none';
+        scoreboard.style.display = 'none';
     }
 }
 
@@ -46,9 +70,6 @@ function toCID(card) {
 
 
 function renderGame(state) {
-
-    const controls = document.getElementById('controls');
-    const playTable = document.getElementById('playTable');
 
     const leadSuit = 
         state.trickEnded === false
@@ -141,6 +162,14 @@ function renderGame(state) {
         });
 
     playTable.innerHTML +=
+        `<div id="scoreboard-button">
+            <button onclick="toggleScoreboard()">Scoreboard</button>
+        </div>
+        ${state.canStartGame ? `
+            <button onclick="startGame()">Start Game</button>
+        ` : ''}`;
+
+    playTable.innerHTML +=
     `<div id="trick-area">
         ${trickToRender.map(t => `
                 <div>
@@ -150,13 +179,14 @@ function renderGame(state) {
     </div>
         `;
 
-    controls.innerHTML = `
-        ${state.canStartGame ? `
-            <button onclick="startGame()">Start Game</button>
-            ` : ''}
-        
-        <button onclick="toggleScoreboard()">Scoreboard</button>
-        <div id="scoreboard" style="display: none">
+    playTable.innerHTML += `
+        <div id="trump-card">
+            <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
+        </div>
+    `
+
+    scoreboard.innerHTML = `
+        <div id="scoreboard-table">
             <table>
                 <tr>
                     <th>Round</th>
@@ -199,4 +229,82 @@ function renderGame(state) {
             socket.emit('place_bid', Number(cardB1.dataset.bid));
         }
     }
+}
+
+
+
+function getMockState() {
+    return {
+        roomCode: "TEST",
+        phase: "playing",
+        trumpCard: { suit: "HEARTS", value: "10"},
+        currentTurn: "p1",
+        youID: "p1",
+
+        players: [
+            { id: "p1", name: "You", tricksWon: 2, bid: 3, score: 10 },
+            { id: "p2", name: "Alice", tricksWon: 1, bid: 2, score: 5 },
+            { id: "p3", name: "Bob", tricksWon: 0, bid: 1, score: 2 },
+            { id: "p4", name: "Charlie", tricksWon: 3, bid: 2, score: 15 },
+            { id: "p5", name: "John", tricksWon: 3, bid: 2, score: 15 },
+            { id: "p6", name: "Pat", tricksWon: 3, bid: 2, score: 15 }
+        ],
+
+        yourHand: [
+            { suit: "HEARTS", value: "A" },
+            { suit: "HEARTS", value: "K" },
+            { suit: "SPADES", value: "10" },
+            { suit: "CLUBS", value: "2" },
+            { suit: "DIAMONDS", value: "J" }
+        ],
+
+        trickCards: [
+            { playerId: "p2", card: { suit: "HEARTS", value: "Q" } },
+            { playerId: "p3", card: { suit: "HEARTS", value: "9" } }
+        ],
+
+        canPlayCard: true,
+        canBid: false,
+        canStartGame: false,
+        roundNumber: 5,
+
+        scoreboard: [
+            {
+                roundNumber: 1,
+                results: [
+                    { playerID: "p1", bid: 2, tricks: 2, score: 7 },
+                    { playerID: "p2", bid: 1, tricks: 0, score: 0 },
+                    { playerID: "p3", bid: 1, tricks: 2, score: 2 },
+                    { playerID: "p4", bid: 3, tricks: 3, score: 8 }
+                ]
+            },
+            {
+                roundNumber: 2,
+                results: [
+                    { playerID: "p1", bid: 3, tricks: 2, score: 9 },
+                    { playerID: "p2", bid: 2, tricks: 2, score: 7 },
+                    { playerID: "p3", bid: 0, tricks: 1, score: 3 },
+                    { playerID: "p4", bid: 1, tricks: 1, score: 10 }
+                ]
+            },
+            {
+                roundNumber: 3,
+                results: [
+                    { playerID: "p1", bid: 1, tricks: 1, score: 15 },
+                    { playerID: "p2", bid: 2, tricks: 3, score: 10 },
+                    { playerID: "p3", bid: 2, tricks: 1, score: 4 },
+                    { playerID: "p4", bid: 2, tricks: 2, score: 15 }
+                ]
+            },
+            {
+                roundNumber: 4,
+                results: [
+                    { playerID: "p1", bid: 2, tricks: 0, score: 15 },
+                    { playerID: "p2", bid: 1, tricks: 1, score: 16 },
+                    { playerID: "p3", bid: 1, tricks: 1, score: 10 },
+                    { playerID: "p4", bid: 3, tricks: 2, score: 17 }
+                ]
+            }
+        ]
+    };
 }
