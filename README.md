@@ -55,4 +55,4 @@ The **+5** game type is the same concept as **+10**, each player gets a 5 point 
 <hr>
 
 ## Progress
-3.21: This project has been slow moving as I have been very busy however the first web deployment is officially live! Play online now [here](https://upanddown.onrender.com/)
+3.21: This project has been slow moving as I have been very busy however the first web deployment is officially live! Play online now [here](https://upanddown.onrender.com/). It still has some debug marks on the main repo, I need to update so it is the pretty version and all the gross debugging stays on the local version.
