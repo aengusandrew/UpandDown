@@ -50,3 +50,9 @@ The **+5** game type is the same concept as **+10**, each player gets a 5 point 
 **JDVII** (Said "Jay-Dee Seven") is a more complex scoring method in which a player is disincentivized to bid 0 throughout the game. In this game mode a player receives a 10 point bonus for making their bid, unless that bid was zero, in which case they receive a 7 point bonus.
 
 *This gamemode has a namesake who will not be mentioned here. However, any experienced player will quickly learn that with a little skill and forethought, it is easy to consistently bid 0 unless a player has truly unloseable cards (aces or face cards of the trump suit). Although this is smart strategizing, and those who start with the more traditional scoring methods will quickly see its benefit, it can lead to a less exciting game in a room full of experienced players. Playing JDVII strongly incentivizes bidding more aggressively.*
+
+<br>
+<hr>
+
+## Progress
+3.21: This project has been slow moving as I have been very busy however the first web deployment is officially live! Play online now [here](https://upanddown.onrender.com/)
