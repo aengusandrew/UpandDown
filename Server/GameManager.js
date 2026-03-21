@@ -169,8 +169,10 @@ class GameManager {
         this.startNewRound();
     }
 
+
+
     getPublicGameState(forPlayerID) {
-        const you = this.players.find(p => p.id === forPlayerID);
+        const you = this.players.find(q => q.id === forPlayerID);
 
         return {
             roomCode: this.roomCode,
@@ -180,6 +182,7 @@ class GameManager {
             trumpSuit: this.trumpSuit,
             currentTurn: this.players[this.playerIndex]?.id,
             trickEnded: this.trickEnded,
+            youID: you.id,
 
             players: this.players.map(p => ({
                 id: p.id,

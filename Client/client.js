@@ -12,6 +12,7 @@ document.getElementById('joinBtn').onclick = () => {
 };
 
 socket.on('game_state', state => {
+    console.log(state);
     renderGame(state);
 });
 
@@ -25,7 +26,6 @@ function startGame() {
 
 function toggleScoreboard() {
     let x = document.getElementById('scoreboard');
-    console.log(x);
     if(x.style.display === 'none') {
         x.style.display = 'flex';
     } else {
@@ -37,6 +37,7 @@ function toggleScoreboard() {
 function renderGame(state) {
 
     const gameDiv = document.getElementById('game');
+    const playTable = document.getElementById('playTable');
 
     const leadSuit = 
         state.trickEnded === false
@@ -50,15 +51,44 @@ function renderGame(state) {
     const trickToRender =
         state.trickCards;
 
+    playTable.innerHTML = '';
+
+    const players = state.players;
+    const total = players.length;
+
+    const radius = 220;
+    const centerX = 300
+    const centerY = 300;
+
+    const youIndex = players.findIndex(p=> p.id === state.youID);
+
+    const orderedPlayers = [
+        ...players.slice(youIndex),
+        ...players.slice(0, youIndex)
+    ];
+
+    orderedPlayers.forEach((player,i) => {
+        const phi = (i/total) * 2 * Math.PI + Math.PI/2;
+
+        const x = centerX + radius * Math.cos(phi);
+        const y = centerY + radius * Math.sin(phi);
+
+        const div = document.createElement('div');
+        div.className = 'player';
+        div.style.position = 'absolute';
+        div.style.left = `${x}px`;
+        div.style.top = `${y}px`;
+        div.style.transform = 'translate(-50%, -50%)';
+
+        div.innerHTML = `<strong>${player.name}</strong>`;
+
+        playTable.appendChild(div);
+    });
 
     gameDiv.innerHTML = `
-        <h2>Room: ${state.roomCode}</h2>
-        <p>Phase: ${state.phase}</p>
         ${state.canStartGame ? `
             <button onclick="startGame()">Start Game</button>
             ` : ''}
-        <p>Trump Suit: ${state.trumpSuit ?? 'N/A'}</p>
-        <p>Current Turn: ${state.currentTurn ?? 'N/A'}</p>
         
         <button onclick="toggleScoreboard()">Scoreboard</button>
         <div id="scoreboard" style="display: none">
@@ -85,19 +115,6 @@ function renderGame(state) {
                 `).join('')}
             </table>
         </div>
-
-        <h3>Players</h3>
-        <ul>
-            ${state.players.map(p => `
-                <li style="${state.currentTurn === p.id ? 'font-weight:bold;' : ''}">
-                    ${p.name} —
-                    Tricks: ${p.tricksWon},
-                    Bid: ${p.bid ?? '-'},
-                    Score: ${p.score}
-                    ${state.currentTurn === p.id ? ' ← turn' : ''}
-                </li>
-            `).join('')}
-        </ul>
 
         <h3>Your Hand</h3>
         <div id="hand">
@@ -136,8 +153,6 @@ function renderGame(state) {
 
 
     if (state.canBid) {
-        console.log(state.scoreboard);
-        console.log(state.scoreboard.results);
         gameDiv.innerHTML += `
         <h3>Your Bid</h3>
         <div id="bid-buttons">
