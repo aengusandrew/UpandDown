@@ -92,22 +92,35 @@ function renderGame(state) {
         div.style.transform = 'translate(-50%, -50%)';
 
         if(i === 0) {
+            const total = state.yourHand.length;
+            const spread = 30;
+
             div.innerHTML = `<div id="hand">
-                ${state.yourHand.map(card => {
+                ${state.yourHand.map((card, i) => {
                 const mustFollow = leadSuit && hasLeadSuit;
                 const isPlayable =
                     state.canPlayCard &&
                     (!mustFollow || card.suit === leadSuit);
                 
-                console.log(toCID(card));
+                const offset = i - (total - 1) / 2;
+                const rotate = offset * 8;
+                const translateX = offset * spread;
+                const translateY = Math.abs(offset * -5);
                 
                 return `
                     <div 
                     class="card-wrapper"
                     data-suit="${card.suit}"
                     data-value="${card.value}"
+                    style="
+                    transform: translateX(${translateX}px) translateY(${translateY}px) rotate(${rotate}deg);
+                    z-index: ${i};
+                    "
                     >
-                        <playing-card cid="${toCID(card)}"></playing-card>
+                        <playing-card 
+                        cid="${toCID(card)}"
+                        opacity="${isPlayable ? '1' : '0.25'}"
+                        ></playing-card>
                     </div>
                     `;
             }).join('')}
@@ -117,9 +130,9 @@ function renderGame(state) {
             div.innerHTML += `<strong class="player-name">${player.name}</strong>`;
 
             if (i === 0 && state.canBid) div.innerHTML += `
-            <div id="bid-buttons">
+            <div id="bidding">
                 ${Array.from({length: state.roundNumber + 1}, (_, i) => `
-                    <button data-bid="${i}">${i}</button>
+                    <button class="bid-button" data-bid="${i}">${i}</button>
                 `).join('')}
             </div>
             `;
@@ -130,8 +143,8 @@ function renderGame(state) {
     playTable.innerHTML +=
     `<div id="trick-area">
         ${trickToRender.map(t => `
-                <div class="trick-card">
-                    ${t.card.value} of ${t.card.suit}
+                <div>
+                    <playing-card cid="${toCID(t.card)}"></playing-card>
                 </div>
             `).join('')}
     </div>
@@ -170,16 +183,20 @@ function renderGame(state) {
     `;
 
     playTable.onclick = e => {
-        if (e.target.dataset.suit && e.target.dataset.value) {
+        const cardE1 = e.target.closest('[data-suit][data-value]');
+
+        if (cardE1) {
             socket.emit('play_card', {
-                suit: e.target.dataset.suit,
-                value: e.target.dataset.value
+                suit: cardE1.dataset.suit,
+                value: cardE1.dataset.value
             });
             return;
         }
 
-        if (e.target.dataset.bid) {
-            socket.emit('place_bid', Number(e.target.dataset.bid));
+        const cardB1 = e.target.closest('[data-bid]');
+
+        if (cardB1) {
+            socket.emit('place_bid', Number(cardB1.dataset.bid));
         }
     }
 }
