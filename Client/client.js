@@ -179,8 +179,13 @@ function renderGame(state) {
     </div>
         `;
 
+    playTable.innerHTML += `
+        <div id="trump-card">
+            <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
+        </div>
+    `
+
     scoreboard.innerHTML = `
-        
         <div id="scoreboard-table">
             <table>
                 <tr>
@@ -232,7 +237,7 @@ function getMockState() {
     return {
         roomCode: "TEST",
         phase: "playing",
-        trumpSuit: "HEARTS",
+        trumpCard: { suit: "HEARTS", value: "10"},
         currentTurn: "p1",
         youID: "p1",
 
