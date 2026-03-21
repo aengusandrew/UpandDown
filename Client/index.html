@@ -2,25 +2,35 @@
 <html lang="en">
 <head>
     <title>Up and Down the Street</title>
+    <link rel="stylesheet" href="styles/trick.css">
+    <link rel="stylesheet" href="styles/scoreboard.css">
+    <link rel="stylesheet" href="styles/table.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
+<div id="app">
+
 <h1>Up and Down the Street</h1>
 
-<div>
-    <input id="nameInput" placeholder="Name">
-    <input id="roomInput" placehodler="Room Code">
-    <button id="createBtn">Create Room</button>
-    <button id="joinBtn">Join Room</button>
+    <div id="controls">
+        <input id="nameInput" placeholder="Name">
+        <input id="roomInput" placeholder="Room Code">
+        <button id="createBtn">Create Room</button>
+        <button id="joinBtn">Join Room</button>
+    </div>
+
+    <div id="playTable"></div>
+
 </div>
-
-<hr>
-
-<div id="game"></div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="client.js"></script>
+<script src="elements.cardmeister.full.js"></script>
 
 </body>
 </html>

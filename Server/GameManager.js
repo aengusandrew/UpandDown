@@ -3,15 +3,17 @@ const Deck = require('./deck')
 class GameManager {
     constructor(roomCode) {
         this.roomCode = roomCode;
-        this.players = new Array();
+        this.players = [];
         this.dealerIndex = 0;
         this.playerIndex = null;
         this.roundNumber = -1;
         this.phase = 'waiting'; // waiting, bidding, playing, scoring
-        this.trickCards = new Array();
+        this.trickCards = [];
         this.trumpSuit = null;
         this.direction = false; // TODO: Check this is working? False when going down the street, true when going up
         this.hostID = null;
+        this.scoreHistory = [];
+        this.trickEnded = true;
     }
 
     addPlayer(Player) {
@@ -42,18 +44,35 @@ class GameManager {
     }
 
     handleBid(playerID, bidValue) {
+        this.trickCards = [];
+
         const player = this.players.find(p => p.id === playerID);
-        if(!player || this.phase !== 'bidding' || this.players.indexOf(player) !== this.playerIndex) return;
+
+        if(!player) return 'no_player';
+        if(this.phase !== 'bidding') return 'wrong_phase';
+        if(this.players[this.playerIndex].id !== playerID) return 'not_turn';
+        if(bidValue < 0 || bidValue > this.roundNumber) return 'invalid_bid';
 
         player.bid = bidValue;
 
-        if(this.playerIndex === 0) this.phase = 'playing';
-
         this.playerIndex = (this.playerIndex + 1) % this.players.length;
 
+        const allBid = this.players.every(p => p.bid !== -1);
+        if(allBid) {
+            this.phase = 'playing';
+
+            this.playerIndex = (this.dealerIndex + 1) % this.players.length;
+        }
+
+        return 'ok';
     }
 
     handlePlayCard(playerID, card) {
+        if(this.trickEnded) {
+            this.trickCards = [];
+            this.trickEnded = false;
+        }
+
         const player = this.players.find(p => p.id === playerID);
 
         if(!player) return 'player_not_found';
@@ -67,7 +86,7 @@ class GameManager {
 
         if(this.trickCards.length > 0) {
             const leadSuit = this.trickCards[0].card.suit;
-            if(player.hand.some(c => c.suit === leadSuit) && card.suit != leadSuit) return 'follow_lead';
+            if(player.hand.some(c => c.suit === leadSuit) && card.suit !== leadSuit) return 'follow_lead';
         }
 
         player.hand.splice(cardIndex, 1);
@@ -79,6 +98,8 @@ class GameManager {
         } else {
             this.playerIndex = (this.playerIndex + 1) % this.players.length;
         }
+
+        return 'ok';
     }
 
     scoreTrick() {
@@ -104,7 +125,7 @@ class GameManager {
         
         trickWinner.tricksWon += 1;
 
-        this.trickCards = [];
+        this.trickEnded = true;
 
         if(this.players[0].hand.length > 0) {
             this.playerIndex = this.players.indexOf(trickWinner);
@@ -116,13 +137,29 @@ class GameManager {
     }
 
     scoreRound() {
+
+        const roundResult = {
+            roundNumber: this.roundNumber,
+            results: []
+        };
+
         for(let player of this.players) {
             player.score += player.tricksWon;
             if(player.tricksWon === player.bid) player.score += 5;
+
+            roundResult.results.push({
+                playerID: player.id,
+                bid: player.bid,
+                tricks: player.tricksWon,
+                score: player.score
+            });
+
             player.hand = [];
             player.tricksWon = 0;
             player.bid = -1;
         }
+
+        this.scoreHistory.push(roundResult);
 
         if(this.roundNumber === 1 && !this.direction) this.direction = true;
         else if(this.roundNumber === (52 % this.players.length) && this.direction) this.endGame(); // TODO: Implement endGame()
@@ -132,8 +169,10 @@ class GameManager {
         this.startNewRound();
     }
 
+
+
     getPublicGameState(forPlayerID) {
-        const you = this.players.find(p => p.id === forPlayerID);
+        const you = this.players.find(q => q.id === forPlayerID);
 
         return {
             roomCode: this.roomCode,
@@ -141,14 +180,16 @@ class GameManager {
             roundNumber: this.roundNumber,
             direction: this.direction,
             trumpSuit: this.trumpSuit,
-            currentTurn: this.players[this.playerIndex]?.id || null,
+            currentTurn: this.players[this.playerIndex]?.id,
+            trickEnded: this.trickEnded,
+            youID: you.id,
 
             players: this.players.map(p => ({
-                ID: p.ID,
+                id: p.id,
                 name: p.name,
                 handSize: p.hand.length,
                 tricksWon: p.tricksWon,
-                bid: p.bid,
+                bid: p.bid === -1 ? null : p.bid,
                 score: p.score
             })),
 
@@ -161,7 +202,17 @@ class GameManager {
             canStartGame:
                 this.phase === 'waiting' &&
                 forPlayerID === this.hostId &&
-                this.players.length >=2
+                this.players.length >=2,
+
+            canBid:
+            this.phase === 'bidding' &&
+            this.players[this.playerIndex]?.id === forPlayerID,
+
+            canPlayCard:
+                this.phase === 'playing' &&
+                this.players[this.playerIndex]?.id === forPlayerID,
+
+            scoreboard: this.scoreHistory
         }
     }
 
@@ -184,18 +235,6 @@ class GameManager {
         };
 
         return RANKS[card1.value] > RANKS [card2.value];
-    }
-}
-    
-
-class Player {
-    constructor(ID, name) {
-        this.ID = ID;
-        this.name = name;
-        this.hand = new Array();
-        this.tricksWon = 0;
-        this.bid = -1;
-        this.score = 0;
     }
 }
 

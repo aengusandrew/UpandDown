@@ -1,0 +1,22 @@
+#scoreboard table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#scoreboard tr {
+    border-bottom: 1px solid black;
+    text-align: center;
+}
+
+#scoreboard th, #scoreboard td {
+    padding: 10px;
+}
+
+#scoreboard td {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+#scoreboard tr:hover {
+    background-color: lightgray;
+}

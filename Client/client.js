@@ -1,6 +1,5 @@
 const socket = io('http://localhost:3000');
 
-const gameDiv = document.getElementById('game');
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
 
@@ -13,6 +12,7 @@ document.getElementById('joinBtn').onclick = () => {
 };
 
 socket.on('game_state', state => {
+    console.log(state);
     renderGame(state);
 });
 
@@ -24,49 +24,179 @@ function startGame() {
     socket.emit('start_game');
 }
 
+function toggleScoreboard() {
+    let x = document.getElementById('scoreboard');
+    if(x.style.display === 'none') {
+        x.style.display = 'flex';
+    } else {
+        x.style.display = 'none';
+    }
+}
+
+function toCID(card) {
+    const suitMap = {
+        HEARTS: 'h',
+        DIAMONDS: 'd',
+        SPADES: 's',
+        CLUBS: 'c'
+    };
+
+    return `${card.value}${suitMap[card.suit]}`;
+}
+
+
 function renderGame(state) {
-    gameDiv.innerHTML = `
-        <h2>Room: ${state.roomCode}</h2>
-        <p>Phase: ${state.phase}</p>
+
+    const controls = document.getElementById('controls');
+    const playTable = document.getElementById('playTable');
+
+    const leadSuit = 
+        state.trickEnded === false
+        ? state.trickCards[0].card.suit :
+        null;
+    
+    const hasLeadSuit =
+        leadSuit &&
+        state.yourHand.some(c => c.suit === leadSuit);
+
+    const trickToRender =
+        state.trickCards;
+
+    playTable.innerHTML = '';
+
+    const players = state.players;
+    const total = players.length;
+
+    const radius = 40;
+    const centerX = 50
+    const centerY = 50;
+
+    const youIndex = players.findIndex(p=> p.id === state.youID);
+
+    const orderedPlayers = [
+        ...players.slice(youIndex),
+        ...players.slice(0, youIndex)
+    ];
+
+    orderedPlayers.forEach((player,i) => {
+        const phi = (i/total) * 2 * Math.PI + Math.PI/2;
+
+        const x = centerX + radius * Math.cos(phi);
+        const y = centerY + radius * Math.sin(phi);
+
+        const div = document.createElement('div');
+        div.className = 'player';
+        div.style.position = 'absolute';
+        div.style.left = `${x}%`;
+        div.style.top = `${y}%`;
+        div.style.transform = 'translate(-50%, -50%)';
+
+        if(i === 0) {
+            const total = state.yourHand.length;
+            const spread = 30;
+
+            div.innerHTML = `<div id="hand">
+                ${state.yourHand.map((card, i) => {
+                const mustFollow = leadSuit && hasLeadSuit;
+                const isPlayable =
+                    state.canPlayCard &&
+                    (!mustFollow || card.suit === leadSuit);
+                
+                const offset = i - (total - 1) / 2;
+                const rotate = offset * 8;
+                const translateX = offset * spread;
+                const translateY = Math.abs(offset * -5);
+                
+                return `
+                    <div 
+                    class="card-wrapper"
+                    data-suit="${card.suit}"
+                    data-value="${card.value}"
+                    style="
+                    transform: translateX(${translateX}px) translateY(${translateY}px) rotate(${rotate}deg);
+                    z-index: ${i};
+                    "
+                    >
+                        <playing-card 
+                        cid="${toCID(card)}"
+                        opacity="${isPlayable ? '1' : '0.25'}"
+                        ></playing-card>
+                    </div>
+                    `;
+            }).join('')}
+            </div>`
+        }
+
+            div.innerHTML += `<strong class="player-name">${player.name}</strong>`;
+
+            if (i === 0 && state.canBid) div.innerHTML += `
+            <div id="bidding">
+                ${Array.from({length: state.roundNumber + 1}, (_, i) => `
+                    <button class="bid-button" data-bid="${i}">${i}</button>
+                `).join('')}
+            </div>
+            `;
+
+            playTable.appendChild(div);
+        });
+
+    playTable.innerHTML +=
+    `<div id="trick-area">
+        ${trickToRender.map(t => `
+                <div>
+                    <playing-card cid="${toCID(t.card)}"></playing-card>
+                </div>
+            `).join('')}
+    </div>
+        `;
+
+    controls.innerHTML = `
         ${state.canStartGame ? `
             <button onclick="startGame()">Start Game</button>
             ` : ''}
-        <p>Trump Suit: ${state.trumpSuit ?? 'N/A'}</p>
-        <p>Current Turn: ${state.currentTurn ?? 'N/A'}</p>
-
-        <h3>Players</h3>
-        <ul>
-            ${state.players.map(p => `
-                <li>
-                    ${p.name} —
-                    Hand: ${p.handSize},
-                    Tricks: ${p.tricksWon},
-                    Bid: ${p.bid},
-                    Score: ${p.score}
-                </li>
-            `).join('')}
-        </ul>
-
-        <h3>Your Hand</h3>
-        <div>
-            ${state.yourHand.map(card => `
-                <button onclick="playCard('${card.suit}', '${card.value}')">
-                    ${card.value} of ${card.suit}
-                </button>
-            `).join('')}
+        
+        <button onclick="toggleScoreboard()">Scoreboard</button>
+        <div id="scoreboard" style="display: none">
+            <table>
+                <tr>
+                    <th>Round</th>
+                    ${state.players.map(p => `<th colspan="2">${p.name}</th>`).join('')}
+                </tr>
+                ${state.scoreboard.map(r => `
+                        <tr>
+                            <td>${r.roundNumber}</td>
+                            ${state.players.map(p => {
+                                const playerResult = r.results.find(q => q.playerID === p.id);
+                                return `
+                                    <td>
+                                        ${playerResult ? `(${playerResult.tricks}/${playerResult.bid})` : '-'}
+                                    </td>
+                                    <td>
+                                        ${playerResult ? `${playerResult.score}` : '-'}
+                                    </td>
+                                    `;
+                            }).join('')}
+                        </tr>     
+                `).join('')}
+            </table>
         </div>
-
-        <h3>Trick</h3>
-        <ul>
-            ${state.trickCards.map(t => `
-                <li>
-                    ${t.playerId}: ${t.card.value} of ${t.card.suit}
-                </li>
-            `).join('')}
-        </ul>
     `;
-}
 
-function playCard(suit, value) {
-    socket.emit('play_card', { suit, value });
+    playTable.onclick = e => {
+        const cardE1 = e.target.closest('[data-suit][data-value]');
+
+        if (cardE1) {
+            socket.emit('play_card', {
+                suit: cardE1.dataset.suit,
+                value: cardE1.dataset.value
+            });
+            return;
+        }
+
+        const cardB1 = e.target.closest('[data-bid]');
+
+        if (cardB1) {
+            socket.emit('place_bid', Number(cardB1.dataset.bid));
+        }
+    }
 }
