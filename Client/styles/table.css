@@ -36,10 +36,6 @@ html, body {
 }
 
 #scoreboard-button {
-    position: relative;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
 }
 
 #hand {
