@@ -1,11 +1,12 @@
 const socket = io('http://localhost:3000');
 
+const DEV_MODE = true;
+
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
 
 const titleScreen = document.getElementById('title-screen');
 const gameScreen = document.getElementById('game-screen');
-const controls = document.getElementById('controls');
 const scoreboard = document.getElementById('scoreboard');
 const playTable = document.getElementById('playTable');
 
@@ -18,6 +19,13 @@ document.getElementById('joinBtn').onclick = () => {
 };
 
 let hasJoined = false;
+
+if(DEV_MODE) {
+    titleScreen.style.display = 'none';
+    gameScreen.style.display = 'block';
+
+    renderGame(getMockState())
+}
 
 socket.on('game_state', state => {
     if(!hasJoined) {
@@ -169,7 +177,7 @@ function renderGame(state) {
             <button onclick="startGame()">Start Game</button>
             ` : ''}
         
-        <button onclick="toggleScoreboard()">Scoreboard</button>
+        <button id="scoreboard-button" onclick="toggleScoreboard()">Scoreboard</button>
         <div id="scoreboard-table" style="display: none">
             <table>
                 <tr>
@@ -213,4 +221,43 @@ function renderGame(state) {
             socket.emit('place_bid', Number(cardB1.dataset.bid));
         }
     }
+}
+
+
+
+function getMockState() {
+    return {
+        roomCode: "TEST",
+        phase: "playing",
+        trumpSuit: "HEARTS",
+        currentTurn: "p1",
+        youID: "p1",
+
+        players: [
+            { id: "p1", name: "You", tricksWon: 2, bid: 3, score: 10 },
+            { id: "p2", name: "Alice", tricksWon: 1, bid: 2, score: 5 },
+            { id: "p3", name: "Bob", tricksWon: 0, bid: 1, score: 2 },
+            { id: "p4", name: "Charlie", tricksWon: 3, bid: 2, score: 15 },
+            { id: "p5", name: "John", tricksWon: 3, bid: 2, score: 15 },
+            { id: "p6", name: "Pat", tricksWon: 3, bid: 2, score: 15 }
+        ],
+
+        yourHand: [
+            { suit: "HEARTS", value: "A" },
+            { suit: "HEARTS", value: "K" },
+            { suit: "SPADES", value: "10" },
+            { suit: "CLUBS", value: "2" },
+            { suit: "DIAMONDS", value: "J" }
+        ],
+
+        trickCards: [
+            { playerId: "p2", card: { suit: "HEARTS", value: "Q" } },
+            { playerId: "p3", card: { suit: "HEARTS", value: "9" } }
+        ],
+
+        canPlayCard: true,
+        canBid: false,
+        canStartGame: false,
+        roundNumber: 5
+    };
 }

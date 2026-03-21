@@ -20,3 +20,11 @@
 #scoreboard-table tr:hover {
     background-color: lightgray;
 }
+
+#scoreboard {
+    display: flex;
+    width: 50%;
+    height: 30%;
+    align-items: center;
+    justify-content: center;
+}
