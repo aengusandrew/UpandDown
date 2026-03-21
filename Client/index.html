@@ -9,21 +9,24 @@
 
 <body>
 
+<div id="app">
+
 <h1>Up and Down the Street</h1>
 
-<div id="controls">
-    <input id="nameInput" placeholder="Name">
-    <input id="roomInput" placeholder="Room Code">
-    <button id="createBtn">Create Room</button>
-    <button id="joinBtn">Join Room</button>
+    <div id="controls">
+        <input id="nameInput" placeholder="Name">
+        <input id="roomInput" placeholder="Room Code">
+        <button id="createBtn">Create Room</button>
+        <button id="joinBtn">Join Room</button>
+    </div>
+
+    <div id="playTable"></div>
+
 </div>
-
-<hr>
-
-<div id="playTable"></div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="client.js"></script>
+<script src="elements.cardmeister.full.js"></script>
 
 </body>
 </html>

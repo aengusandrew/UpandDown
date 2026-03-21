@@ -33,10 +33,21 @@ function toggleScoreboard() {
     }
 }
 
+function toCID(card) {
+    const suitMap = {
+        HEARTS: 'h',
+        DIAMONDS: 'd',
+        SPADES: 's',
+        CLUBS: 'c'
+    };
+
+    return `${card.value}${suitMap[card.suit]}`;
+}
+
 
 function renderGame(state) {
 
-    const gameDiv = document.getElementById('controls');
+    const controls = document.getElementById('controls');
     const playTable = document.getElementById('playTable');
 
     const leadSuit = 
@@ -56,9 +67,9 @@ function renderGame(state) {
     const players = state.players;
     const total = players.length;
 
-    const radius = 220;
-    const centerX = 300
-    const centerY = 300;
+    const radius = 40;
+    const centerX = 50
+    const centerY = 50;
 
     const youIndex = players.findIndex(p=> p.id === state.youID);
 
@@ -76,8 +87,8 @@ function renderGame(state) {
         const div = document.createElement('div');
         div.className = 'player';
         div.style.position = 'absolute';
-        div.style.left = `${x}px`;
-        div.style.top = `${y}px`;
+        div.style.left = `${x}%`;
+        div.style.top = `${y}%`;
         div.style.transform = 'translate(-50%, -50%)';
 
         if(i === 0) {
@@ -87,20 +98,17 @@ function renderGame(state) {
                 const isPlayable =
                     state.canPlayCard &&
                     (!mustFollow || card.suit === leadSuit);
-
+                
+                console.log(toCID(card));
+                
                 return `
-                    <button
-                        data-suit="${card.suit}"
-                        data-value="${card.value}"
-                        ${isPlayable ? '' : 'disabled'}
-                        style="
-                            opacity: ${isPlayable ? '1' : '0.5'}
-                            cursor: ${isPlayable ? 'pointer' : 'not-allowed'}
-                        "
-                        class="card-button"
+                    <div 
+                    class="card-wrapper"
+                    data-suit="${card.suit}"
+                    data-value="${card.value}"
                     >
-                        ${card.value} <br> ${card.suit}
-                    </button>
+                        <playing-card cid="${toCID(card)}"></playing-card>
+                    </div>
                     `;
             }).join('')}
             </div>`
