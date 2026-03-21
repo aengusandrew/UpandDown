@@ -13,6 +13,7 @@ class GameManager {
         this.direction = false; // TODO: Check this is working? False when going down the street, true when going up
         this.hostID = null;
         this.scoreHistory = [];
+        this.trickEnded = true;
     }
 
     addPlayer(Player) {
@@ -43,6 +44,8 @@ class GameManager {
     }
 
     handleBid(playerID, bidValue) {
+        this.trickCards = [];
+
         const player = this.players.find(p => p.id === playerID);
 
         if(!player) return 'no_player';
@@ -65,6 +68,11 @@ class GameManager {
     }
 
     handlePlayCard(playerID, card) {
+        if(this.trickEnded) {
+            this.trickCards = [];
+            this.trickEnded = false;
+        }
+
         const player = this.players.find(p => p.id === playerID);
 
         if(!player) return 'player_not_found';
@@ -78,7 +86,7 @@ class GameManager {
 
         if(this.trickCards.length > 0) {
             const leadSuit = this.trickCards[0].card.suit;
-            if(player.hand.some(c => c.suit === leadSuit) && card.suit != leadSuit) return 'follow_lead';
+            if(player.hand.some(c => c.suit === leadSuit) && card.suit !== leadSuit) return 'follow_lead';
         }
 
         player.hand.splice(cardIndex, 1);
@@ -117,7 +125,7 @@ class GameManager {
         
         trickWinner.tricksWon += 1;
 
-        this.trickCards = [];
+        this.trickEnded = true;
 
         if(this.players[0].hand.length > 0) {
             this.playerIndex = this.players.indexOf(trickWinner);
@@ -161,8 +169,10 @@ class GameManager {
         this.startNewRound();
     }
 
+
+
     getPublicGameState(forPlayerID) {
-        const you = this.players.find(p => p.id === forPlayerID);
+        const you = this.players.find(q => q.id === forPlayerID);
 
         return {
             roomCode: this.roomCode,
@@ -171,6 +181,8 @@ class GameManager {
             direction: this.direction,
             trumpSuit: this.trumpSuit,
             currentTurn: this.players[this.playerIndex]?.id,
+            trickEnded: this.trickEnded,
+            youID: you.id,
 
             players: this.players.map(p => ({
                 id: p.id,

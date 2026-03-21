@@ -1,0 +1,69 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 10px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+#controls {
+    flex: 0 0 auto;
+}
+
+#playTable {
+    flex: 1;
+    position: relative;
+    margin-bottom: 30px;
+    border: 1px solid red;
+}
+
+#hand {
+    position: relative;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.card-wrapper {
+    position: absolute;
+    transition: transform 0.2s ease;
+}
+
+playing-card {
+    width: 100px;
+    height: auto;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.bid-button {
+    border: none;
+    padding: 10px;
+}
+
+.bid-button:hover {
+    background: lightblue;
+}
+
+.player {
+    text-align: center;
+}
+
+.player-name {
+    padding: 0;
+    font-family: "Caveat", cursive;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 20px;
+}
