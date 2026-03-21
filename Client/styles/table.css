@@ -67,3 +67,41 @@ playing-card {
     font-style: normal;
     font-size: 20px;
 }
+
+#trick-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    gap: 12px;
+    min-height: 60px;
+    margin: 10px 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.trick-card {
+    padding: 8px 12px;
+    border: 1px solid #333;
+    background: #ddd;
+    opacity: 0;
+    animation: fadeIn 400ms forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.trick-card.fade-out {
+    animation: fadeOut 800ms forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
