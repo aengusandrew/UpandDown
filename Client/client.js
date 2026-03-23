@@ -117,7 +117,7 @@ function renderGame(state) {
         <div id="sub-player-list">
             <div id="player-count">Players: ${state.players.length}</div>
             <div id="num-rounds">
-                <select name="round-selector" id="round-selector">
+                Rounds:<select name="round-selector" id="round-selector">
                     ${Array.from(
                         { length: Math.min(Math.floor(52/state.players.length), 10)}, 
                             (_,i) => `
