@@ -9,7 +9,7 @@ class GameManager {
         this.roundNumber = -1;
         this.phase = 'waiting'; // waiting, bidding, playing, scoring
         this.trickCards = [];
-        this.trumpSuit = null;
+        this.trumpCard = null;
         this.direction = false; // TODO: Check this is working? False when going down the street, true when going up
         this.hostID = null;
         this.scoreHistory = [];
@@ -36,7 +36,7 @@ class GameManager {
         }
 
         // Assign trump suit as suit of card on top of deck
-        this.trumpSuit = deck.cards[0].suit;
+        this.trumpCard = deck.cards[0];
 
         this.playerIndex = (this.dealerIndex + 1) % this.players.length;
 
@@ -105,7 +105,7 @@ class GameManager {
     scoreTrick() {
         const leadSuit = this.trickCards[0].card.suit;
         let leadingPlay = this.trickCards[0];
-        let trumpThrown = this.trickCards[0].card.suit === this.trumpSuit;
+        let trumpThrown = this.trickCards[0].card.suit === this.trumpCard.suit;
 
         for(const { playerID, card } of this.trickCards) {
             switch(card.suit) {
@@ -113,7 +113,7 @@ class GameManager {
                     if(!trumpThrown && this.cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card };
                     break;
                 
-                case this.trumpSuit:
+                case this.trumpCard.suit:
                     if(!trumpThrown) { leadingPlay = { playerID, card }; trumpThrown = true; }
                     else if (this.cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card };
                     break;
@@ -180,7 +180,7 @@ class GameManager {
             phase: this.phase,
             roundNumber: this.roundNumber,
             direction: this.direction,
-            trumpSuit: this.trumpSuit,
+            trumpCard: this.trumpCard,
             currentTurn: this.players[this.playerIndex]?.id,
             trickEnded: this.trickEnded,
             youID: you.id,

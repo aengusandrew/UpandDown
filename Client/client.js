@@ -71,11 +71,11 @@ function toCID(card) {
 
 function renderGame(state) {
 
-    const leadSuit = 
+    const leadSuit =
         state.trickEnded === false
         ? state.trickCards[0].card.suit :
         null;
-    
+
     const hasLeadSuit =
         leadSuit &&
         state.yourHand.some(c => c.suit === leadSuit);
@@ -139,6 +139,7 @@ function renderGame(state) {
                     "
                     >
                         <playing-card 
+                        class="hand-card"
                         cid="${toCID(card)}"
                         opacity="${isPlayable ? '1' : '0.25'}"
                         ></playing-card>
@@ -147,8 +148,14 @@ function renderGame(state) {
             }).join('')}
             </div>`
         }
+            if(i !== 0)
+                div.innerHTML += `
+                    <img class="player-icon" src="../assets/player-icon-male.png" alt="player-icon">
+                    <strong class="player-name">${player.name}</strong>`;
 
-            div.innerHTML += `<strong class="player-name">${player.name}</strong>`;
+            if(player.id === state.currentTurn) {
+                div.style.filter = 'drop-shadow(0 0 30px white)';
+            }
 
             if (i === 0 && state.canBid) div.innerHTML += `
             <div id="bidding">
@@ -179,8 +186,13 @@ function renderGame(state) {
     </div>
         `;
 
+    playTable.innerHTML += `
+        <div id="trump-card">
+            <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
+        </div>
+    `
+
     scoreboard.innerHTML = `
-        
         <div id="scoreboard-table">
             <table>
                 <tr>
@@ -210,7 +222,7 @@ function renderGame(state) {
     playTable.onclick = e => {
         const cardE1 = e.target.closest('[data-suit][data-value]');
 
-        if (cardE1) {
+        if (cardE1 && state.phase === "playing") {
             socket.emit('play_card', {
                 suit: cardE1.dataset.suit,
                 value: cardE1.dataset.value
@@ -220,7 +232,7 @@ function renderGame(state) {
 
         const cardB1 = e.target.closest('[data-bid]');
 
-        if (cardB1) {
+        if (cardB1 && state.phase === "bidding") {
             socket.emit('place_bid', Number(cardB1.dataset.bid));
         }
     }
@@ -232,8 +244,8 @@ function getMockState() {
     return {
         roomCode: "TEST",
         phase: "playing",
-        trumpSuit: "HEARTS",
-        currentTurn: "p1",
+        trumpCard: { suit: "HEARTS", value: "10"},
+        currentTurn: "p2",
         youID: "p1",
 
         players: [
