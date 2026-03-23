@@ -68,7 +68,7 @@ playing-card {
     display: flex;
     left: 50%;
     transform: translateX(-50%);
-    bottom: -40px;
+    bottom: 30vh;
 }
 
 .bid-button {
@@ -83,6 +83,17 @@ playing-card {
 .player {
     text-align: center;
     position: relative;
+}
+
+#your-player {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .player-name {
