@@ -123,7 +123,11 @@ io.on('connection', (socket) => {
             return;
         }
 
-        game.startNewRound();
+        const result = game.startNewRound();
+
+        console.log("Start Game: ", result);
+
+        if(result !== "ok") socket.emit('game_error', result);
 
         for (const player of game.players) {
             io.to(player.id).emit(

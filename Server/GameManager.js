@@ -21,7 +21,7 @@ class GameManager {
     }
     
     startNewRound() {
-        if(this.roundNumber > Math.min(Math.floor(52/this.players.length), 10)) return;
+        if(this.roundNumber > Math.min(Math.floor(52/this.players.length), 10)) return "pick_rounds";
 
         const deck = new Deck();
 
@@ -38,6 +38,8 @@ class GameManager {
         this.playerIndex = (this.dealerIndex + 1) % this.players.length;
 
         this.phase = 'bidding';
+
+        return "ok";
     }
 
     handleBid(playerID, bidValue) {
