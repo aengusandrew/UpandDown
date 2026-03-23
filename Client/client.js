@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -134,9 +134,16 @@ function renderGame(state) {
             ${state.canStartGame ? `<button onclick="startGame()" id="start-button">Start Game</button>` : ''}
         </div>
     `
+
     lobbyScreen.appendChild(lobbyContent);
 
-    document.getElementById('round-selector').value = Math.min(Math.floor(52 / state.players.length), 10);
+    const roundSelector = document.getElementById('round-selector');
+    roundSelector.value = state.roundNumber;
+
+    roundSelector.onchange = (e) => {
+        const rounds = Number(e.target.value);
+        socket.emit('set_rounds', rounds);
+    };
 
     const leadSuit =
         state.trickEnded === false

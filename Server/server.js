@@ -89,6 +89,23 @@ io.on('connection', (socket) => {
         console.log(`${socket.id} joined room ${roomCode}`);
     });
 
+    socket.on('set_rounds', (rounds) => {
+       const roomCode = socket.roomCode;
+       if(!roomCode) return;
+
+       const game = rooms.get(roomCode);
+       if(!game) return;
+
+       game.roundNumber = rounds;
+
+       console.log("Received change rounds: ", game.roundNumber);
+
+       for(const player of game.players) {
+           io.to(player.id).emit('game_state', game.getPublicGameState(player.id));
+       }
+
+    });
+
     socket.on('start_game', () => {
         const roomCode = socket.roomCode;
         if(!roomCode) return;
@@ -106,7 +123,7 @@ io.on('connection', (socket) => {
             return;
         }
 
-        game.startGame();
+        game.startNewRound();
 
         for (const player of game.players) {
             io.to(player.id).emit(

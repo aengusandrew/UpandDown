@@ -10,7 +10,7 @@ class GameManager {
         this.phase = 'waiting'; // startup, waiting, bidding, playing, scoring
         this.trickCards = [];
         this.trumpCard = null;
-        this.direction = false; // TODO: Check this is working? False when going down the street, true when going up
+        this.direction = false;
         this.hostID = null;
         this.scoreHistory = [];
         this.trickEnded = true;
@@ -19,17 +19,12 @@ class GameManager {
     addPlayer(Player) {
         this.players.push(Player);
     }
-
-    startGame() {
-        this.roundNumber = Math.min(Math.floor(52 / this.players.length), 10);
-        this.startNewRound();
-    }
     
     startNewRound() {
         const deck = new Deck();
 
         deck.shuffle();
-        
+
         // Deal
         for(let player of this.players) {
             player.hand = deck.cards.splice(0, this.roundNumber);
@@ -163,7 +158,7 @@ class GameManager {
         this.scoreHistory.push(roundResult);
 
         if(this.roundNumber === 1 && !this.direction) this.direction = true;
-        else if(this.roundNumber === (52 % this.players.length) && this.direction) this.endGame(); // TODO: Implement endGame()
+        else if(this.roundNumber === (52 % this.players.length) && this.direction) this.endGame(); // TODO: Implement endGame(), right now bids just increase
         else if(this.direction) this.roundNumber += 1;
         else if (!this.direction) this.roundNumber -= 1;
         this.dealerIndex += 1;
