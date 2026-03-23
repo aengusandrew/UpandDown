@@ -72,6 +72,40 @@
     font-size: 35px;
 }
 
+#sub-player-list {
+    position: relative;
+    width: 40%;
+    height: 20%;
+
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+    margin: 5px;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+#player-count, #num-rounds {
+    font-size: 30px;
+}
+
+#player-count {
+    position: relative;
+    justify-content: left;
+    align-items: center;
+}
+
+#num-rounds {
+    position: relative;
+    justify-content: right;
+    align-items: center;
+}
+
 #start {
     position: relative;
     margin: 30px;

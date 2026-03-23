@@ -114,6 +114,13 @@ function renderGame(state) {
     `
 
     lobbyContent.innerHTML += `
+        <div id="sub-player-list">
+            <div id="player-count"">Players: ${state.players.length}</div>
+            <div id="num-rounds">${Math.min(Math.floor(52 / state.players.length), 10)} Rounds</div>
+        </div>
+    `
+
+    lobbyContent.innerHTML += `
         <div id="start">
             ${state.canStartGame ? `<button onclick="startGame()" id="start-button">Start Game</button>` : ''}
         </div>

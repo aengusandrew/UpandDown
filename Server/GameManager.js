@@ -21,7 +21,7 @@ class GameManager {
     }
 
     startGame() {
-        this.roundNumber = Math.min(52 / this.players.length, 10);
+        this.roundNumber = Math.min(Math.floor(52 / this.players.length), 10);
         this.startNewRound();
     }
     
