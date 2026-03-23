@@ -1,6 +1,6 @@
 const socket = io('http://localhost:3000');
 
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -71,11 +71,11 @@ function toCID(card) {
 
 function renderGame(state) {
 
-    const leadSuit = 
+    const leadSuit =
         state.trickEnded === false
         ? state.trickCards[0].card.suit :
         null;
-    
+
     const hasLeadSuit =
         leadSuit &&
         state.yourHand.some(c => c.suit === leadSuit);
@@ -147,8 +147,14 @@ function renderGame(state) {
             }).join('')}
             </div>`
         }
+            if(i !== 0)
+                div.innerHTML += `
+                    <img class="player-icon" src="../assets/player-icon-male.png" alt="player-icon">
+                    <strong class="player-name">${player.name}</strong>`;
 
-            div.innerHTML += `<strong class="player-name">${player.name}</strong>`;
+            if(player.id === state.currentTurn) {
+                div.style.filter = 'drop-shadow(0 0 30px white)';
+            }
 
             if (i === 0 && state.canBid) div.innerHTML += `
             <div id="bidding">
@@ -238,7 +244,7 @@ function getMockState() {
         roomCode: "TEST",
         phase: "playing",
         trumpCard: { suit: "HEARTS", value: "10"},
-        currentTurn: "p1",
+        currentTurn: "p2",
         youID: "p1",
 
         players: [

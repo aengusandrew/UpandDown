@@ -69,6 +69,7 @@ playing-card {
 
 .player {
     text-align: center;
+    position: relative;
 }
 
 .player-name {
@@ -77,8 +78,20 @@ playing-card {
     font-optical-sizing: auto;
     font-weight: 700;
     font-style: normal;
-    font-size: 40px;
-    color: white;
+    font-size: 20px;
+    color: black;
+    position: absolute;
+    top: 68px;
+    transform: translate(-50%, -50%);
+}
+
+.player-icon {
+    padding: 0;
+    position: absolute;
+    width: 100px;
+    height: auto;
+    transform: translate(-50%, -50%);
+    top: 15px;
 }
 
 #trick-area {
@@ -97,7 +110,7 @@ playing-card {
 
 #trump-card {
     position: absolute;
-    top: 30%;
+    top: 32.5%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(90deg);
 }
