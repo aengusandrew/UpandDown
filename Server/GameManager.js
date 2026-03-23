@@ -111,6 +111,7 @@ class GameManager {
             switch(card.suit) {
                 case leadSuit:
                     if(!trumpThrown && this.cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card };
+                    if(trumpThrown && leadSuit === this.trumpCard.suit && this.cardBeats(card, leadingPlay.card)) leadingPlay = { playerID, card };
                     break;
                 
                 case this.trumpCard.suit:
@@ -165,6 +166,7 @@ class GameManager {
         else if(this.roundNumber === (52 % this.players.length) && this.direction) this.endGame(); // TODO: Implement endGame()
         else if(this.direction) this.roundNumber += 1;
         else if (!this.direction) this.roundNumber -= 1;
+        this.dealerIndex += 1;
         this.phase = 'waiting';
         this.startNewRound();
     }

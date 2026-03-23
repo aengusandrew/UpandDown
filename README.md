@@ -50,3 +50,13 @@ The **+5** game type is the same concept as **+10**, each player gets a 5 point 
 **JDVII** (Said "Jay-Dee Seven") is a more complex scoring method in which a player is disincentivized to bid 0 throughout the game. In this game mode a player receives a 10 point bonus for making their bid, unless that bid was zero, in which case they receive a 7 point bonus.
 
 *This gamemode has a namesake who will not be mentioned here. However, any experienced player will quickly learn that with a little skill and forethought, it is easy to consistently bid 0 unless a player has truly unloseable cards (aces or face cards of the trump suit). Although this is smart strategizing, and those who start with the more traditional scoring methods will quickly see its benefit, it can lead to a less exciting game in a room full of experienced players. Playing JDVII strongly incentivizes bidding more aggressively.*
+
+<br>
+<hr>
+
+## Progress
+3.21: This project has been slow moving as I have been very busy however the first web deployment is officially live! Play online now [here](https://upanddown.onrender.com/). It still has some debug marks on the main repo, I need to update so it is the pretty version and all the gross debugging stays on the local version.
+
+3.21: It's kind of a differnet day than yesterday because I wrote that note at 4am. I did a big UI push and it looks much cleaner. Still a long way to go with fonts and everything, and as of right now you can't actually end a game because there's no endgame function but I need to implement a lobby I think to do that because you'll have the option to return to the home screen or to reenter a lobby with the same people. URL is the same it is still deployed free with Render.
+
+3.23 (**0.1.0**): Some more UI updates to pretty things up. Biggest pushes now for UI are buttons that just need some CSS sprucing but I hate CSS. I also fixed one quick bug in the trump logic. All updates are deployed to the online version now. I think I'll call this **0.1.0** because I wanna be like the cool software people. Probably should work on the lobby next but the UI updates are so satisfying.
