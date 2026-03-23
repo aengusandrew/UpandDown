@@ -6,7 +6,7 @@ class GameManager {
         this.players = [];
         this.dealerIndex = 0;
         this.playerIndex = null;
-        this.roundNumber = -1;
+        this.roundNumber = null;
         this.phase = 'waiting'; // startup, waiting, bidding, playing, scoring
         this.trickCards = [];
         this.trumpCard = null;

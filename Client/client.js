@@ -118,6 +118,7 @@ function renderGame(state) {
             <div id="player-count">Players: ${state.players.length}</div>
             <div id="num-rounds">
                 Rounds:<select name="round-selector" id="round-selector">
+                    <option value="" disabled selected>Select</option>
                     ${Array.from(
                         { length: Math.min(Math.floor(52/state.players.length), 10)}, 
                             (_,i) => `
@@ -138,7 +139,7 @@ function renderGame(state) {
     lobbyScreen.appendChild(lobbyContent);
 
     const roundSelector = document.getElementById('round-selector');
-    roundSelector.value = state.roundNumber;
+    if(state.roundNumber !== null) roundSelector.value = state.roundNumber;
 
     roundSelector.onchange = (e) => {
         const rounds = Number(e.target.value);
@@ -419,7 +420,7 @@ function getMockState(type) {
                 canPlayCard: false,
                 canBid: true,
                 canStartGame: false,
-                roundNumber: -1,
+                roundNumber: null,
 
                 scoreboard: []
             };
@@ -453,7 +454,7 @@ function getMockState(type) {
                 canPlayCard: false,
                 canBid: false,
                 canStartGame: true,
-                roundNumber: -1,
+                roundNumber: null,
             };
     }
 

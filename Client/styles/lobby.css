@@ -103,7 +103,7 @@
 
 #round-selector {
     position: relative;
-    justify-content: right;
+    justify-content: space-between;
     align-items: center;
 
     appearance: none;
