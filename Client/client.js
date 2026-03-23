@@ -22,9 +22,21 @@ document.getElementById('joinBtn').onclick = () => {
 let hasJoined = false;
 
 if(DEV_MODE) {
-    titleScreen.style.display = 'none';
-    gameScreen.style.display = 'block';
-    renderGame(getMockState());
+    state = getMockState('waiting')
+
+    switch(state.phase) {
+        case 'waiting':
+            titleScreen.style.display = 'none';
+            lobbyScreen.style.display = 'block';
+            break;
+        case 'bidding':
+            lobbyScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            break;
+        default: break;
+    }
+
+    renderGame(state);
 } else {
     socket.on('game_state', state => {
         switch(state.phase) {
@@ -199,7 +211,7 @@ function renderGame(state) {
         div.style.transform = 'translate(-50%, -50%)';
 
         div.innerHTML += `
-            <img class="player-icon" src="../assets/player-icon-male.png" alt="player-icon">
+            <img class="player-icon" src="../assets/images/player-icon-male.png" alt="player-icon">
             <strong class="player-name table">${player.name}</strong>`;
 
         if(player.id === state.currentTurn) {
@@ -276,80 +288,143 @@ function renderGame(state) {
     }
 }
 
+function getMockState(type) {
+    switch(type) {
+        case 'playing':
+            return {
+                roomCode: "TEST",
+                phase: "playing",
+                trumpCard: { suit: "HEARTS", value: "10"},
+                currentTurn: "p2",
+                youID: "p1",
 
+                players: [
+                    { id: "p1", name: "You", tricksWon: 2, bid: 3, score: 10 },
+                    { id: "p2", name: "Alice", tricksWon: 1, bid: 2, score: 5 },
+                    { id: "p3", name: "Bob", tricksWon: 0, bid: 1, score: 2 },
+                    { id: "p4", name: "Charlie", tricksWon: 3, bid: 2, score: 15 },
+                    { id: "p5", name: "John", tricksWon: 3, bid: 2, score: 15 },
+                    { id: "p6", name: "Pat", tricksWon: 3, bid: 2, score: 15 }
+                ],
 
-function getMockState() {
-    return {
-        roomCode: "TEST",
-        phase: "playing",
-        trumpCard: { suit: "HEARTS", value: "10"},
-        currentTurn: "p2",
-        youID: "p1",
+                yourHand: [
+                    { suit: "HEARTS", value: "A" },
+                    { suit: "HEARTS", value: "K" },
+                    { suit: "SPADES", value: "10" },
+                    { suit: "CLUBS", value: "2" },
+                    { suit: "DIAMONDS", value: "J" }
+                ],
 
-        players: [
-            { id: "p1", name: "You", tricksWon: 2, bid: 3, score: 10 },
-            { id: "p2", name: "Alice", tricksWon: 1, bid: 2, score: 5 },
-            { id: "p3", name: "Bob", tricksWon: 0, bid: 1, score: 2 },
-            { id: "p4", name: "Charlie", tricksWon: 3, bid: 2, score: 15 },
-            { id: "p5", name: "John", tricksWon: 3, bid: 2, score: 15 },
-            { id: "p6", name: "Pat", tricksWon: 3, bid: 2, score: 15 }
-        ],
+                trickCards: [
+                    { playerId: "p2", card: { suit: "HEARTS", value: "Q" } },
+                    { playerId: "p3", card: { suit: "HEARTS", value: "9" } }
+                ],
 
-        yourHand: [
-            { suit: "HEARTS", value: "A" },
-            { suit: "HEARTS", value: "K" },
-            { suit: "SPADES", value: "10" },
-            { suit: "CLUBS", value: "2" },
-            { suit: "DIAMONDS", value: "J" }
-        ],
+                canPlayCard: true,
+                canBid: false,
+                canStartGame: false,
+                roundNumber: 5,
 
-        trickCards: [
-            { playerId: "p2", card: { suit: "HEARTS", value: "Q" } },
-            { playerId: "p3", card: { suit: "HEARTS", value: "9" } }
-        ],
-
-        canPlayCard: true,
-        canBid: false,
-        canStartGame: false,
-        roundNumber: 5,
-
-        scoreboard: [
-            {
-                roundNumber: 1,
-                results: [
-                    { playerID: "p1", bid: 2, tricks: 2, score: 7 },
-                    { playerID: "p2", bid: 1, tricks: 0, score: 0 },
-                    { playerID: "p3", bid: 1, tricks: 2, score: 2 },
-                    { playerID: "p4", bid: 3, tricks: 3, score: 8 }
+                scoreboard: [
+                    {
+                        roundNumber: 1,
+                        results: [
+                            { playerID: "p1", bid: 2, tricks: 2, score: 7 },
+                            { playerID: "p2", bid: 1, tricks: 0, score: 0 },
+                            { playerID: "p3", bid: 1, tricks: 2, score: 2 },
+                            { playerID: "p4", bid: 3, tricks: 3, score: 8 }
+                        ]
+                    },
+                    {
+                        roundNumber: 2,
+                        results: [
+                            { playerID: "p1", bid: 3, tricks: 2, score: 9 },
+                            { playerID: "p2", bid: 2, tricks: 2, score: 7 },
+                            { playerID: "p3", bid: 0, tricks: 1, score: 3 },
+                            { playerID: "p4", bid: 1, tricks: 1, score: 10 }
+                        ]
+                    },
+                    {
+                        roundNumber: 3,
+                        results: [
+                            { playerID: "p1", bid: 1, tricks: 1, score: 15 },
+                            { playerID: "p2", bid: 2, tricks: 3, score: 10 },
+                            { playerID: "p3", bid: 2, tricks: 1, score: 4 },
+                            { playerID: "p4", bid: 2, tricks: 2, score: 15 }
+                        ]
+                    },
+                    {
+                        roundNumber: 4,
+                        results: [
+                            { playerID: "p1", bid: 2, tricks: 0, score: 15 },
+                            { playerID: "p2", bid: 1, tricks: 1, score: 16 },
+                            { playerID: "p3", bid: 1, tricks: 1, score: 10 },
+                            { playerID: "p4", bid: 3, tricks: 2, score: 17 }
+                        ]
+                    }
                 ]
-            },
-            {
-                roundNumber: 2,
-                results: [
-                    { playerID: "p1", bid: 3, tricks: 2, score: 9 },
-                    { playerID: "p2", bid: 2, tricks: 2, score: 7 },
-                    { playerID: "p3", bid: 0, tricks: 1, score: 3 },
-                    { playerID: "p4", bid: 1, tricks: 1, score: 10 }
-                ]
-            },
-            {
-                roundNumber: 3,
-                results: [
-                    { playerID: "p1", bid: 1, tricks: 1, score: 15 },
-                    { playerID: "p2", bid: 2, tricks: 3, score: 10 },
-                    { playerID: "p3", bid: 2, tricks: 1, score: 4 },
-                    { playerID: "p4", bid: 2, tricks: 2, score: 15 }
-                ]
-            },
-            {
-                roundNumber: 4,
-                results: [
-                    { playerID: "p1", bid: 2, tricks: 0, score: 15 },
-                    { playerID: "p2", bid: 1, tricks: 1, score: 16 },
-                    { playerID: "p3", bid: 1, tricks: 1, score: 10 },
-                    { playerID: "p4", bid: 3, tricks: 2, score: 17 }
-                ]
-            }
-        ]
-    };
+            };
+        case 'bidding':
+            return {
+                roomCode: "TEST",
+                phase: "bidding",
+                trumpCard: { suit: "HEARTS", value: "10"},
+                currentTurn: "p1",
+                youID: "p1",
+
+                players: [
+                    { id: "p1", name: "You", tricksWon: 2, bid: 3, score: 10 },
+                    { id: "p2", name: "Alice", tricksWon: 1, bid: 2, score: 5 },
+                    { id: "p3", name: "Bob", tricksWon: 0, bid: 1, score: 2 },
+                    { id: "p4", name: "Charlie", tricksWon: 3, bid: 2, score: 15 },
+                    { id: "p5", name: "John", tricksWon: 3, bid: 2, score: 15 },
+                    { id: "p6", name: "Pat", tricksWon: 3, bid: 2, score: 15 }
+                ],
+
+                yourHand: [
+                    { suit: "HEARTS", value: "A" },
+                    { suit: "HEARTS", value: "K" },
+                    { suit: "SPADES", value: "10" },
+                    { suit: "CLUBS", value: "2" },
+                    { suit: "DIAMONDS", value: "J" }
+                ],
+
+                trickCards: [],
+
+                canPlayCard: false,
+                canBid: true,
+                canStartGame: false,
+                roundNumber: -1,
+
+                scoreboard: []
+            };
+        case 'waiting':
+            return {
+                roomCode: "TEST",
+                phase: "waiting",
+                trumpCard: null,
+                currentTurn: "p1",
+                youID: "p1",
+
+                players: [
+                    { id: "p1", name: "You", tricksWon: 2, bid: 3, score: 10 },
+                    { id: "p2", name: "Alice", tricksWon: 1, bid: 2, score: 5 },
+                    { id: "p3", name: "Bob", tricksWon: 0, bid: 1, score: 2 },
+                    { id: "p4", name: "Charlie", tricksWon: 3, bid: 2, score: 15 },
+                    { id: "p5", name: "John", tricksWon: 3, bid: 2, score: 15 },
+                    { id: "p6", name: "Pat", tricksWon: 3, bid: 2, score: 15 }
+                ],
+
+                yourHand: [],
+
+                trickCards: [],
+
+                canPlayCard: false,
+                canBid: false,
+                canStartGame: true,
+                roundNumber: -1,
+            };
+    }
+
+
 }

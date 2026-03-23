@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <title>Up and Down the Street</title>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/scoreboard.css">
     <link rel="stylesheet" href="styles/table.css">
     <link rel="stylesheet" href="styles/titles.css">
@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
@@ -22,8 +23,8 @@
         <h1>Up and Down the Street</h1>
 
         <div id="controls">
-            <input id="nameInput" placeholder="Name">
-            <input id="roomInput" placeholder="Room Code">
+            <label for="nameInput" style="display: none">Name Input</label><input id="nameInput" placeholder="Name">
+            <label for="roomInput" style="display: none">Room Code</label><input id="roomInput" placeholder="Room Code">
             <button id="createBtn">Create Room</button>
             <button id="joinBtn">Join Room</button>
         </div>

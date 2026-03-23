@@ -9,7 +9,7 @@
 
     transition: opacity 0.5s ease;
 
-    background-image: url("../assets/title-background.jpg");
+    background-image: url("../assets/images/title-background.jpg");
     background-size: cover;
     background-position: center center;
 }

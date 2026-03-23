@@ -175,6 +175,7 @@ class GameManager {
         return this.phase;
     }
 
+
     getPublicGameState(forPlayerID) {
         const you = this.players.find(q => q.id === forPlayerID);
 
