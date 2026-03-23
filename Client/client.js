@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -412,7 +412,13 @@ function getMockState(type) {
                     { id: "p3", name: "Bob", tricksWon: 0, bid: 1, score: 2 },
                     { id: "p4", name: "Charlie", tricksWon: 3, bid: 2, score: 15 },
                     { id: "p5", name: "John", tricksWon: 3, bid: 2, score: 15 },
-                    { id: "p6", name: "Pat", tricksWon: 3, bid: 2, score: 15 }
+                    { id: "p6", name: "Pat", tricksWon: 3, bid: 2, score: 15 },
+                    { id: "p11", name: "Amber", tricksWon: 2, bid: 3, score: 10 },
+                    { id: "p12", name: "Meg", tricksWon: 1, bid: 2, score: 5 },
+                    { id: "p13", name: "Hannah", tricksWon: 0, bid: 1, score: 2 },
+                    { id: "p14", name: "Kelly", tricksWon: 3, bid: 2, score: 15 },
+                    { id: "p15", name: "Seamus", tricksWon: 3, bid: 2, score: 15 },
+                    { id: "p16", name: "Aengus", tricksWon: 3, bid: 2, score: 15 }
                 ],
 
                 yourHand: [],
