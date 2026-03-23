@@ -85,8 +85,55 @@ function renderGame(state) {
 
     playTable.innerHTML = '';
 
+    const you = document.createElement('div');
+    you.id = "your-player"
+
+    // Render your hand
+    const handSize = state.yourHand.length;
+    const spread = 30;
+
+    you.innerHTML = `<div id="hand">
+            ${state.yourHand.map((card, i) => {
+        const mustFollow = leadSuit && hasLeadSuit;
+        const isPlayable =
+            state.canPlayCard &&
+            (!mustFollow || card.suit === leadSuit);
+
+        const offset = i - (handSize - 1) / 2;
+        const rotate = offset * 8;
+        const translateX = offset * spread;
+        const translateY = Math.abs(offset * -5);
+
+        return `
+                <div 
+                class="card-wrapper"
+                data-suit="${card.suit}"
+                data-value="${card.value}"
+                style="
+                transform: translateX(${translateX}px) translateY(${translateY}px) rotate(${rotate}deg);
+                z-index: ${i};
+                "
+                >
+                    <playing-card 
+                    class="hand-card"
+                    cid="${toCID(card)}"
+                    opacity="${isPlayable ? '1' : '0.25'}"
+                    ></playing-card>
+                </div>
+                `;
+    }).join('')}
+        </div>`
+
+    if(state.canBid) you.innerHTML +=`
+        <div id="bidding">
+            ${Array.from({length: state.roundNumber + 1}, (_, i) => `
+                    <button class="bid-button" data-bid="${i}">${i}</button>
+                `).join('')}
+        </div>
+            `;
+
     const players = state.players;
-    const total = players.length;
+    const numPlayers = players.length;
 
     const radius = 40;
     const centerX = 50
@@ -94,13 +141,16 @@ function renderGame(state) {
 
     const youIndex = players.findIndex(p=> p.id === state.youID);
 
+    playTable.appendChild(you);
+
+    // Put players in order so you are always at the bottom
     const orderedPlayers = [
-        ...players.slice(youIndex),
+        ...players.slice(youIndex + 1),
         ...players.slice(0, youIndex)
     ];
 
     orderedPlayers.forEach((player,i) => {
-        const phi = (i/total) * 2 * Math.PI + Math.PI/2;
+        const phi = ((i+1)/numPlayers) * 2 * Math.PI + Math.PI/2;
 
         const x = centerX + radius * Math.cos(phi);
         const y = centerY + radius * Math.sin(phi);
@@ -112,58 +162,13 @@ function renderGame(state) {
         div.style.top = `${y}%`;
         div.style.transform = 'translate(-50%, -50%)';
 
-        if(i === 0) {
-            const total = state.yourHand.length;
-            const spread = 30;
+        div.innerHTML += `
+            <img class="player-icon" src="../assets/player-icon-male.png" alt="player-icon">
+            <strong class="player-name">${player.name}</strong>`;
 
-            div.innerHTML = `<div id="hand">
-                ${state.yourHand.map((card, i) => {
-                const mustFollow = leadSuit && hasLeadSuit;
-                const isPlayable =
-                    state.canPlayCard &&
-                    (!mustFollow || card.suit === leadSuit);
-                
-                const offset = i - (total - 1) / 2;
-                const rotate = offset * 8;
-                const translateX = offset * spread;
-                const translateY = Math.abs(offset * -5);
-                
-                return `
-                    <div 
-                    class="card-wrapper"
-                    data-suit="${card.suit}"
-                    data-value="${card.value}"
-                    style="
-                    transform: translateX(${translateX}px) translateY(${translateY}px) rotate(${rotate}deg);
-                    z-index: ${i};
-                    "
-                    >
-                        <playing-card 
-                        class="hand-card"
-                        cid="${toCID(card)}"
-                        opacity="${isPlayable ? '1' : '0.25'}"
-                        ></playing-card>
-                    </div>
-                    `;
-            }).join('')}
-            </div>`
+        if(player.id === state.currentTurn) {
+            div.style.filter = 'drop-shadow(0 0 30px white)';
         }
-            if(i !== 0)
-                div.innerHTML += `
-                    <img class="player-icon" src="../assets/player-icon-male.png" alt="player-icon">
-                    <strong class="player-name">${player.name}</strong>`;
-
-            if(player.id === state.currentTurn) {
-                div.style.filter = 'drop-shadow(0 0 30px white)';
-            }
-
-            if (i === 0 && state.canBid) div.innerHTML += `
-            <div id="bidding">
-                ${Array.from({length: state.roundNumber + 1}, (_, i) => `
-                    <button class="bid-button" data-bid="${i}">${i}</button>
-                `).join('')}
-            </div>
-            `;
 
             playTable.appendChild(div);
         });
