@@ -94,17 +94,17 @@ function renderGame(state) {
 
     you.innerHTML = `<div id="hand">
             ${state.yourHand.map((card, i) => {
-        const mustFollow = leadSuit && hasLeadSuit;
-        const isPlayable =
-            state.canPlayCard &&
-            (!mustFollow || card.suit === leadSuit);
-
-        const offset = i - (handSize - 1) / 2;
-        const rotate = offset * 8;
-        const translateX = offset * spread;
-        const translateY = Math.abs(offset * -5);
-
-        return `
+            const mustFollow = leadSuit && hasLeadSuit;
+            const isPlayable =
+                state.canPlayCard &&
+                (!mustFollow || card.suit === leadSuit);
+    
+            const offset = i - (handSize - 1) / 2;
+            const rotate = offset * 8;
+            const translateX = offset * spread;
+            const translateY = Math.abs(offset * -5);
+    
+            return `
                 <div 
                 class="card-wrapper"
                 data-suit="${card.suit}"
@@ -131,6 +131,7 @@ function renderGame(state) {
                 `).join('')}
         </div>
             `;
+    playTable.appendChild(you);
 
     const players = state.players;
     const numPlayers = players.length;
@@ -140,8 +141,6 @@ function renderGame(state) {
     const centerY = 50;
 
     const youIndex = players.findIndex(p=> p.id === state.youID);
-
-    playTable.appendChild(you);
 
     // Put players in order so you are always at the bottom
     const orderedPlayers = [
