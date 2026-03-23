@@ -39,11 +39,12 @@ html, body {
 }
 
 #hand {
-    position: relative;
+    position: absolute;
     min-height: 50px;
     display: flex;
     justify-content: center;
     align-items: flex-end;
+    transform: translate(0, -70px);
 }
 
 .card-wrapper {
@@ -58,6 +59,18 @@ playing-card {
     border-radius: 10px;
 }
 
+.hand-card:hover {
+    transform: scale(1.1);
+}
+
+#bidding {
+    position: absolute;
+    display: flex;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -40px;
+}
+
 .bid-button {
     border: none;
     padding: 10px;
@@ -69,6 +82,7 @@ playing-card {
 
 .player {
     text-align: center;
+    position: relative;
 }
 
 .player-name {
@@ -77,8 +91,20 @@ playing-card {
     font-optical-sizing: auto;
     font-weight: 700;
     font-style: normal;
-    font-size: 40px;
-    color: white;
+    font-size: 20px;
+    color: black;
+    position: absolute;
+    top: 68px;
+    transform: translate(-50%, -50%);
+}
+
+.player-icon {
+    padding: 0;
+    position: absolute;
+    width: 100px;
+    height: auto;
+    transform: translate(-50%, -50%);
+    top: 15px;
 }
 
 #trick-area {
@@ -97,7 +123,7 @@ playing-card {
 
 #trump-card {
     position: absolute;
-    top: 30%;
+    top: 32.5%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(90deg);
 }
