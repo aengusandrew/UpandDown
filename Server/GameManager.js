@@ -6,8 +6,9 @@ class GameManager {
         this.players = [];
         this.dealerIndex = 0;
         this.playerIndex = null;
+        this.totalRounds = null;
         this.roundNumber = null;
-        this.phase = 'waiting'; // startup, waiting, bidding, playing, scoring
+        this.phase = 'waiting'; // waiting, bidding, playing, scoring
         this.trickCards = [];
         this.trumpCard = null;
         this.direction = false;
@@ -21,7 +22,7 @@ class GameManager {
     }
     
     startNewRound() {
-        if(this.roundNumber > Math.min(Math.floor(52/this.players.length), 10)) return "pick_rounds";
+        if(this.totalRounds > Math.min(Math.floor(52/this.players.length), 10)) return "pick_rounds";
 
         const deck = new Deck();
 
@@ -162,7 +163,7 @@ class GameManager {
         this.scoreHistory.push(roundResult);
 
         if(this.roundNumber === 1 && !this.direction) this.direction = true;
-        else if(this.roundNumber === (52 % this.players.length) && this.direction) this.endGame(); // TODO: Implement endGame(), right now bids just increase
+        else if(this.roundNumber === this.totalRounds && this.direction) this.endGame()
         else if(this.direction) this.roundNumber += 1;
         else if (!this.direction) this.roundNumber -= 1;
         this.dealerIndex += 1;
@@ -170,10 +171,14 @@ class GameManager {
         this.startNewRound();
     }
 
-    getPhase() {
-        return this.phase;
-    }
+    endGame() {
+        let leadPlayer = this.players[0];
+        for(let player of this.players) {
+            if(player.score > leadPlayer.score) leadPlayer = player;
+        }
 
+        console.log(leadPlayer);
+    }
 
     getPublicGameState(forPlayerID) {
         const you = this.players.find(q => q.id === forPlayerID);
@@ -205,7 +210,7 @@ class GameManager {
 
             canStartGame:
                 this.phase === 'waiting' &&
-                forPlayerID === this.hostId &&
+                forPlayerID === this.hostID &&
                 this.players.length >=2,
 
             canBid:

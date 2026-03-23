@@ -96,9 +96,10 @@ io.on('connection', (socket) => {
        const game = rooms.get(roomCode);
        if(!game) return;
 
-       game.roundNumber = rounds;
+       game.totalRounds = rounds;
+       game.roundNumber = game.totalRounds;
 
-       console.log("Received change rounds: ", game.roundNumber);
+       console.log("Received change rounds: ", game.totalRounds);
 
        for(const player of game.players) {
            io.to(player.id).emit('game_state', game.getPublicGameState(player.id));
