@@ -57,6 +57,11 @@ io.on('connection', (socket) => {
             return;
         }
 
+        if(game.phase !== 'waiting') {
+            socket.emit('room_error', 'game_started');
+            return;
+        }
+
         game.addPlayer({
             id: socket.id,
             name: playerName,
