@@ -222,7 +222,7 @@ function renderGame(state) {
     playTable.onclick = e => {
         const cardE1 = e.target.closest('[data-suit][data-value]');
 
-        if (cardE1) {
+        if (cardE1 && state.phase === "playing") {
             socket.emit('play_card', {
                 suit: cardE1.dataset.suit,
                 value: cardE1.dataset.value
@@ -232,7 +232,7 @@ function renderGame(state) {
 
         const cardB1 = e.target.closest('[data-bid]');
 
-        if (cardB1) {
+        if (cardB1 && state.phase === "bidding") {
             socket.emit('place_bid', Number(cardB1.dataset.bid));
         }
     }
