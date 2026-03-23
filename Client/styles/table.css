@@ -44,7 +44,7 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    transform: translate(0, -50px);
+    transform: translate(0, -70px);
 }
 
 .card-wrapper {
@@ -61,6 +61,14 @@ playing-card {
 
 .hand-card:hover {
     transform: scale(1.1);
+}
+
+#bidding {
+    position: absolute;
+    display: flex;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -40px;
 }
 
 .bid-button {
