@@ -22,7 +22,7 @@ document.getElementById('joinBtn').onclick = () => {
 let hasJoined = false;
 
 if(DEV_MODE) {
-    state = getMockState('playing')
+    state = getMockState('waiting')
 
     switch(state.phase) {
         case 'waiting':
@@ -115,8 +115,18 @@ function renderGame(state) {
 
     lobbyContent.innerHTML += `
         <div id="sub-player-list">
-            <div id="player-count"">Players: ${state.players.length}</div>
-            <div id="num-rounds">${Math.min(Math.floor(52 / state.players.length), 10)} Rounds</div>
+            <div id="player-count">Players: ${state.players.length}</div>
+            <div id="num-rounds">
+                Rounds:<select name="round-selector" id="round-selector">
+                    <option value="" disabled selected>Select</option>
+                    ${Array.from(
+                        { length: Math.min(Math.floor(52/state.players.length), 10)}, 
+                            (_,i) => `
+                            <option value="${i+1}" class="num-rounds">${i+1}</option>
+                `
+                    ).join('')}
+                </select>
+            </div>
         </div>
     `
 
@@ -125,7 +135,16 @@ function renderGame(state) {
             ${state.canStartGame ? `<button onclick="startGame()" id="start-button">Start Game</button>` : ''}
         </div>
     `
+
     lobbyScreen.appendChild(lobbyContent);
+
+    const roundSelector = document.getElementById('round-selector');
+    if(state.roundNumber !== null) roundSelector.value = state.roundNumber;
+
+    roundSelector.onchange = (e) => {
+        const rounds = Number(e.target.value);
+        socket.emit('set_rounds', rounds);
+    };
 
     const leadSuit =
         state.trickEnded === false
@@ -401,7 +420,7 @@ function getMockState(type) {
                 canPlayCard: false,
                 canBid: true,
                 canStartGame: false,
-                roundNumber: -1,
+                roundNumber: null,
 
                 scoreboard: []
             };
@@ -435,7 +454,7 @@ function getMockState(type) {
                 canPlayCard: false,
                 canBid: false,
                 canStartGame: true,
-                roundNumber: -1,
+                roundNumber: null,
             };
     }
 
