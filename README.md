@@ -66,3 +66,6 @@ Some more UI updates to pretty things up. Biggest pushes now for UI are buttons 
 
 ### **0.2.0**
 Lobby added. Now after creating a room you're sent to a lobby where you wait for other players to join, once there are at least 2 the person that originally opened the room can start the game. Toying with the idea of anyone being able to start the game. Definitely need to add reconnect support at this point because if you create a room and then refresh you're screwed. UI for titles and lobby are basically done. Main game screen still needs some UI work. All pages need some scaling done, almost everything right now is sized in pure px and when on a bigger monitor everything looks tiny. 
+
+### **0.2.1**
+Added small feature, now can select how many rounds you want to play no matter what your group size is up to the maximum possible for your group size. If you try and select too many rounds it will kick an error. Main issue now is that where to click to select the number of rounds you want to play is not abundantly clear, will need to find a way to clarify that further.
