@@ -7,6 +7,7 @@ const roomInput = document.getElementById('roomInput')
 
 const titleScreen = document.getElementById('title-screen');
 const gameScreen = document.getElementById('game-screen');
+const lobbyScreen = document.getElementById('lobby-screen');
 const scoreboard = document.getElementById('scoreboard');
 const playTable = document.getElementById('playTable');
 
@@ -26,16 +27,18 @@ if(DEV_MODE) {
     renderGame(getMockState());
 } else {
     socket.on('game_state', state => {
-        if(!hasJoined) {
-            hasJoined = true;
-
-            titleScreen.classList.add('fade-out');
-
-            setTimeout(() => {
+        switch(state.phase) {
+            case 'waiting':
                 titleScreen.style.display = 'none';
+                lobbyScreen.style.display = 'block';
+                break;
+            case 'bidding':
+                lobbyScreen.style.display = 'none';
                 gameScreen.style.display = 'block';
-            }, 500);
+                break;
+            default: break;
         }
+
         renderGame(state);
     });
 }
@@ -70,6 +73,40 @@ function toCID(card) {
 
 
 function renderGame(state) {
+
+    //TODO: Refactor renderGame into different functions for clarity
+
+    lobbyScreen.innerHTML = '';
+
+    const lobbyHeader = document.createElement('div');
+    lobbyHeader.id = 'lobby-header';
+
+    lobbyHeader.innerHTML = `
+        <h1>Room Code: ${state.roomCode}</h1>
+    `
+
+    lobbyScreen.appendChild(lobbyHeader);
+
+    const lobbyContent = document.createElement('div');
+    lobbyContent.id = 'lobby-content';
+
+    lobbyContent.innerHTML = `
+        <div id="player-list">
+            ${state.players.map(p => {
+                return `<div class="player lobby">
+                    <strong class="player-name lobby">${p.name}</strong>
+                </div>`
+            }).join('')
+            }
+        </div>
+    `
+
+    lobbyContent.innerHTML += `
+        <div id="start">
+            ${state.canStartGame ? `<button onclick="startGame()" id="start-button">Start Game</button>` : ''}
+        </div>
+    `
+    lobbyScreen.appendChild(lobbyContent);
 
     const leadSuit =
         state.trickEnded === false
@@ -163,7 +200,7 @@ function renderGame(state) {
 
         div.innerHTML += `
             <img class="player-icon" src="../assets/player-icon-male.png" alt="player-icon">
-            <strong class="player-name">${player.name}</strong>`;
+            <strong class="player-name table">${player.name}</strong>`;
 
         if(player.id === state.currentTurn) {
             div.style.filter = 'drop-shadow(0 0 30px white)';
@@ -175,10 +212,7 @@ function renderGame(state) {
     playTable.innerHTML +=
         `<div id="scoreboard-button">
             <button onclick="toggleScoreboard()">Scoreboard</button>
-        </div>
-        ${state.canStartGame ? `
-            <button onclick="startGame()">Start Game</button>
-        ` : ''}`;
+        </div>`;
 
     playTable.innerHTML +=
     `<div id="trick-area">

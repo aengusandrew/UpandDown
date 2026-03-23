@@ -1,0 +1,69 @@
+#lobby-screen {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    transition: opacity 0.5s ease;
+
+    background-image: url("../assets/title-background.jpg");
+    background-size: cover;
+    background-position: center center;
+}
+
+#lobby-header {
+    position: relative;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#lobby-header h1 {
+    position: relative;
+
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+#lobby-content {
+    position: relative;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#player-list {
+    position: relative;
+
+    width: 40%;
+    height: 50%;
+
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.player.lobby {
+    font-size: 20px;
+}
+
+#start {
+    position: relative;
+    margin: 30px;
+    width: 30%;
+    height: 100%;
+}
+
+#start-button {
+    width: 100%;
+    height: 100%;
+}
