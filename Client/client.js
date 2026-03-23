@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -22,7 +22,7 @@ document.getElementById('joinBtn').onclick = () => {
 let hasJoined = false;
 
 if(DEV_MODE) {
-    state = getMockState('playing')
+    state = getMockState('waiting')
 
     switch(state.phase) {
         case 'waiting':
@@ -115,8 +115,17 @@ function renderGame(state) {
 
     lobbyContent.innerHTML += `
         <div id="sub-player-list">
-            <div id="player-count"">Players: ${state.players.length}</div>
-            <div id="num-rounds">${Math.min(Math.floor(52 / state.players.length), 10)} Rounds</div>
+            <div id="player-count">Players: ${state.players.length}</div>
+            <div id="num-rounds">
+                <select name="round-selector" id="round-selector">
+                    ${Array.from(
+                        { length: Math.min(Math.floor(52/state.players.length), 10)}, 
+                            (_,i) => `
+                            <option value="${i+1}" class="num-rounds">${i+1}</option>
+                `
+                    ).join('')}
+                </select>
+            </div>
         </div>
     `
 
@@ -126,6 +135,8 @@ function renderGame(state) {
         </div>
     `
     lobbyScreen.appendChild(lobbyContent);
+
+    document.getElementById('round-selector').value = Math.min(Math.floor(52 / state.players.length), 10);
 
     const leadSuit =
         state.trickEnded === false
