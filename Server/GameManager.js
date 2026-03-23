@@ -21,6 +21,8 @@ class GameManager {
     }
     
     startNewRound() {
+        if(this.roundNumber > Math.min(Math.floor(52/this.players.length), 10)) return;
+
         const deck = new Deck();
 
         deck.shuffle();
