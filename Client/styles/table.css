@@ -39,11 +39,12 @@ html, body {
 }
 
 #hand {
-    position: relative;
+    position: absolute;
     min-height: 50px;
     display: flex;
     justify-content: center;
     align-items: flex-end;
+    transform: translate(0, -50px);
 }
 
 .card-wrapper {
@@ -56,6 +57,10 @@ playing-card {
     height: auto;
     padding: 10px;
     border-radius: 10px;
+}
+
+.hand-card:hover {
+    transform: scale(1.1);
 }
 
 .bid-button {

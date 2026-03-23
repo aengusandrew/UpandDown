@@ -1,6 +1,6 @@
 const socket = io('http://localhost:3000');
 
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -139,6 +139,7 @@ function renderGame(state) {
                     "
                     >
                         <playing-card 
+                        class="hand-card"
                         cid="${toCID(card)}"
                         opacity="${isPlayable ? '1' : '0.25'}"
                         ></playing-card>
