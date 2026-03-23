@@ -1,0 +1,140 @@
+#lobby-screen {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    transition: opacity 0.5s ease;
+
+    background-image: url("../assets/images/title-background.jpg");
+    background-size: cover;
+    background-position: center center;
+}
+
+#lobby-header {
+    position: relative;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#lobby-header h1 {
+    position: relative;
+
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+}
+
+#lobby-content {
+    position: relative;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#player-list {
+    position: relative;
+
+    width: 40%;
+    height: 50%;
+
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 30px;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.player.lobby {
+    font-size: 35px;
+}
+
+#sub-player-list {
+    position: relative;
+    width: 40%;
+    height: 20%;
+
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+    margin: 5px;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+#player-count, #num-rounds {
+    font-size: 30px;
+}
+
+#player-count {
+    position: relative;
+    justify-content: left;
+    align-items: center;
+}
+
+#num-rounds {
+    position: relative;
+    justify-content: right;
+    align-items: center;
+}
+
+#start {
+    position: relative;
+    margin: 30px;
+    width: 30%;
+
+    align-items: center;
+    justify-content: center;
+}
+
+#start-button {
+    position: relative;
+    min-height: 12.36vh;
+    min-width: 20vh;
+
+    left: 50%;
+    transform: translate(-50%, 0);
+
+    font-family: LuckiestGuy, serif;
+    font-size: 24px;
+
+    border-radius: 15px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+
+    background-color: white;
+}
+
+#start-button:hover {
+    cursor: pointer;
+    background-color: lightgrey;
+}

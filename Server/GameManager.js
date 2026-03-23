@@ -7,7 +7,7 @@ class GameManager {
         this.dealerIndex = 0;
         this.playerIndex = null;
         this.roundNumber = -1;
-        this.phase = 'waiting'; // waiting, bidding, playing, scoring
+        this.phase = 'waiting'; // startup, waiting, bidding, playing, scoring
         this.trickCards = [];
         this.trumpCard = null;
         this.direction = false; // TODO: Check this is working? False when going down the street, true when going up
@@ -21,7 +21,7 @@ class GameManager {
     }
 
     startGame() {
-        this.roundNumber = Math.min(52 / this.players.length, 10);
+        this.roundNumber = Math.min(Math.floor(52 / this.players.length), 10);
         this.startNewRound();
     }
     
@@ -171,6 +171,9 @@ class GameManager {
         this.startNewRound();
     }
 
+    getPhase() {
+        return this.phase;
+    }
 
 
     getPublicGameState(forPlayerID) {
