@@ -5,7 +5,9 @@
 #game-screen {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, green, black);
+    background-image: url("../assets/images/table-background.png");
+    background-size: cover;
+    background-position: center center;
 }
 
 #playTable {

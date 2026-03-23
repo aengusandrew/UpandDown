@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -22,14 +22,14 @@ document.getElementById('joinBtn').onclick = () => {
 let hasJoined = false;
 
 if(DEV_MODE) {
-    state = getMockState('waiting')
+    state = getMockState('playing')
 
     switch(state.phase) {
         case 'waiting':
             titleScreen.style.display = 'none';
             lobbyScreen.style.display = 'block';
             break;
-        case 'bidding':
+        case 'playing':
             lobbyScreen.style.display = 'none';
             gameScreen.style.display = 'block';
             break;
