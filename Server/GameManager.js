@@ -163,7 +163,7 @@ class GameManager {
         this.scoreHistory.push(roundResult);
 
         if(this.roundNumber === 1 && !this.direction) this.direction = true;
-        else if(this.roundNumber === this.totalRounds && this.direction) this.endGame()
+        else if(this.roundNumber === this.totalRounds && this.direction) { this.endGame(); return; }
         else if(this.direction) this.roundNumber += 1;
         else if (!this.direction) this.roundNumber -= 1;
         this.dealerIndex += 1;
@@ -181,10 +181,11 @@ class GameManager {
             if(player.score >= leadPlayer.score) leadPlayer = player; // TODO: fine tune the way this displays ties
         }
 
-        this.dealerIndex = this.players.findIndex(p=>p.id === leadPlayer.id);
+        console.log(leadPlayer);
 
-        console.log(this.players[this.dealerIndex]);
+        this.playerIndex = this.players.findIndex(p=>p.id === leadPlayer.id);
 
+        console.log("playerIndex at endGame() ", this.playerIndex)
     }
 
     getPublicGameState(forPlayerID) {

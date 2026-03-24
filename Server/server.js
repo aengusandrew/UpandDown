@@ -190,6 +190,21 @@ io.on('connection', (socket) => {
             );
         }
     })
+
+    socket.on('end_game', () => {
+        const roomCode = socket.roomCode;
+        if(!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        if(!game) return;
+
+        for(const player of game.players) {
+            io.to(player.id).emit(
+                'game_state',
+                game.getPublicGameState(player.id)
+            );
+        }
+    })
 });
 
 const PORT = process.env.PORT || 3000;

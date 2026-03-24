@@ -1,0 +1,57 @@
+#end-screen {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-image: url("../assets/images/table-background.png");
+    background-size: cover;
+    background-position: center center;
+}
+
+#winner {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#winner h1 {
+    position: absolute;
+    font-family: LuckiestGuy, serif;
+    font-size: 10vh;
+}
+
+#winner-wrapper {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#winner-icon {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+    height: 50vh;
+    width: auto;
+}
+
+#winner-name {
+    position: relative;
+
+    font-family: LuckiestGuy, serif;
+    font-size: 6vh;
+
+    transform: translate(0, -8vh);
+}

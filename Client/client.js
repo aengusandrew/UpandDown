@@ -10,6 +10,7 @@ const gameScreen = document.getElementById('game-screen');
 const lobbyScreen = document.getElementById('lobby-screen');
 const scoreboard = document.getElementById('scoreboard');
 const playTable = document.getElementById('playTable');
+const endScreen = document.getElementById('end-screen');
 
 document.getElementById('createBtn').onclick = () => {
     socket.emit('createRoom', roomInput.value, nameInput.value)
@@ -45,7 +46,6 @@ if(DEV_MODE) {
 
 } else {
     socket.on('game_state', state => {
-        console.log(state);
         switch(state.phase) {
             case 'waiting':
                 titleScreen.style.display = 'none';
@@ -54,14 +54,14 @@ if(DEV_MODE) {
                 break;
             case 'playing':
             case 'bidding': // Also bidding screen
-
                 lobbyScreen.style.display = 'none';
                 gameScreen.style.display = 'block';
                 renderPlay(state);
                 break;
             case 'scoring':
+                console.log('scoring');
                 gameScreen.style.display = 'none';
-                // TODO: Add endGame screen
+                endScreen.style.display = 'block';
                 renderEnd(state);
                 break;
             default: break;
@@ -310,7 +310,28 @@ function renderPlay(state) {
 }
 
 function renderEnd(state) {
+    console.log('end')
 
+    endScreen.innerHTML = '';
+
+    console.log(state.currentTurn);
+
+    const winningPlayer = state.players.find(p => p.id === state.currentTurn);
+
+    console.log(winningPlayer);
+
+    const winner = document.createElement('div');
+    winner.id = 'winner';
+
+    winner.innerHTML = `
+        <h1>Winner!</h1>
+        <div id="winner-wrapper">
+            <img id="winner-icon" src="../assets/images/player-icon-male.png" alt="player icon">
+            <strong id="winner-name">${winningPlayer.name}</strong>
+        </div>
+    `;
+
+    endScreen.appendChild(winner);
 }
 
 function renderScoreboard(state) {
