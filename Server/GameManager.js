@@ -178,12 +178,12 @@ class GameManager {
     endGame() {
         let leadPlayer = this.players[0];
         for(let player of this.players) {
-            if(player.score > leadPlayer.score) leadPlayer = player;
+            if(player.score >= leadPlayer.score) leadPlayer = player; // TODO: fine tune the way this displays ties
         }
 
-        // this.dealerIndex = this.players.findIndex(p=>p.id === leadPlayer.id);
-        //
-        // console.log(this.players[this.dealerIndex]);
+        this.dealerIndex = this.players.findIndex(p=>p.id === leadPlayer.id);
+
+        console.log(this.players[this.dealerIndex]);
 
     }
 

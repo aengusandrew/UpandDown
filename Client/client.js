@@ -28,30 +28,44 @@ if(DEV_MODE) {
         case 'waiting':
             titleScreen.style.display = 'none';
             lobbyScreen.style.display = 'block';
+            renderLobby(state);
             break;
-        case 'playing':
+        case 'playing' || 'bidding' : // Also bidding screen
             lobbyScreen.style.display = 'none';
             gameScreen.style.display = 'block';
+            renderPlay(state);
+            break;
+        case 'scoring':
+            gameScreen.style.display = 'none';
+            // TODO: Add endGame screen
+            renderEnd(state);
             break;
         default: break;
     }
 
-    renderGame(state);
 } else {
     socket.on('game_state', state => {
+        console.log(state);
         switch(state.phase) {
             case 'waiting':
                 titleScreen.style.display = 'none';
                 lobbyScreen.style.display = 'block';
+                renderLobby(state);
                 break;
-            case 'bidding':
+            case 'playing':
+            case 'bidding': // Also bidding screen
+
                 lobbyScreen.style.display = 'none';
                 gameScreen.style.display = 'block';
+                renderPlay(state);
+                break;
+            case 'scoring':
+                gameScreen.style.display = 'none';
+                // TODO: Add endGame screen
+                renderEnd(state);
                 break;
             default: break;
         }
-
-        renderGame(state);
     });
 }
 
@@ -64,8 +78,9 @@ function startGame() {
     socket.emit('start_game');
 }
 
-function toggleScoreboard() {
+function toggleScoreboard(state) {
     if(scoreboard.style.display === 'none') {
+        renderScoreboard(state);
         scoreboard.style.display = 'flex';
     } else {
         scoreboard.style.display = 'none';
@@ -83,11 +98,7 @@ function toCID(card) {
     return `${card.value}${suitMap[card.suit]}`;
 }
 
-
-function renderGame(state) {
-
-    //TODO: Refactor renderGame into different functions for clarity
-
+function renderLobby(state) {
     lobbyScreen.innerHTML = '';
 
     const lobbyHeader = document.createElement('div');
@@ -105,11 +116,11 @@ function renderGame(state) {
     lobbyContent.innerHTML = `
         <div id="player-list">
             ${state.players.map(p => {
-                return `<div class="player lobby">
+        return `<div class="player lobby">
                     <strong class="player-name lobby">${p.name}</strong>
                 </div>`
-            }).join('')
-            }
+    }).join('')
+    }
         </div>
     `
 
@@ -120,11 +131,11 @@ function renderGame(state) {
                 Rounds:<select name="round-selector" id="round-selector">
                     <option value="" disabled selected>Select</option>
                     ${Array.from(
-                        { length: Math.min(Math.floor(52/state.players.length), 10)}, 
-                            (_,i) => `
+        { length: Math.min(Math.floor(52/state.players.length), 10)},
+        (_,i) => `
                             <option value="${i+1}" class="num-rounds">${i+1}</option>
                 `
-                    ).join('')}
+    ).join('')}
                 </select>
             </div>
         </div>
@@ -146,10 +157,13 @@ function renderGame(state) {
         socket.emit('set_rounds', rounds);
     };
 
+}
+
+function renderPlay(state) {
     const leadSuit =
         state.trickEnded === false
-        ? state.trickCards[0].card.suit :
-        null;
+            ? state.trickCards[0].card.suit :
+            null;
 
     const hasLeadSuit =
         leadSuit &&
@@ -169,17 +183,17 @@ function renderGame(state) {
 
     you.innerHTML = `<div id="hand">
             ${state.yourHand.map((card, i) => {
-            const mustFollow = leadSuit && hasLeadSuit;
-            const isPlayable =
-                state.canPlayCard &&
-                (!mustFollow || card.suit === leadSuit);
-    
-            const offset = i - (handSize - 1) / 2;
-            const rotate = offset * 8;
-            const translateX = offset * spread;
-            const translateY = Math.abs(offset * -5);
-    
-            return `
+        const mustFollow = leadSuit && hasLeadSuit;
+        const isPlayable =
+            state.canPlayCard &&
+            (!mustFollow || card.suit === leadSuit);
+
+        const offset = i - (handSize - 1) / 2;
+        const rotate = offset * 8;
+        const translateX = offset * spread;
+        const translateY = Math.abs(offset * -5);
+
+        return `
                 <div 
                 class="card-wrapper"
                 data-suit="${card.suit}"
@@ -244,16 +258,21 @@ function renderGame(state) {
             div.style.filter = 'drop-shadow(0 0 30px white)';
         }
 
-            playTable.appendChild(div);
-        });
+        playTable.appendChild(div);
+    });
 
     playTable.innerHTML +=
-        `<div id="scoreboard-button">
-            <button onclick="toggleScoreboard()">Scoreboard</button>
+        `<div id="scoreboard-button-wrapper">
+            <button id="scoreboard-button">Scoreboard</button>
         </div>`;
 
+    // document.getElementById('scoreboard-button').addEventListener('click', () => {
+    //     console.log('scoreboard clicked');
+    //     toggleScoreboard(state);
+    // })
+
     playTable.innerHTML +=
-    `<div id="trick-area">
+        `<div id="trick-area">
         ${trickToRender.map(t => `
                 <div>
                     <playing-card cid="${toCID(t.card)}"></playing-card>
@@ -267,33 +286,6 @@ function renderGame(state) {
             <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
         </div>
     `
-
-    scoreboard.innerHTML = `
-        <div id="scoreboard-table">
-            <table>
-                <tr>
-                    <th>Round</th>
-                    ${state.players.map(p => `<th colspan="2">${p.name}</th>`).join('')}
-                </tr>
-                ${state.scoreboard.map(r => `
-                        <tr>
-                            <td>${r.roundNumber}</td>
-                            ${state.players.map(p => {
-                                const playerResult = r.results.find(q => q.playerID === p.id);
-                                return `
-                                    <td>
-                                        ${playerResult ? `(${playerResult.tricks}/${playerResult.bid})` : '-'}
-                                    </td>
-                                    <td>
-                                        ${playerResult ? `${playerResult.score}` : '-'}
-                                    </td>
-                                    `;
-                            }).join('')}
-                        </tr>     
-                `).join('')}
-            </table>
-        </div>
-    `;
 
     playTable.onclick = e => {
         const cardE1 = e.target.closest('[data-suit][data-value]');
@@ -311,7 +303,43 @@ function renderGame(state) {
         if (cardB1 && state.phase === "bidding") {
             socket.emit('place_bid', Number(cardB1.dataset.bid));
         }
+
+        const cardS1 = e.target.id === 'scoreboard-button';
+        if(cardS1) toggleScoreboard(state);
     }
+}
+
+function renderEnd(state) {
+
+}
+
+function renderScoreboard(state) {
+    scoreboard.innerHTML = `
+        <div id="scoreboard-table">
+            <table>
+                <tr>
+                    <th>Round</th>
+                    ${state.players.map(p => `<th colspan="2">${p.name}</th>`).join('')}
+                </tr>
+                ${state.scoreboard.map(r => `
+                        <tr>
+                            <td>${r.roundNumber}</td>
+                            ${state.players.map(p => {
+        const playerResult = r.results.find(q => q.playerID === p.id);
+        return `
+                                    <td>
+                                        ${playerResult ? `(${playerResult.tricks}/${playerResult.bid})` : '-'}
+                                    </td>
+                                    <td>
+                                        ${playerResult ? `${playerResult.score}` : '-'}
+                                    </td>
+                                    `;
+    }).join('')}
+                        </tr>     
+                `).join('')}
+            </table>
+        </div>
+    `;
 }
 
 function getMockState(type) {
