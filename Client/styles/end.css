@@ -26,13 +26,17 @@
 }
 
 #winner h1 {
-    position: absolute;
+    position: relative;
     font-family: LuckiestGuy, serif;
     font-size: 10vh;
+
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
 }
 
 #winner-wrapper {
-    position: absolute;
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
