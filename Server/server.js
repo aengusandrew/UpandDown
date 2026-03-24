@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
         }
 
         const game = new GameManager(roomCode);
-        game.hostId = socket.id;
+        game.hostID = socket.id;
         rooms.set(roomCode, game);
 
         game.addPlayer({
@@ -114,7 +114,7 @@ io.on('connection', (socket) => {
         const game = rooms.get(roomCode);
         if (!game) return;
 
-        if (socket.id !== game.hostId) {
+        if (socket.id !== game.hostID) {
             socket.emit('game_error', 'not_host');
             return;
         }

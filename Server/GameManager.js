@@ -171,13 +171,20 @@ class GameManager {
         this.startNewRound();
     }
 
+    getPhase() {
+        return this.phase;
+    }
+
     endGame() {
         let leadPlayer = this.players[0];
         for(let player of this.players) {
             if(player.score > leadPlayer.score) leadPlayer = player;
         }
 
-        console.log(leadPlayer);
+        // this.dealerIndex = this.players.findIndex(p=>p.id === leadPlayer.id);
+        //
+        // console.log(this.players[this.dealerIndex]);
+
     }
 
     getPublicGameState(forPlayerID) {
