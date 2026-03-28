@@ -231,7 +231,8 @@ class GameManager {
             canStartGame:
                 this.phase === 'waiting' &&
                 forPlayerID === this.hostID &&
-                this.players.length >=2,
+                this.players.length >=2 &&
+                this.roundNumber,
 
             canBid:
             this.phase === 'bidding' &&
