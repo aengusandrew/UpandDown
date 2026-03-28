@@ -27,23 +27,28 @@ if(DEV_MODE) {
 
     switch(state.phase) {
         case 'waiting':
-            titleScreen.style.display = 'none';
             lobbyScreen.style.display = 'block';
+            titleScreen.style.display = 'none';
+            endScreen.style.display = 'none';
             renderLobby(state);
             break;
-        case 'playing' || 'bidding' : // Also bidding screen
+        case 'playing':
+        case 'bidding':
             lobbyScreen.style.display = 'none';
             gameScreen.style.display = 'block';
+            endScreen.style.display = 'none';
             renderPlay(state);
             break;
         case 'scoring':
+            console.log('scoring');
+            lobbyScreen.style.display = 'none';
             gameScreen.style.display = 'none';
-            // TODO: Add endGame screen
+            endScreen.style.display = 'block';
             renderEnd(state);
             break;
-        default: break;
+        default:
+            break;
     }
-
 } else {
     socket.on('game_state', state => {
         console.log(state.phase);
@@ -55,7 +60,7 @@ if(DEV_MODE) {
                 renderLobby(state);
                 break;
             case 'playing':
-            case 'bidding': // Also bidding screen
+            case 'bidding':
                 lobbyScreen.style.display = 'none';
                 gameScreen.style.display = 'block';
                 endScreen.style.display = 'none';
