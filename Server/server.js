@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
 
     socket.on('createRoom', (roomCode, playerName) => {
         if(rooms.has(roomCode)) {
-            socket.emit('room_error', 'room_exists');
+            socket.emit('game_error', 'room_exists');
             return;
         }
 
@@ -51,14 +51,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on('joinRoom', (roomCode, playerName) => {
+        console.log(playerName, "has requested to join ", roomCode);
         const game = rooms.get(roomCode);
         if(!game) {
-            socket.emit('room_error', 'room_not_found');
+            socket.emit('game_error', 'room_not_found');
             return;
         }
 
         if(game.phase !== 'waiting') {
-            socket.emit('room_error', 'game_started');
+            socket.emit('game_error', 'game_started');
             return;
         }
 
@@ -193,17 +194,14 @@ io.on('connection', (socket) => {
 
     socket.on('end_game', () => {
         const roomCode = socket.roomCode;
-        if(!roomCode) return;
 
+        if(!roomCode) return;
         const game = rooms.get(roomCode);
         if(!game) return;
 
-        for(const player of game.players) {
-            io.to(player.id).emit(
-                'game_state',
-                game.getPublicGameState(player.id)
-            );
-        }
+        console.log(rooms);
+
+        game.clearHistory();
     })
 });
 

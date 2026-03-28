@@ -46,20 +46,24 @@ if(DEV_MODE) {
 
 } else {
     socket.on('game_state', state => {
+        console.log(state.phase);
         switch(state.phase) {
             case 'waiting':
-                titleScreen.style.display = 'none';
                 lobbyScreen.style.display = 'block';
+                titleScreen.style.display = 'none';
+                endScreen.style.display = 'none';
                 renderLobby(state);
                 break;
             case 'playing':
             case 'bidding': // Also bidding screen
                 lobbyScreen.style.display = 'none';
                 gameScreen.style.display = 'block';
+                endScreen.style.display = 'none';
                 renderPlay(state);
                 break;
             case 'scoring':
                 console.log('scoring');
+                lobbyScreen.style.display = 'none';
                 gameScreen.style.display = 'none';
                 endScreen.style.display = 'block';
                 renderEnd(state);
@@ -331,7 +335,34 @@ function renderEnd(state) {
         </div>
     `;
 
+    socket.emit('end_game');
+
+    const nextGame = document.createElement('div');
+    nextGame.id = 'next-game';
+
+    nextGame.innerHTML = `
+        <div id="nextGame-buttons">
+            <button id="play-again">Play Again</button>
+            <button id="quit-game">Quit</button>
+        </div>
+    `
+
     endScreen.appendChild(winner);
+
+    endScreen.appendChild(nextGame);
+
+    endScreen.addEventListener('click', e => {
+        console.log(e.target);
+        const playAgain = e.target.id === 'play-again';
+        const quitGame = e.target.id === 'quit-game';
+
+        if(quitGame) {
+            window.location.reload();
+        }
+
+        if(playAgain) socket.emit('joinRoom', state.roomCode, state.players.find(p => p.id === socket.id).name);
+        console.log(state.roomCode, state.players.find(p => p.id === socket.id).name)
+    })
 }
 
 function renderScoreboard(state) {

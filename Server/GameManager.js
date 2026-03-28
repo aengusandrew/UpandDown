@@ -181,11 +181,22 @@ class GameManager {
             if(player.score >= leadPlayer.score) leadPlayer = player; // TODO: fine tune the way this displays ties
         }
 
-        console.log(leadPlayer);
-
         this.playerIndex = this.players.findIndex(p=>p.id === leadPlayer.id);
+    }
 
-        console.log("playerIndex at endGame() ", this.playerIndex)
+    clearHistory() {
+        this.players = [];
+        this.dealerIndex = 0;
+        this.playerIndex = null;
+        this.totalRounds = null;
+        this.roundNumber = null;
+        this.phase = 'waiting'; // waiting, bidding, playing, scoring
+        this.trickCards = [];
+        this.trumpCard = null;
+        this.direction = false;
+        this.hostID = null;
+        this.scoreHistory = [];
+        this.trickEnded = true;
     }
 
     getPublicGameState(forPlayerID) {
