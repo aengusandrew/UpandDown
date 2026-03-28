@@ -18,6 +18,7 @@ class GameManager {
     }
 
     addPlayer(Player) {
+        if(this.players.length === 0) this.hostID = Player.id;
         this.players.push(Player);
     }
     

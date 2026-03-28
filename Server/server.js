@@ -26,7 +26,6 @@ io.on('connection', (socket) => {
         }
 
         const game = new GameManager(roomCode);
-        game.hostID = socket.id;
         rooms.set(roomCode, game);
 
         game.addPlayer({
