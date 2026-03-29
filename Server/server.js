@@ -114,8 +114,6 @@ io.on('connection', (socket) => {
        game.totalRounds = rounds;
        game.roundNumber = game.totalRounds;
 
-       console.log("Received change rounds: ", game.totalRounds);
-
        for(const player of game.players) {
            io.to(player.id).emit('game_state', game.getPublicGameState(player.id));
        }
@@ -141,8 +139,6 @@ io.on('connection', (socket) => {
 
         const result = game.startNewRound();
 
-        console.log("Start Game: ", result);
-
         if(result !== "ok") socket.emit('game_error', result);
 
         for (const player of game.players) {
@@ -159,14 +155,12 @@ io.on('connection', (socket) => {
         console.log("SERVER received bid: ", bidValue);
 
         const roomCode = socket.roomCode;
-        console.log(roomCode);
         if (!roomCode) return;
 
         const game = rooms.get(roomCode);
         if (!game) return;
 
         const result = game.handleBid(socket.id, bidValue);
-        console.log(result);
         if(result === 'error') {
             socket.emit('game_error', 'invalid_bid');
             return;
@@ -212,8 +206,6 @@ io.on('connection', (socket) => {
         if(!roomCode) return;
         const game = rooms.get(roomCode);
         if(!game) return;
-
-        console.log(rooms);
 
         game.clearHistory();
     })
