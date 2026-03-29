@@ -183,6 +183,19 @@ function renderPlay(state) {
 
     playTable.innerHTML = '';
 
+    if(state.trickCards.length !== 0) {
+        const trick = document.createElement('div');
+        trick.id = "trick-area";
+        trick.innerHTML = `
+            ${trickToRender.map(t => `
+                <div>
+                    <playing-card cid="${toCID(t.card)}"></playing-card>
+                </div>
+            `).join('')}`;
+        playTable.appendChild(trick);
+    }
+
+
     const you = document.createElement('div');
     you.id = "your-player"
 
@@ -194,8 +207,9 @@ function renderPlay(state) {
             ${state.yourHand.map((card, i) => {
         const mustFollow = leadSuit && hasLeadSuit;
         const isPlayable =
-            state.canPlayCard &&
-            (!mustFollow || card.suit === leadSuit);
+            state.phase === 'bidding' ||
+            (state.canPlayCard &&
+            (!mustFollow || card.suit === leadSuit));
 
         const offset = i - (handSize - 1) / 2;
         const rotate = offset * 8;

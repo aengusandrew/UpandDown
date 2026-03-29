@@ -56,8 +56,17 @@ playing-card {
 }
 
 .bid-button {
-    border: none;
+    border: 2px black solid;
     padding: 10px;
+    margin: 5px;
+    height: 10vh;
+    width: 10vh;
+    border-radius: 5vh;
+
+    font-family: LuckiestGuy, serif;
+    font-size: 5vh;
+
+    background-color: lightgray;
 }
 
 .bid-button:hover {
