@@ -275,11 +275,6 @@ function renderPlay(state) {
             <button id="scoreboard-button">Scoreboard</button>
         </div>`;
 
-    // document.getElementById('scoreboard-button').addEventListener('click', () => {
-    //     console.log('scoreboard clicked');
-    //     toggleScoreboard(state);
-    // })
-
     playTable.innerHTML +=
         `<div id="trick-area">
         ${trickToRender.map(t => `
@@ -354,7 +349,7 @@ function renderEnd(state) {
 
     endScreen.appendChild(nextGame);
 
-    endScreen.addEventListener('click', e => {
+    endScreen.onclick = e => {
         console.log(e.target);
         const playAgain = e.target.id === 'play-again';
         const quitGame = e.target.id === 'quit-game';
@@ -363,8 +358,8 @@ function renderEnd(state) {
             window.location.reload();
 
         if(playAgain)
-            socket.emit('joinRoom', state.roomCode, state.players.find(p => p.id === socket.id).name);
-    })
+            socket.emit('play-again');
+    }
 }
 
 function renderScoreboard(state) {
@@ -381,13 +376,13 @@ function renderScoreboard(state) {
                             ${state.players.map(p => {
         const playerResult = r.results.find(q => q.playerID === p.id);
         return `
-                                    <td>
-                                        ${playerResult ? `(${playerResult.tricks}/${playerResult.bid})` : '-'}
-                                    </td>
-                                    <td>
-                                        ${playerResult ? `${playerResult.score}` : '-'}
-                                    </td>
-                                    `;
+                <td>
+                    ${playerResult ? `(${playerResult.tricks}/${playerResult.bid})` : '-'}
+                </td>
+                <td>
+                    ${playerResult ? `${playerResult.score}` : '-'}
+                </td>
+                `;
     }).join('')}
                         </tr>     
                 `).join('')}

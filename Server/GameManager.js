@@ -186,7 +186,6 @@ class GameManager {
     }
 
     clearHistory() {
-        this.players = [];
         this.dealerIndex = 0;
         this.playerIndex = null;
         this.totalRounds = null;
@@ -211,7 +210,7 @@ class GameManager {
             trumpCard: this.trumpCard,
             currentTurn: this.players[this.playerIndex]?.id,
             trickEnded: this.trickEnded,
-            youID: you.id,
+            youID: forPlayerID,
 
             players: this.players.map(p => ({
                 id: p.id,

@@ -24,9 +24,21 @@ io.on('connection', (socket) => {
         const game = rooms.get(roomCode);
         if(!game) return;
 
+        console.log(game.players);
+
         game.players = game.players.filter(p => p.id !== socket.id);
 
         console.log('Player ', socket.id, ' left room ', socket.roomCode);
+
+        console.log(game.players);
+
+        for(const player of game.players) {
+            console.log(player);
+            io.to(player.id).emit(
+                'game_state',
+                game.getPublicGameState(player.id),
+            );
+        }
 
         if(game.players.length === 0) {
             rooms.delete(roomCode);
@@ -207,7 +219,26 @@ io.on('connection', (socket) => {
         const game = rooms.get(roomCode);
         if(!game) return;
 
+        console.log("Game ended in room: ", roomCode);
+    })
+
+    socket.on('play-again', () => {
+        const roomCode = socket.roomCode;
+        if(!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        if(!game) return;
+
+        console.log(socket.id, " has asked to play again");
+
         game.clearHistory();
+
+        game.hostID = socket.id;
+
+        io.to(socket.id).emit(
+            'game_state',
+            game.getPublicGameState(socket.id)
+        );
     })
 });
 
