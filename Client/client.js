@@ -207,8 +207,9 @@ function renderPlay(state) {
             ${state.yourHand.map((card, i) => {
         const mustFollow = leadSuit && hasLeadSuit;
         const isPlayable =
-            state.canPlayCard &&
-            (!mustFollow || card.suit === leadSuit);
+            state.phase === 'bidding' ||
+            (state.canPlayCard &&
+            (!mustFollow || card.suit === leadSuit));
 
         const offset = i - (handSize - 1) / 2;
         const rotate = offset * 8;
