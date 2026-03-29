@@ -6,8 +6,9 @@ class GameManager {
         this.players = [];
         this.dealerIndex = 0;
         this.playerIndex = null;
+        this.totalRounds = null;
         this.roundNumber = null;
-        this.phase = 'waiting'; // startup, waiting, bidding, playing, scoring
+        this.phase = 'waiting'; // waiting, bidding, playing, scoring
         this.trickCards = [];
         this.trumpCard = null;
         this.direction = false;
@@ -17,11 +18,12 @@ class GameManager {
     }
 
     addPlayer(Player) {
+        if(this.players.length === 0) this.hostID = Player.id;
         this.players.push(Player);
     }
     
     startNewRound() {
-        if(this.roundNumber > Math.min(Math.floor(52/this.players.length), 10)) return "pick_rounds";
+        if(this.totalRounds > Math.min(Math.floor(52/this.players.length), 10)) return "pick_rounds";
 
         const deck = new Deck();
 
@@ -162,7 +164,7 @@ class GameManager {
         this.scoreHistory.push(roundResult);
 
         if(this.roundNumber === 1 && !this.direction) this.direction = true;
-        else if(this.roundNumber === (52 % this.players.length) && this.direction) this.endGame(); // TODO: Implement endGame(), right now bids just increase
+        else if(this.roundNumber === this.totalRounds && this.direction) { this.endGame(); return; }
         else if(this.direction) this.roundNumber += 1;
         else if (!this.direction) this.roundNumber -= 1;
         this.dealerIndex += 1;
@@ -174,6 +176,28 @@ class GameManager {
         return this.phase;
     }
 
+    endGame() {
+        let leadPlayer = this.players[0];
+        for(let player of this.players) {
+            if(player.score >= leadPlayer.score) leadPlayer = player; // TODO: fine tune the way this displays ties
+        }
+
+        this.playerIndex = this.players.findIndex(p=>p.id === leadPlayer.id);
+    }
+
+    clearHistory() {
+        this.dealerIndex = 0;
+        this.playerIndex = null;
+        this.totalRounds = null;
+        this.roundNumber = null;
+        this.phase = 'waiting'; // waiting, bidding, playing, scoring
+        this.trickCards = [];
+        this.trumpCard = null;
+        this.direction = false;
+        this.hostID = null;
+        this.scoreHistory = [];
+        this.trickEnded = true;
+    }
 
     getPublicGameState(forPlayerID) {
         const you = this.players.find(q => q.id === forPlayerID);
@@ -186,7 +210,7 @@ class GameManager {
             trumpCard: this.trumpCard,
             currentTurn: this.players[this.playerIndex]?.id,
             trickEnded: this.trickEnded,
-            youID: you.id,
+            youID: forPlayerID,
 
             players: this.players.map(p => ({
                 id: p.id,
@@ -205,8 +229,9 @@ class GameManager {
 
             canStartGame:
                 this.phase === 'waiting' &&
-                forPlayerID === this.hostId &&
-                this.players.length >=2,
+                forPlayerID === this.hostID &&
+                this.players.length >=2 &&
+                this.roundNumber,
 
             canBid:
             this.phase === 'bidding' &&

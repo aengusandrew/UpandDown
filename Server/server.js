@@ -17,16 +17,42 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
+
+        const roomCode = socket.roomCode;
+        if(!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        if(!game) return;
+
+        console.log(game.players);
+
+        game.players = game.players.filter(p => p.id !== socket.id);
+
+        console.log('Player ', socket.id, ' left room ', socket.roomCode);
+
+        console.log(game.players);
+
+        for(const player of game.players) {
+            console.log(player);
+            io.to(player.id).emit(
+                'game_state',
+                game.getPublicGameState(player.id),
+            );
+        }
+
+        if(game.players.length === 0) {
+            rooms.delete(roomCode);
+            console.log("Room ", game.roomCode, " pruned")
+        }
     })
 
     socket.on('createRoom', (roomCode, playerName) => {
         if(rooms.has(roomCode)) {
-            socket.emit('room_error', 'room_exists');
+            socket.emit('game_error', 'room_exists');
             return;
         }
 
         const game = new GameManager(roomCode);
-        game.hostId = socket.id;
         rooms.set(roomCode, game);
 
         game.addPlayer({
@@ -51,14 +77,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on('joinRoom', (roomCode, playerName) => {
+        console.log(playerName, "has requested to join ", roomCode);
         const game = rooms.get(roomCode);
         if(!game) {
-            socket.emit('room_error', 'room_not_found');
+            socket.emit('game_error', 'room_not_found');
             return;
         }
 
         if(game.phase !== 'waiting') {
-            socket.emit('room_error', 'game_started');
+            socket.emit('game_error', 'game_started');
             return;
         }
 
@@ -96,9 +123,8 @@ io.on('connection', (socket) => {
        const game = rooms.get(roomCode);
        if(!game) return;
 
-       game.roundNumber = rounds;
-
-       console.log("Received change rounds: ", game.roundNumber);
+       game.totalRounds = rounds;
+       game.roundNumber = game.totalRounds;
 
        for(const player of game.players) {
            io.to(player.id).emit('game_state', game.getPublicGameState(player.id));
@@ -113,7 +139,7 @@ io.on('connection', (socket) => {
         const game = rooms.get(roomCode);
         if (!game) return;
 
-        if (socket.id !== game.hostId) {
+        if (socket.id !== game.hostID) {
             socket.emit('game_error', 'not_host');
             return;
         }
@@ -124,8 +150,6 @@ io.on('connection', (socket) => {
         }
 
         const result = game.startNewRound();
-
-        console.log("Start Game: ", result);
 
         if(result !== "ok") socket.emit('game_error', result);
 
@@ -143,14 +167,12 @@ io.on('connection', (socket) => {
         console.log("SERVER received bid: ", bidValue);
 
         const roomCode = socket.roomCode;
-        console.log(roomCode);
         if (!roomCode) return;
 
         const game = rooms.get(roomCode);
         if (!game) return;
 
         const result = game.handleBid(socket.id, bidValue);
-        console.log(result);
         if(result === 'error') {
             socket.emit('game_error', 'invalid_bid');
             return;
@@ -188,6 +210,35 @@ io.on('connection', (socket) => {
                 game.getPublicGameState(player.id)
             );
         }
+    })
+
+    socket.on('end_game', () => {
+        const roomCode = socket.roomCode;
+
+        if(!roomCode) return;
+        const game = rooms.get(roomCode);
+        if(!game) return;
+
+        console.log("Game ended in room: ", roomCode);
+    })
+
+    socket.on('play-again', () => {
+        const roomCode = socket.roomCode;
+        if(!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        if(!game) return;
+
+        console.log(socket.id, " has asked to play again");
+
+        game.clearHistory();
+
+        game.hostID = socket.id;
+
+        io.to(socket.id).emit(
+            'game_state',
+            game.getPublicGameState(socket.id)
+        );
     })
 });
 

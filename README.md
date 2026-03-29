@@ -69,3 +69,6 @@ Lobby added. Now after creating a room you're sent to a lobby where you wait for
 
 ### **0.2.1**
 Added small feature, now can select how many rounds you want to play no matter what your group size is up to the maximum possible for your group size. If you try and select too many rounds it will kick an error. Main issue now is that where to click to select the number of rounds you want to play is not abundantly clear, will need to find a way to clarify that further.
+
+### **0.3.0**
+Added an endgame screen that shows the winner of the game and allows you to play again or quit the game. When you play again it puts you into a room with the same roomCode as the previous game. When you quit the game it just forces a refresh which brings you back to the homescreen, eventually this will need to be fixed when reconnect handling is fixed because refreshing will remmeber who you were in the previous game but for now it works quite well. 
