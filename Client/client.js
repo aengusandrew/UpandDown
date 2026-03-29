@@ -319,8 +319,6 @@ function renderPlay(state) {
 }
 
 function renderEnd(state) {
-    console.log('end')
-
     endScreen.innerHTML = '';
 
     console.log(state.currentTurn);
@@ -361,12 +359,11 @@ function renderEnd(state) {
         const playAgain = e.target.id === 'play-again';
         const quitGame = e.target.id === 'quit-game';
 
-        if(quitGame) {
+        if(quitGame)
             window.location.reload();
-        }
 
-        if(playAgain) socket.emit('joinRoom', state.roomCode, state.players.find(p => p.id === socket.id).name);
-        console.log(state.roomCode, state.players.find(p => p.id === socket.id).name)
+        if(playAgain)
+            socket.emit('joinRoom', state.roomCode, state.players.find(p => p.id === socket.id).name);
     })
 }
 

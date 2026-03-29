@@ -17,6 +17,21 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
+
+        const roomCode = socket.roomCode;
+        if(!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        if(!game) return;
+
+        game.players = game.players.filter(p => p.id !== socket.id);
+
+        console.log('Player ', socket.id, ' left room ', socket.roomCode);
+
+        if(game.players.length === 0) {
+            rooms.delete(roomCode);
+            console.log("Room ", game.roomCode, " pruned")
+        }
     })
 
     socket.on('createRoom', (roomCode, playerName) => {

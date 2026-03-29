@@ -186,7 +186,6 @@ class GameManager {
     }
 
     clearHistory() {
-        this.players = [];
         this.dealerIndex = 0;
         this.playerIndex = null;
         this.totalRounds = null;
