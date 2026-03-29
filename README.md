@@ -73,5 +73,8 @@ Added small feature, now can select how many rounds you want to play no matter w
 ### **0.3.0**
 Added an endgame screen that shows the winner of the game and allows you to play again or quit the game. When you play again it puts you into a room with the same roomCode as the previous game. When you quit the game it just forces a refresh which brings you back to the homescreen, eventually this will need to be fixed when reconnect handling is fixed because refreshing will remmeber who you were in the previous game but for now it works quite well. 
 
-### **0.3.1** ###
+### **0.3.1**
 Better bid-buttons which appear on top of trick and are formatted as cute lil circles.
+
+### **0.3.2**
+PLayer's bids now are visible to other players with little icons on their player on the play screen.
