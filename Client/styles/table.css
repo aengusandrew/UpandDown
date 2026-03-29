@@ -102,6 +102,19 @@ playing-card {
     transform: translate(-50%, -50%);
 }
 
+.player-bid.table {
+    padding: 0;
+    font-family: "Caveat", cursive;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 20px;
+    color: black;
+    position: absolute;
+    top: 68px;
+    transform: translate(-50%, -50%);
+}
+
 .player-icon {
     padding: 0;
     position: absolute;
