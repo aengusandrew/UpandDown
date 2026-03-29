@@ -17,6 +17,33 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
+
+        const roomCode = socket.roomCode;
+        if(!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        if(!game) return;
+
+        console.log(game.players);
+
+        game.players = game.players.filter(p => p.id !== socket.id);
+
+        console.log('Player ', socket.id, ' left room ', socket.roomCode);
+
+        console.log(game.players);
+
+        for(const player of game.players) {
+            console.log(player);
+            io.to(player.id).emit(
+                'game_state',
+                game.getPublicGameState(player.id),
+            );
+        }
+
+        if(game.players.length === 0) {
+            rooms.delete(roomCode);
+            console.log("Room ", game.roomCode, " pruned")
+        }
     })
 
     socket.on('createRoom', (roomCode, playerName) => {
@@ -99,8 +126,6 @@ io.on('connection', (socket) => {
        game.totalRounds = rounds;
        game.roundNumber = game.totalRounds;
 
-       console.log("Received change rounds: ", game.totalRounds);
-
        for(const player of game.players) {
            io.to(player.id).emit('game_state', game.getPublicGameState(player.id));
        }
@@ -126,8 +151,6 @@ io.on('connection', (socket) => {
 
         const result = game.startNewRound();
 
-        console.log("Start Game: ", result);
-
         if(result !== "ok") socket.emit('game_error', result);
 
         for (const player of game.players) {
@@ -144,14 +167,12 @@ io.on('connection', (socket) => {
         console.log("SERVER received bid: ", bidValue);
 
         const roomCode = socket.roomCode;
-        console.log(roomCode);
         if (!roomCode) return;
 
         const game = rooms.get(roomCode);
         if (!game) return;
 
         const result = game.handleBid(socket.id, bidValue);
-        console.log(result);
         if(result === 'error') {
             socket.emit('game_error', 'invalid_bid');
             return;
@@ -198,9 +219,26 @@ io.on('connection', (socket) => {
         const game = rooms.get(roomCode);
         if(!game) return;
 
-        console.log(rooms);
+        console.log("Game ended in room: ", roomCode);
+    })
+
+    socket.on('play-again', () => {
+        const roomCode = socket.roomCode;
+        if(!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        if(!game) return;
+
+        console.log(socket.id, " has asked to play again");
 
         game.clearHistory();
+
+        game.hostID = socket.id;
+
+        io.to(socket.id).emit(
+            'game_state',
+            game.getPublicGameState(socket.id)
+        );
     })
 });
 

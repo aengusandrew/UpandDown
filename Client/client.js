@@ -289,10 +289,15 @@ function renderPlay(state) {
             <button id="scoreboard-button">Scoreboard</button>
         </div>`;
 
-    // document.getElementById('scoreboard-button').addEventListener('click', () => {
-    //     console.log('scoreboard clicked');
-    //     toggleScoreboard(state);
-    // })
+    playTable.innerHTML +=
+        `<div id="trick-area">
+        ${trickToRender.map(t => `
+                <div>
+                    <playing-card cid="${toCID(t.card)}"></playing-card>
+                </div>
+            `).join('')}
+    </div>
+        `;
 
     playTable.innerHTML += `
         <div id="trump-card">
@@ -323,8 +328,6 @@ function renderPlay(state) {
 }
 
 function renderEnd(state) {
-    console.log('end')
-
     endScreen.innerHTML = '';
 
     console.log(state.currentTurn);
@@ -360,18 +363,17 @@ function renderEnd(state) {
 
     endScreen.appendChild(nextGame);
 
-    endScreen.addEventListener('click', e => {
+    endScreen.onclick = e => {
         console.log(e.target);
         const playAgain = e.target.id === 'play-again';
         const quitGame = e.target.id === 'quit-game';
 
-        if(quitGame) {
+        if(quitGame)
             window.location.reload();
-        }
 
-        if(playAgain) socket.emit('joinRoom', state.roomCode, state.players.find(p => p.id === socket.id).name);
-        console.log(state.roomCode, state.players.find(p => p.id === socket.id).name)
-    })
+        if(playAgain)
+            socket.emit('play-again');
+    }
 }
 
 function renderScoreboard(state) {
@@ -388,13 +390,13 @@ function renderScoreboard(state) {
                             ${state.players.map(p => {
         const playerResult = r.results.find(q => q.playerID === p.id);
         return `
-                                    <td>
-                                        ${playerResult ? `(${playerResult.tricks}/${playerResult.bid})` : '-'}
-                                    </td>
-                                    <td>
-                                        ${playerResult ? `${playerResult.score}` : '-'}
-                                    </td>
-                                    `;
+                <td>
+                    ${playerResult ? `(${playerResult.tricks}/${playerResult.bid})` : '-'}
+                </td>
+                <td>
+                    ${playerResult ? `${playerResult.score}` : '-'}
+                </td>
+                `;
     }).join('')}
                         </tr>     
                 `).join('')}
