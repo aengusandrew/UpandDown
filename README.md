@@ -66,3 +66,6 @@ Some more UI updates to pretty things up. Biggest pushes now for UI are buttons 
 
 ### **0.2.0**
 Lobby added. Now after creating a room you're sent to a lobby where you wait for other players to join, once there are at least 2 the person that originally opened the room can start the game. Toying with the idea of anyone being able to start the game. Definitely need to add reconnect support at this point because if you create a room and then refresh you're screwed. UI for titles and lobby are basically done. Main game screen still needs some UI work. All pages need some scaling done, almost everything right now is sized in pure px and when on a bigger monitor everything looks tiny. 
+
+### **0.3.0**
+Added an endgame screen that shows the winner of the game and allows you to play again or quit the game. When you play again it puts you into a room with the same roomCode as the previous game. When you quit the game it just forces a refresh which brings you back to the homescreen, eventually this will need to be fixed when reconnect handling is fixed because refreshing will remmeber who you were in the previous game but for now it works quite well. 
