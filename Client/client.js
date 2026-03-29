@@ -23,7 +23,7 @@ document.getElementById('joinBtn').onclick = () => {
 let hasJoined = false;
 
 if(DEV_MODE) {
-    state = getMockState('waiting')
+    state = getMockState('playing')
 
     switch(state.phase) {
         case 'waiting':
@@ -286,7 +286,16 @@ function renderPlay(state) {
 
         div.innerHTML += `
             <img class="player-icon" src="../assets/images/player-icon-male.png" alt="player-icon">
-            <strong class="player-name table">${player.name}</strong>`;
+            <strong class="player-name table">${player.name}</strong>
+        `;
+
+        if(player.bid)
+            div.innerHTML += `
+            <div class="player-bid-wrapper">
+                <strong class="player-bid table">${player.bid}</strong>
+            </div>
+            
+            `
 
         if(player.id === state.currentTurn) {
             div.style.filter = 'drop-shadow(0 0 30px white)';
