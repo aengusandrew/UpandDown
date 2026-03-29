@@ -103,16 +103,28 @@ playing-card {
 }
 
 .player-bid.table {
-    padding: 0;
+    padding-right: 6px;
+    padding-bottom: 3px;
+
     font-family: "Caveat", cursive;
-    font-optical-sizing: auto;
+    font-size: 24px;
     font-weight: 700;
-    font-style: normal;
-    font-size: 20px;
-    color: black;
+}
+
+.player-bid-wrapper {
+    display: flex;
     position: absolute;
-    top: 68px;
-    transform: translate(-50%, -50%);
+    align-items: center;
+    justify-content: center;
+
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid black;
+
+    top: -60px;
+    right: -60px;
 }
 
 .player-icon {

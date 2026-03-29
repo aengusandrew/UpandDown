@@ -23,7 +23,7 @@ document.getElementById('joinBtn').onclick = () => {
 let hasJoined = false;
 
 if(DEV_MODE) {
-    state = getMockState('waiting')
+    state = getMockState('playing')
 
     switch(state.phase) {
         case 'waiting':
@@ -291,7 +291,10 @@ function renderPlay(state) {
 
         if(player.bid)
             div.innerHTML += `
-            <strong class="player-bid table">${player.bid}</strong>
+            <div class="player-bid-wrapper">
+                <strong class="player-bid table">${player.bid}</strong>
+            </div>
+            
             `
 
         if(player.id === state.currentTurn) {
