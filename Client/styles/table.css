@@ -144,7 +144,7 @@ playing-card {
     align-items: center;
 
     top: 10px;
-    left: 80px;
+    left: 40px;
 }
 
 playing-card.won-trick-card {
