@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -296,6 +296,14 @@ function renderPlay(state) {
             </div>
             
             `
+
+        const wonTricks = document.createElement('div');
+        wonTricks.classList.add('won-tricks', 'table');
+
+        wonTricks.innerHTML = `<playing-card rank='0' backcolor = 'red' class="won-trick-card table"></playing-card>
+                               <playing-card rank='0' backcolor = 'red' class="won-trick-card table" style="top: -25px"></playing-card>`
+
+        div.appendChild(wonTricks);
 
         if(player.id === state.currentTurn) {
             div.style.filter = 'drop-shadow(0 0 30px white)';

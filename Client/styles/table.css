@@ -136,6 +136,25 @@ playing-card {
     top: 15px;
 }
 
+.won-tricks {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    top: 10px;
+    left: 80px;
+}
+
+playing-card.won-trick-card {
+    position: absolute;
+    transform: rotate(90deg);
+
+    width: 50px;
+}
+
+
 #trick-area {
     position: absolute;
     top: 50%;
