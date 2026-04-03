@@ -147,9 +147,32 @@ playing-card {
     left: 40px;
 }
 
+#your-won-tricks {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid red;
+
+    top: -30px;
+    /*left: 120px;*/
+}
+
 playing-card.won-trick-card {
     position: absolute;
     transform: rotate(90deg);
+
+    width: 50px;
+}
+
+playing-card.your-won-trick-card {
+    position: absolute;
+
+    transform: translate(50%, 0);
+
+    border: 1px solid blue;
 
     width: 50px;
 }

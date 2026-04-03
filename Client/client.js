@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -40,7 +40,6 @@ if(DEV_MODE) {
             renderPlay(state);
             break;
         case 'scoring':
-            console.log('scoring');
             lobbyScreen.style.display = 'none';
             gameScreen.style.display = 'none';
             endScreen.style.display = 'block';
@@ -51,7 +50,6 @@ if(DEV_MODE) {
     }
 } else {
     socket.on('game_state', state => {
-        console.log(state.phase);
         switch(state.phase) {
             case 'waiting':
                 lobbyScreen.style.display = 'block';
@@ -67,7 +65,6 @@ if(DEV_MODE) {
                 renderPlay(state);
                 break;
             case 'scoring':
-                console.log('scoring');
                 lobbyScreen.style.display = 'none';
                 gameScreen.style.display = 'none';
                 endScreen.style.display = 'block';
@@ -181,6 +178,18 @@ function renderPlay(state) {
     const trickToRender =
         state.trickCards;
 
+    const players = state.players;
+    const numPlayers = players.length;
+
+    const youIndex = players.findIndex(p=> p.id === state.youID);
+
+    // Put players in order so you are always at the bottom
+    const orderedPlayers = [
+        ...players.slice(youIndex + 1),
+        ...players.slice(0, youIndex)
+    ];
+
+
     playTable.innerHTML = '';
 
     const trickArea = document.createElement('div');
@@ -254,22 +263,26 @@ function renderPlay(state) {
                 `).join('')}
         </div>
             `;
-    playTable.appendChild(you);
 
-    const players = state.players;
-    const numPlayers = players.length;
+    const yourWonTricks = document.createElement('div');
+    yourWonTricks.id = 'your-won-tricks';
+
+
+
+    for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
+        const wonTrick = document.createElement('div');
+        wonTrick.classList.add('won-trick-card-wrapper', 'table');
+        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='right: ${i*(5)}px'></playing-card>`;
+        yourWonTricks.appendChild(wonTrick);
+    }
+
+    you.appendChild(yourWonTricks);
+
+    playTable.appendChild(you);
 
     const radius = 40;
     const centerX = 50
     const centerY = 50;
-
-    const youIndex = players.findIndex(p=> p.id === state.youID);
-
-    // Put players in order so you are always at the bottom
-    const orderedPlayers = [
-        ...players.slice(youIndex + 1),
-        ...players.slice(0, youIndex)
-    ];
 
     orderedPlayers.forEach((player,i) => {
         const phi = ((i+1)/numPlayers) * 2 * Math.PI + Math.PI/2;
@@ -300,9 +313,7 @@ function renderPlay(state) {
         const wonTricks = document.createElement('div');
         wonTricks.classList.add('won-tricks', 'table');
 
-        console.log(player.tricksWon);
-        for(i = 0; i < player.tricksWon; i++) {
-            console.log(i);
+        for(let i = 0; i < player.tricksWon; i++) {
             const wonTrick = document.createElement('div');
             wonTrick.classList.add('won-trick-card-wrapper', 'table');
             wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style='top: ${i*(5)}px'></playing-card>`;
@@ -353,11 +364,7 @@ function renderPlay(state) {
 function renderEnd(state) {
     endScreen.innerHTML = '';
 
-    console.log(state.currentTurn);
-
     const winningPlayer = state.players.find(p => p.id === state.currentTurn);
-
-    console.log(winningPlayer);
 
     const winner = document.createElement('div');
     winner.id = 'winner';
@@ -387,7 +394,6 @@ function renderEnd(state) {
     endScreen.appendChild(nextGame);
 
     endScreen.onclick = e => {
-        console.log(e.target);
         const playAgain = e.target.id === 'play-again';
         const quitGame = e.target.id === 'quit-game';
 
@@ -439,9 +445,9 @@ function getMockState(type) {
                 youID: "p1",
 
                 players: [
-                    { id: "p1", name: "You", tricksWon: 2, bid: 3, score: 10 },
+                    { id: "p1", name: "You", tricksWon: 1, bid: 3, score: 10 },
                     { id: "p2", name: "Alice", tricksWon: 1, bid: 2, score: 5 },
-                    { id: "p3", name: "Bob", tricksWon: 0, bid: 1, score: 2 },
+                    { id: "p3", name: "Bob", tricksWon: 10, bid: 1, score: 2 },
                     { id: "p4", name: "Charlie", tricksWon: 3, bid: 2, score: 15 },
                     { id: "p5", name: "John", tricksWon: 3, bid: 2, score: 15 },
                     { id: "p6", name: "Pat", tricksWon: 3, bid: 2, score: 15 }
