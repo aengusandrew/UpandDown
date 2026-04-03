@@ -154,10 +154,7 @@ playing-card {
     justify-content: center;
     align-items: center;
 
-    border: 1px solid red;
-
     top: -30px;
-    /*left: 120px;*/
 }
 
 playing-card.won-trick-card {
@@ -171,8 +168,6 @@ playing-card.your-won-trick-card {
     position: absolute;
 
     transform: translate(50%, 0);
-
-    border: 1px solid blue;
 
     width: 50px;
 }

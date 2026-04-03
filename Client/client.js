@@ -267,12 +267,12 @@ function renderPlay(state) {
     const yourWonTricks = document.createElement('div');
     yourWonTricks.id = 'your-won-tricks';
 
-
-
     for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
+        const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 25 + 5*i;
+
         const wonTrick = document.createElement('div');
         wonTrick.classList.add('won-trick-card-wrapper', 'table');
-        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='right: ${i*(5)}px'></playing-card>`;
+        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='right: ${cardOffset}px'></playing-card>`;
         yourWonTricks.appendChild(wonTrick);
     }
 
@@ -445,7 +445,7 @@ function getMockState(type) {
                 youID: "p1",
 
                 players: [
-                    { id: "p1", name: "You", tricksWon: 1, bid: 3, score: 10 },
+                    { id: "p1", name: "You", tricksWon: 8, bid: 3, score: 10 },
                     { id: "p2", name: "Alice", tricksWon: 1, bid: 2, score: 5 },
                     { id: "p3", name: "Bob", tricksWon: 10, bid: 1, score: 2 },
                     { id: "p4", name: "Charlie", tricksWon: 3, bid: 2, score: 15 },
