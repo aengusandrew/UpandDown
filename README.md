@@ -78,3 +78,6 @@ Better bid-buttons which appear on top of trick and are formatted as cute lil ci
 
 ### **0.3.2**
 PLayer's bids now are visible to other players with little icons on their player on the play screen.
+
+### **0.3.3**
+Players and your won tricks now display on the screen as a stack of cards next to the player or below your hand for the tricks that you have won.
