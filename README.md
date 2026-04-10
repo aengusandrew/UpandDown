@@ -81,3 +81,6 @@ PLayer's bids now are visible to other players with little icons on their player
 
 ### **0.3.3**
 Players and your won tricks now display on the screen as a stack of cards next to the player or below your hand for the tricks that you have won.
+
+### **0.3.4.b**
+After a trick is won the cards in the trick fly to the player that won the trick and add to their stack.
