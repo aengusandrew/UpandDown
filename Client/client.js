@@ -486,16 +486,16 @@ function animateTrickToWinner(state, trickCards) {
 
     if(!trickCards.length) return;
 
-    const winnerID = state.currentTurn; // TODO: figure out why the cards don't fly to the winner all the time
+    const winnerID = state.currentTurn;
     const winnerEl = document.querySelector(`[data-player-id="${winnerID}"]`);
     if(!winnerEl) return;
 
     let stackEl;
 
     if(winnerID === state.youID) {
-        stackEl = document.querySelector('#your-won-tricks');
+        stackEl = winnerEl.querySelector('#your-won-tricks');
     } else {
-        stackEl = document.querySelector('.won-tricks');
+        stackEl = winnerEl.querySelector('.won-tricks');
     }
 
     if(!stackEl) return;
