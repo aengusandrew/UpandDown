@@ -478,21 +478,11 @@ function renderScoreboard(state) {
 }
 
 function animateTrickToWinner(state, trickCards) {
-    console.log("Trick anim fired");
-    console.log(trickCards);
+
     if(!trickCards.length) return;
 
     const winnerID = state.currentTurn;
-
-    console.log(winnerID);
-
-    console.log("All players in DOM:",
-        Array.from(document.querySelectorAll('.player #play-table'))
-            .map(el => el.dataset.playerId));
-
-
     const winnerEl = document.querySelector(`[data-player-id="${winnerID}"]`);
-
     if(!winnerEl) return;
 
     const winnerRect = winnerEl.getBoundingClientRect();
@@ -511,8 +501,8 @@ function animateTrickToWinner(state, trickCards) {
         requestAnimationFrame(() => {
             card.style.left = (winnerRect.left + winnerRect.width / 2) + 'px';
             card.style.top = (winnerRect.top + winnerRect.height / 2) + 'px';
-            card.style.transform = 'scale(0.3) rotate(20deg)';
-            card.style.opacity = '0.5';
+            card.style.transform = 'scale(0)';
+            card.style.opacity = '1.0';
         });
 
         setTimeout(() => {
