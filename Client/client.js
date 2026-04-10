@@ -515,8 +515,8 @@ function animateTrickToWinner(state, trickCards) {
 
         // Fly to stack of tricks TODO: Make it fly towards center of stack
         requestAnimationFrame(() => {
-            card.style.left = (stackRect.left + stackRect.width / 2 - cardRect.width / 2) + 'px';
-            card.style.top = (stackRect.top + stackRect.height / 2 - cardRect.height / 2) + 'px';
+            card.style.left = (stackRect.left + stackRect.width / 2 - cardRect.width / 2 + 25) + 'px';
+            card.style.top = (stackRect.top + stackRect.height / 2 - cardRect.height / 2 + 30) + 'px';
             card.style.transform = 'scale(0.5) rotate(90deg)'; // TODO: Find correct scale
         });
 
