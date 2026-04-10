@@ -22,6 +22,8 @@ document.getElementById('joinBtn').onclick = () => {
 
 let hasJoined = false;
 
+let previousTrickEnded = true;
+
 if(DEV_MODE) {
     state = getMockState('playing')
 
@@ -50,29 +52,52 @@ if(DEV_MODE) {
     }
 } else {
     socket.on('game_state', state => {
-        switch(state.phase) {
-            case 'waiting':
-                lobbyScreen.style.display = 'block';
-                titleScreen.style.display = 'none';
-                endScreen.style.display = 'none';
-                renderLobby(state);
-                break;
-            case 'playing':
-            case 'bidding':
-                lobbyScreen.style.display = 'none';
-                gameScreen.style.display = 'block';
-                endScreen.style.display = 'none';
-                renderPlay(state);
-                break;
-            case 'scoring':
-                lobbyScreen.style.display = 'none';
-                gameScreen.style.display = 'none';
-                endScreen.style.display = 'block';
-                renderEnd(state);
-                break;
-            default: break;
+        if(previousTrickEnded === false && state.trickEnded === true) {
+            renderState(state);
+
+            requestAnimationFrame(() => {
+                const existingCards = Array.from(
+                    document.querySelectorAll("#trick-area playing-card")
+                );
+
+                animateTrickToWinner(state, existingCards);
+
+                setTimeout(() => {
+                    renderState(state);
+                }, 1000);
+            })
+
+        } else {
+            renderState(state);
         }
+
+        previousTrickEnded = state.trickEnded;
     });
+}
+
+function renderState(state) {
+    switch(state.phase) {
+        case 'waiting':
+            lobbyScreen.style.display = 'block';
+            titleScreen.style.display = 'none';
+            endScreen.style.display = 'none';
+            renderLobby(state);
+            break;
+        case 'playing':
+        case 'bidding':
+            lobbyScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            endScreen.style.display = 'none';
+            renderPlay(state);
+            break;
+        case 'scoring':
+            lobbyScreen.style.display = 'none';
+            gameScreen.style.display = 'none';
+            endScreen.style.display = 'block';
+            renderEnd(state);
+            break;
+        default: break;
+    }
 }
 
 
@@ -192,16 +217,6 @@ function renderPlay(state) {
 
     playTable.innerHTML = '';
 
-    const trickArea = document.createElement('div');
-    trickArea.id = 'trick-area';
-    trickArea.innerHTML +=
-        `${trickToRender.map(t => `
-                <div>
-                    <playing-card cid="${toCID(t.card)}"></playing-card>
-                </div>
-            `).join('')}
-        `;
-    playTable.appendChild(trickArea);
 
     if(state.trickCards.length !== 0) {
         const trick = document.createElement('div');
@@ -218,6 +233,8 @@ function renderPlay(state) {
 
     const you = document.createElement('div');
     you.id = "your-player"
+
+    you.dataset.playerId = state.youID;
 
     // Render your hand
     const handSize = state.yourHand.length;
@@ -292,6 +309,9 @@ function renderPlay(state) {
 
         const div = document.createElement('div');
         div.className = 'player';
+
+        div.dataset.playerId = player.id;
+
         div.style.position = 'absolute';
         div.style.left = `${x}%`;
         div.style.top = `${y}%`;
@@ -455,6 +475,50 @@ function renderScoreboard(state) {
     scoreboard.onclick = e => {
         scoreboard.style.display = 'none';
     }
+}
+
+function animateTrickToWinner(state, trickCards) {
+    console.log("Trick anim fired");
+    console.log(trickCards);
+    if(!trickCards.length) return;
+
+    const winnerID = state.currentTurn;
+
+    console.log(winnerID);
+
+    console.log("All players in DOM:",
+        Array.from(document.querySelectorAll('.player #play-table'))
+            .map(el => el.dataset.playerId));
+
+
+    const winnerEl = document.querySelector(`[data-player-id="${winnerID}"]`);
+
+    if(!winnerEl) return;
+
+    const winnerRect = winnerEl.getBoundingClientRect();
+
+    trickCards.forEach(card => {
+        const cardRect = card.getBoundingClientRect();
+
+        document.body.appendChild(card);
+
+        card.style.position = 'fixed';
+        card.style.left = cardRect.left + 'px';
+        card.style.top = cardRect.top + 'px';
+        card.style.transition = 'all 1s ease-in-out';
+        card.style.zIndex = 9999;
+
+        requestAnimationFrame(() => {
+            card.style.left = (winnerRect.left + winnerRect.width / 2) + 'px';
+            card.style.top = (winnerRect.top + winnerRect.height / 2) + 'px';
+            card.style.transform = 'scale(0.3) rotate(20deg)';
+            card.style.opacity = '0.5';
+        });
+
+        setTimeout(() => {
+            card.remove();
+        }, 1000);
+    })
 }
 
 function getMockState(type) {
