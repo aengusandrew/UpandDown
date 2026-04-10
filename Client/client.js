@@ -289,6 +289,7 @@ function renderPlay(state) {
     const yourWonTricks = document.createElement('div');
     yourWonTricks.id = 'your-won-tricks';
 
+    // TODO: Implement that a won trick card does not appear until after the below animation plays
     for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
         const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 25 + 5*i;
 
@@ -513,6 +514,7 @@ function animateTrickToWinner(state, trickCards) {
         card.style.transition = 'all 0.5s ease-in-out';
         card.style.zIndex = 9999;
 
+        // TODO: fix alignment for cards to players and rotation for your player wins
         requestAnimationFrame(() => {
             card.style.left = (stackRect.left + stackRect.width / 2 - cardRect.width / 2 + 25) + 'px';
             card.style.top = (stackRect.top + stackRect.height / 2 - cardRect.height / 2 + 30) + 'px';
