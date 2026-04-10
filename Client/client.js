@@ -63,7 +63,12 @@ if(DEV_MODE) {
                 animateTrickToWinner(state, existingCards);
 
                 setTimeout(() => {
-                    renderState(state);
+                    // Clear trickCards for rendering purposes
+                    const cleanState = {
+                        ...state,
+                        trickCards: []
+                    };
+                    renderState(cleanState);
                 }, 1000);
             })
 
@@ -497,7 +502,7 @@ function animateTrickToWinner(state, trickCards) {
 
     const stackRect = stackEl.getBoundingClientRect();
 
-    trickCards.forEach(card => {
+    trickCards.forEach((card, index) => {
         const cardRect = card.getBoundingClientRect();
 
         document.body.appendChild(card);
@@ -505,19 +510,33 @@ function animateTrickToWinner(state, trickCards) {
         card.style.position = 'fixed';
         card.style.left = cardRect.left + 'px';
         card.style.top = cardRect.top + 'px';
-        card.style.transition = 'all 1s ease-in-out';
+        card.style.transition = 'all 0.5s ease-in-out';
         card.style.zIndex = 9999;
 
+        // Fly to stack of tricks TODO: Make it fly towards center of stack
         requestAnimationFrame(() => {
             card.style.left = (stackRect.left + stackRect.width / 2) + 'px';
             card.style.top = (stackRect.top + stackRect.height / 2) + 'px';
-            card.style.transform = 'scale(0)';
-            card.style.opacity = '1.0';
+            card.style.transform = 'scale(0.5) rotate(90deg)';
         });
+
+        // Flip cards
+        setTimeout(() => {
+            card.style.transition = 'transform 0.2s';
+            card.style.transform = 'scaleX(0)';
+        }, 650 + index * 60);
+
+        setTimeout(() => {
+            card.setAttribute('backcolor', 'red');
+            card.setAttribute('rank', '0');
+            card.removeAttribute('cid');
+
+            card.style.transform = 'scaleX(1) scale(0.5) rotate(90deg)';
+        }, 800 + index * 60);
 
         setTimeout(() => {
             card.remove();
-        }, 1000);
+        }, 1200 + index * 60);
     })
 }
 
