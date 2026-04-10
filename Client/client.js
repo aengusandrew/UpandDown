@@ -514,7 +514,6 @@ function animateTrickToWinner(state, trickCards) {
         card.style.zIndex = 9999;
 
         // Fly to stack of tricks TODO: Make it fly towards center of stack
-        // TODO: Cards always fly to opponent
         requestAnimationFrame(() => {
             card.style.left = (stackRect.left + stackRect.width / 2 - cardRect.width / 2) + 'px';
             card.style.top = (stackRect.top + stackRect.height / 2 - cardRect.height / 2) + 'px';
