@@ -513,11 +513,10 @@ function animateTrickToWinner(state, trickCards) {
         card.style.transition = 'all 0.5s ease-in-out';
         card.style.zIndex = 9999;
 
-        // Fly to stack of tricks TODO: Make it fly towards center of stack
         requestAnimationFrame(() => {
             card.style.left = (stackRect.left + stackRect.width / 2 - cardRect.width / 2 + 25) + 'px';
             card.style.top = (stackRect.top + stackRect.height / 2 - cardRect.height / 2 + 30) + 'px';
-            card.style.transform = 'scale(0.5) rotate(90deg)'; // TODO: Find correct scale
+            card.style.transform = 'scale(0.4) rotate(90deg)';
         });
 
         // Flip cards
@@ -531,7 +530,7 @@ function animateTrickToWinner(state, trickCards) {
             card.setAttribute('rank', '0');
             card.removeAttribute('cid');
 
-            card.style.transform = 'scaleX(1) scale(0.5) rotate(90deg)';
+            card.style.transform = 'scaleX(1) scale(0.4) rotate(90deg)';
         }, 800 + index * 60);
 
         setTimeout(() => {
