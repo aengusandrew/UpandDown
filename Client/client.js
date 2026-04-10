@@ -485,7 +485,17 @@ function animateTrickToWinner(state, trickCards) {
     const winnerEl = document.querySelector(`[data-player-id="${winnerID}"]`);
     if(!winnerEl) return;
 
-    const winnerRect = winnerEl.getBoundingClientRect();
+    let stackEl;
+
+    if(winnerEl.id === state.youID) {
+        stackEl = document.querySelector('#your-won-tricks');
+    } else {
+        stackEl = document.querySelector('.won-tricks');
+    }
+
+    if(!stackEl) return;
+
+    const stackRect = stackEl.getBoundingClientRect();
 
     trickCards.forEach(card => {
         const cardRect = card.getBoundingClientRect();
@@ -499,8 +509,8 @@ function animateTrickToWinner(state, trickCards) {
         card.style.zIndex = 9999;
 
         requestAnimationFrame(() => {
-            card.style.left = (winnerRect.left + winnerRect.width / 2) + 'px';
-            card.style.top = (winnerRect.top + winnerRect.height / 2) + 'px';
+            card.style.left = (stackRect.left + stackRect.width / 2) + 'px';
+            card.style.top = (stackRect.top + stackRect.height / 2) + 'px';
             card.style.transform = 'scale(0)';
             card.style.opacity = '1.0';
         });
