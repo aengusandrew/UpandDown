@@ -86,8 +86,8 @@ function startGame() {
 
 function toggleScoreboard(state) {
     if(scoreboard.style.display === 'none') {
-        renderScoreboard(state);
-        scoreboard.style.display = 'flex';
+
+
     } else {
         scoreboard.style.display = 'none';
     }
@@ -330,7 +330,7 @@ function renderPlay(state) {
 
     playTable.innerHTML +=
         `<div id="scoreboard-button-wrapper">
-            <button id="scoreboard-button">Scoreboard</button>
+            <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
         </div>`;
 
     playTable.innerHTML += `
@@ -357,7 +357,10 @@ function renderPlay(state) {
         }
 
         const cardS1 = e.target.id === 'scoreboard-button';
-        if(cardS1) toggleScoreboard(state);
+        if(cardS1) {
+            renderScoreboard(state);
+            scoreboard.style.display = 'flex';
+        }
     }
 }
 
@@ -406,9 +409,14 @@ function renderEnd(state) {
 }
 
 function renderScoreboard(state) {
-    scoreboard.innerHTML = `
-        <div id="scoreboard-table">
-            <table>
+
+    scoreboard.innerHTML = '';
+
+    const scoreboardTable = document.createElement('div');
+    scoreboardTable.id = 'scoreboard-table';
+
+    scoreboardTable.innerHTML = `
+        <table>
                 <tr>
                     <th>Round</th>
                     ${state.players.map(p => `<th colspan="2">${p.name}</th>`).join('')}
@@ -430,8 +438,22 @@ function renderScoreboard(state) {
                         </tr>     
                 `).join('')}
             </table>
-        </div>
     `;
+
+    scoreboard.appendChild(scoreboardTable);
+
+    const closeBoardMessage = document.createElement('div');
+    closeBoardMessage.id = 'close-board-message-wrapper';
+
+    closeBoardMessage.innerHTML = `
+        <strong id="close-board-message">click anywhere to close</strong>
+    `;
+
+    scoreboard.appendChild(closeBoardMessage);
+
+    scoreboard.onclick = e => {
+        scoreboard.style.display = 'none';
+    }
 }
 
 function getMockState(type) {

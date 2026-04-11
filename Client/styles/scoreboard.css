@@ -1,6 +1,6 @@
 #scoreboard-table table {
     border-collapse: collapse;
-    width: 100%;
+    width: 80vh;
     background: white;
     border-radius: 5px;
 }
@@ -19,19 +19,27 @@
     border-right: 1px solid black;
 }
 
-#scoreboard-table tr:hover {
-    background-color: lightgray;
-}
-
 #scoreboard {
     display: flex;
     width: 100%;
     height: 100%;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 
     position: fixed;
     z-index: 99;
-    pointer-events: none;
     background: rgba(0,0,0,0.6);
+}
+
+#close-board-message-wrapper {
+    margin: 10px;
+}
+
+#close-board-message {
+    padding: 10px;
+
+    font-size: 20px;
+    color: white;
+    opacity: 80%;
 }
