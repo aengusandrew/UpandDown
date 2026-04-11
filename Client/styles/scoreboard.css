@@ -2,16 +2,20 @@
     border-collapse: collapse;
     width: 80vh;
     background: white;
-    border-radius: 5px;
+
+    font-family: Monospaced, serif;
 }
 
 #scoreboard-table tr {
     border-bottom: 1px solid black;
     text-align: center;
+
+    font-family: JetBrainsMono, serif;
 }
 
 #scoreboard-table th, #scoreboard td {
     padding: 10px;
+    border-left: 1px solid black;
 }
 
 #scoreboard-table td {
