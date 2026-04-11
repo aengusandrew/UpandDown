@@ -55,32 +55,35 @@ The **+5** game type is the same concept as **+10**, each player gets a 5 point 
 <hr>
 
 ## Progress
-### 3/21
-This project has been slow moving as I have been very busy however the first web deployment is officially live! Play online now [here](https://upanddown.onrender.com/). It still has some debug marks on the main repo, I need to update so it is the pretty version and all the gross debugging stays on the local version.
 
-### 3/21
-It's kind of a differnet day than yesterday because I wrote that note at 4am. I did a big UI push and it looks much cleaner. Still a long way to go with fonts and everything, and as of right now you can't actually end a game because there's no endgame function but I need to implement a lobby I think to do that because you'll have the option to return to the home screen or to reenter a lobby with the same people. URL is the same it is still deployed free with Render.
-
-### 3/23 (**0.1.0**)
-Some more UI updates to pretty things up. Biggest pushes now for UI are buttons that just need some CSS sprucing but I hate CSS. I also fixed one quick bug in the trump logic. All updates are deployed to the online version now. I think I'll call this **0.1.0** because I wanna be like the cool software people. Probably should work on the lobby next but the UI updates are so satisfying.
-
-### **0.2.0**
-Lobby added. Now after creating a room you're sent to a lobby where you wait for other players to join, once there are at least 2 the person that originally opened the room can start the game. Toying with the idea of anyone being able to start the game. Definitely need to add reconnect support at this point because if you create a room and then refresh you're screwed. UI for titles and lobby are basically done. Main game screen still needs some UI work. All pages need some scaling done, almost everything right now is sized in pure px and when on a bigger monitor everything looks tiny. 
-
-### **0.2.1**
-Added small feature, now can select how many rounds you want to play no matter what your group size is up to the maximum possible for your group size. If you try and select too many rounds it will kick an error. Main issue now is that where to click to select the number of rounds you want to play is not abundantly clear, will need to find a way to clarify that further.
-
-### **0.3.0**
-Added an endgame screen that shows the winner of the game and allows you to play again or quit the game. When you play again it puts you into a room with the same roomCode as the previous game. When you quit the game it just forces a refresh which brings you back to the homescreen, eventually this will need to be fixed when reconnect handling is fixed because refreshing will remmeber who you were in the previous game but for now it works quite well. 
-
-### **0.3.1**
-Better bid-buttons which appear on top of trick and are formatted as cute lil circles.
-
-### **0.3.2**
-PLayer's bids now are visible to other players with little icons on their player on the play screen.
+### **0.3.4**
+After a trick is won the cards in the trick fly to the player that won the trick and add to their stack. Also UI updates for the scoreboard including a new button and new font with some other prettiness updates. I also flipped the direction of the progress, so the newest updates come at the top.
 
 ### **0.3.3**
 Players and your won tricks now display on the screen as a stack of cards next to the player or below your hand for the tricks that you have won.
 
-### **0.3.4.b**
-After a trick is won the cards in the trick fly to the player that won the trick and add to their stack.
+### **0.3.2**
+PLayer's bids now are visible to other players with little icons on their player on the play screen.
+
+### **0.3.1**
+Better bid-buttons which appear on top of trick and are formatted as cute lil circles.
+
+### **0.3.0**
+Added an endgame screen that shows the winner of the game and allows you to play again or quit the game. When you play again it puts you into a room with the same roomCode as the previous game. When you quit the game it just forces a refresh which brings you back to the homescreen, eventually this will need to be fixed when reconnect handling is fixed because refreshing will remmeber who you were in the previous game but for now it works quite well. 
+
+### **0.2.1**
+Added small feature, now can select how many rounds you want to play no matter what your group size is up to the maximum possible for your group size. If you try and select too many rounds it will kick an error. Main issue now is that where to click to select the number of rounds you want to play is not abundantly clear, will need to find a way to clarify that further.
+
+### **0.2.0**
+Lobby added. Now after creating a room you're sent to a lobby where you wait for other players to join, once there are at least 2 the person that originally opened the room can start the game. Toying with the idea of anyone being able to start the game. Definitely need to add reconnect support at this point because if you create a room and then refresh you're screwed. UI for titles and lobby are basically done. Main game screen still needs some UI work. All pages need some scaling done, almost everything right now is sized in pure px and when on a bigger monitor everything looks tiny. 
+
+### 3/23 (**0.1.0**)
+Some more UI updates to pretty things up. Biggest pushes now for UI are buttons that just need some CSS sprucing but I hate CSS. I also fixed one quick bug in the trump logic. All updates are deployed to the online version now. I think I'll call this **0.1.0** because I wanna be like the cool software people. Probably should work on the lobby next but the UI updates are so satisfying.
+
+### 3/21
+It's kind of a differnet day than yesterday because I wrote that note at 4am. I did a big UI push and it looks much cleaner. Still a long way to go with fonts and everything, and as of right now you can't actually end a game because there's no endgame function but I need to implement a lobby I think to do that because you'll have the option to return to the home screen or to reenter a lobby with the same people. URL is the same it is still deployed free with Render.
+
+### 3/21
+This project has been slow moving as I have been very busy however the first web deployment is officially live! Play online now [here](https://upanddown.onrender.com/). It still has some debug marks on the main repo, I need to update so it is the pretty version and all the gross debugging stays on the local version.
+
+
