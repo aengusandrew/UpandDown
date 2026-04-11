@@ -22,6 +22,8 @@ document.getElementById('joinBtn').onclick = () => {
 
 let hasJoined = false;
 
+let previousTrickEnded = true;
+
 if(DEV_MODE) {
     state = getMockState('playing')
 
@@ -50,29 +52,57 @@ if(DEV_MODE) {
     }
 } else {
     socket.on('game_state', state => {
-        switch(state.phase) {
-            case 'waiting':
-                lobbyScreen.style.display = 'block';
-                titleScreen.style.display = 'none';
-                endScreen.style.display = 'none';
-                renderLobby(state);
-                break;
-            case 'playing':
-            case 'bidding':
-                lobbyScreen.style.display = 'none';
-                gameScreen.style.display = 'block';
-                endScreen.style.display = 'none';
-                renderPlay(state);
-                break;
-            case 'scoring':
-                lobbyScreen.style.display = 'none';
-                gameScreen.style.display = 'none';
-                endScreen.style.display = 'block';
-                renderEnd(state);
-                break;
-            default: break;
+        if(previousTrickEnded === false && state.trickEnded === true) {
+            renderState(state);
+
+            requestAnimationFrame(() => {
+                const existingCards = Array.from(
+                    document.querySelectorAll("#trick-area playing-card")
+                );
+
+                animateTrickToWinner(state, existingCards);
+
+                setTimeout(() => {
+                    // Clear trickCards for rendering purposes
+                    const cleanState = {
+                        ...state,
+                        trickCards: []
+                    };
+                    renderState(cleanState);
+                }, 1000);
+            })
+
+        } else {
+            renderState(state);
         }
+
+        previousTrickEnded = state.trickEnded;
     });
+}
+
+function renderState(state) {
+    switch(state.phase) {
+        case 'waiting':
+            lobbyScreen.style.display = 'block';
+            titleScreen.style.display = 'none';
+            endScreen.style.display = 'none';
+            renderLobby(state);
+            break;
+        case 'playing':
+        case 'bidding':
+            lobbyScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            endScreen.style.display = 'none';
+            renderPlay(state);
+            break;
+        case 'scoring':
+            lobbyScreen.style.display = 'none';
+            gameScreen.style.display = 'none';
+            endScreen.style.display = 'block';
+            renderEnd(state);
+            break;
+        default: break;
+    }
 }
 
 
@@ -192,16 +222,6 @@ function renderPlay(state) {
 
     playTable.innerHTML = '';
 
-    const trickArea = document.createElement('div');
-    trickArea.id = 'trick-area';
-    trickArea.innerHTML +=
-        `${trickToRender.map(t => `
-                <div>
-                    <playing-card cid="${toCID(t.card)}"></playing-card>
-                </div>
-            `).join('')}
-        `;
-    playTable.appendChild(trickArea);
 
     if(state.trickCards.length !== 0) {
         const trick = document.createElement('div');
@@ -218,6 +238,8 @@ function renderPlay(state) {
 
     const you = document.createElement('div');
     you.id = "your-player"
+
+    you.dataset.playerId = state.youID;
 
     // Render your hand
     const handSize = state.yourHand.length;
@@ -267,6 +289,7 @@ function renderPlay(state) {
     const yourWonTricks = document.createElement('div');
     yourWonTricks.id = 'your-won-tricks';
 
+    // TODO: Implement that a won trick card does not appear until after the below animation plays
     for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
         const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 25 + 5*i;
 
@@ -292,6 +315,9 @@ function renderPlay(state) {
 
         const div = document.createElement('div');
         div.className = 'player';
+
+        div.dataset.playerId = player.id;
+
         div.style.position = 'absolute';
         div.style.left = `${x}%`;
         div.style.top = `${y}%`;
@@ -330,7 +356,7 @@ function renderPlay(state) {
 
     playTable.innerHTML +=
         `<div id="scoreboard-button-wrapper">
-            <button id="scoreboard-button">Scoreboard</button>
+            <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
         </div>`;
 
     playTable.innerHTML += `
@@ -357,7 +383,10 @@ function renderPlay(state) {
         }
 
         const cardS1 = e.target.id === 'scoreboard-button';
-        if(cardS1) toggleScoreboard(state);
+        if(cardS1) {
+            renderScoreboard(state);
+            scoreboard.style.display = 'flex';
+        }
     }
 }
 
@@ -406,9 +435,14 @@ function renderEnd(state) {
 }
 
 function renderScoreboard(state) {
-    scoreboard.innerHTML = `
-        <div id="scoreboard-table">
-            <table>
+
+    scoreboard.innerHTML = '';
+
+    const scoreboardTable = document.createElement('div');
+    scoreboardTable.id = 'scoreboard-table';
+
+    scoreboardTable.innerHTML = `
+        <table>
                 <tr>
                     <th>Round</th>
                     ${state.players.map(p => `<th colspan="2">${p.name}</th>`).join('')}
@@ -417,21 +451,93 @@ function renderScoreboard(state) {
                         <tr>
                             <td>${r.roundNumber}</td>
                             ${state.players.map(p => {
-        const playerResult = r.results.find(q => q.playerID === p.id);
-        return `
-                <td>
-                    ${playerResult ? `(${playerResult.tricks}/${playerResult.bid})` : '-'}
-                </td>
-                <td>
-                    ${playerResult ? `${playerResult.score}` : '-'}
-                </td>
-                `;
-    }).join('')}
+                                const playerResult = r.results.find(q => q.playerID === p.id);
+                                return `
+                                        <td>
+                                            ${playerResult ? `${playerResult.tricks}&frasl;${playerResult.bid}` : '-'}
+                                        </td>
+                                        <td>
+                                            ${playerResult ? `${playerResult.score}` : '-'}
+                                        </td>
+                                        `;
+                            }).join('')}
                         </tr>     
                 `).join('')}
             </table>
-        </div>
     `;
+
+    scoreboard.appendChild(scoreboardTable);
+
+    const closeBoardMessage = document.createElement('div');
+    closeBoardMessage.id = 'close-board-message-wrapper';
+
+    closeBoardMessage.innerHTML = `
+        <strong id="close-board-message">click anywhere to close</strong>
+    `;
+
+    scoreboard.appendChild(closeBoardMessage);
+
+    scoreboard.onclick = e => {
+        scoreboard.style.display = 'none';
+    }
+}
+
+function animateTrickToWinner(state, trickCards) {
+
+    if(!trickCards.length) return;
+
+    const winnerID = state.currentTurn;
+    const winnerEl = document.querySelector(`[data-player-id="${winnerID}"]`);
+    if(!winnerEl) return;
+
+    let stackEl;
+
+    if(winnerID === state.youID) {
+        stackEl = winnerEl.querySelector('#your-won-tricks');
+    } else {
+        stackEl = winnerEl.querySelector('.won-tricks');
+    }
+
+    if(!stackEl) return;
+
+    const stackRect = stackEl.getBoundingClientRect();
+
+    trickCards.forEach((card, index) => {
+        const cardRect = card.getBoundingClientRect();
+
+        document.body.appendChild(card);
+
+        card.style.position = 'fixed';
+        card.style.left = cardRect.left + 'px';
+        card.style.top = cardRect.top + 'px';
+        card.style.transition = 'all 0.5s ease-in-out';
+        card.style.zIndex = 9999;
+
+        // TODO: fix alignment for cards to players and rotation for your player wins
+        requestAnimationFrame(() => {
+            card.style.left = (stackRect.left + stackRect.width / 2 - cardRect.width / 2 + 25) + 'px';
+            card.style.top = (stackRect.top + stackRect.height / 2 - cardRect.height / 2 + 30) + 'px';
+            card.style.transform = 'scale(0.4) rotate(90deg)';
+        });
+
+        // Flip cards
+        setTimeout(() => {
+            card.style.transition = 'transform 0.2s';
+            card.style.transform = 'scaleX(0)';
+        }, 650 + index * 60);
+
+        setTimeout(() => {
+            card.setAttribute('backcolor', 'red');
+            card.setAttribute('rank', '0');
+            card.removeAttribute('cid');
+
+            card.style.transform = 'scaleX(1) scale(0.4) rotate(90deg)';
+        }, 800 + index * 60);
+
+        setTimeout(() => {
+            card.remove();
+        }, 1200 + index * 60);
+    })
 }
 
 function getMockState(type) {

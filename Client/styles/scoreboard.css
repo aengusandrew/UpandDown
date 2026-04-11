@@ -1,26 +1,26 @@
 #scoreboard-table table {
     border-collapse: collapse;
-    width: 100%;
+    width: 80vh;
     background: white;
-    border-radius: 5px;
+
+    font-family: Monospaced, serif;
 }
 
 #scoreboard-table tr {
     border-bottom: 1px solid black;
     text-align: center;
+
+    font-family: JetBrainsMono, serif;
 }
 
 #scoreboard-table th, #scoreboard td {
     padding: 10px;
+    border-left: 1px solid black;
 }
 
 #scoreboard-table td {
     border-left: 1px solid black;
     border-right: 1px solid black;
-}
-
-#scoreboard-table tr:hover {
-    background-color: lightgray;
 }
 
 #scoreboard {
@@ -29,9 +29,21 @@
     height: 100%;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 
     position: fixed;
     z-index: 99;
-    pointer-events: none;
     background: rgba(0,0,0,0.6);
+}
+
+#close-board-message-wrapper {
+    margin: 10px;
+}
+
+#close-board-message {
+    padding: 10px;
+
+    font-size: 20px;
+    color: white;
+    opacity: 80%;
 }

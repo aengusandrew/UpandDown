@@ -22,3 +22,10 @@ html, body {
     font-weight: 700;
     font-style: normal;
 }
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../assets/fonts/JetBrainsMono-Regular.ttf) format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}

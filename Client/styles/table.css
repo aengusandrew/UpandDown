@@ -22,6 +22,26 @@
 #scoreboard-button {
 }
 
+#scoreboard-button.parallelogram {
+    margin: 5px;
+
+    display: flex;
+    --p: 10px;
+    height: 40px;
+    aspect-ratio: 5;
+    clip-path: polygon(var(--p) 0,100% 0,calc(100% - var(--p)) 100%,0 100%);
+    background: white;
+
+    justify-content: center;
+    align-items: center;
+
+    font-size: 25px;
+}
+
+#scoreboard-button:hover {
+    cursor: pointer;
+}
+
 #hand {
     position: absolute;
     min-height: 50px;
