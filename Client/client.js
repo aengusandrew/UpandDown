@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -116,8 +116,8 @@ function startGame() {
 
 function toggleScoreboard(state) {
     if(scoreboard.style.display === 'none') {
-
-
+        renderScoreboard(state);
+        scoreboard.style.display = 'flex';
     } else {
         scoreboard.style.display = 'none';
     }
@@ -441,7 +441,6 @@ function renderScoreboard(state) {
     const scoreboardTable = document.createElement('div');
     scoreboardTable.id = 'scoreboard-table';
 
-    // TODO: Fix round numbering to be in order for rounds
     scoreboardTable.innerHTML = `
         <table>
                 <tr>
@@ -450,7 +449,7 @@ function renderScoreboard(state) {
                 </tr>
                 ${state.scoreboard.map(r => `
                         <tr>
-                            <td>${r.roundNumber}</td> 
+                            <td>${r.roundNumber}</td>
                             ${state.players.map(p => {
                                 const playerResult = r.results.find(q => q.playerID === p.id);
                                 return `
