@@ -56,6 +56,9 @@ The **+5** game type is the same concept as **+10**, each player gets a 5 point 
 
 ## Progress
 
+### **0.3.5**
+Improved end screen UI. Scoreboard can also now be viewed from the end screen. Improved animations for end of trick with refactoring improvements for won-trick stack location. Improved error handling, no more browser popups, errors now pop up in a nicer looking dialog with readable interpretations of the errors and error messages disappear after 2s without needing to click out of them, incidental help because of the way it is implemented, as you make the error more and more times the background becomes more opaque making it more noticeable; downside to this if you make multiple different errors all at once they stack on top of each other and are unreadable.
+
 ### **0.3.4**
 After a trick is won the cards in the trick fly to the player that won the trick and add to their stack. Also UI updates for the scoreboard including a new button and new font with some other prettiness updates. I also flipped the direction of the progress, so the newest updates come at the top.
 
