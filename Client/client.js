@@ -2,6 +2,24 @@ const socket = io();
 
 const DEV_MODE = false;
 
+let clientID = localStorage.getItem("clientID");
+if(!clientID) {
+    clientID = crypto.randomUUID();
+    localStorage.setItem("clientID", clientID);
+}
+
+socket.on('connect', () => {
+    const roomCode = localStorage.getItem('roomCode');
+
+    if (roomCode && clientID) {
+        socket.emit('joinRoom', {
+            roomCode,
+            playerName: nameInput.value,
+            clientID
+        });
+    }
+});
+
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
 
@@ -13,11 +31,19 @@ const playTable = document.getElementById('playTable');
 const endScreen = document.getElementById('end-screen');
 
 document.getElementById('createBtn').onclick = () => {
-    socket.emit('createRoom', roomInput.value, nameInput.value)
+    socket.emit('createRoom', {
+        roomCode: roomInput.value,
+        playerName: nameInput.value,
+        clientID
+    });
 };
 
 document.getElementById('joinBtn').onclick = () => {
-    socket.emit('joinRoom', roomInput.value, nameInput.value);
+    socket.emit('joinRoom', {
+        roomCode: roomInput.value,
+        playerName: nameInput.value,
+        clientID
+    });
 };
 
 // Error message map for prettier printout to users
@@ -33,8 +59,6 @@ const errors = new Map([
     ["NOT_IN_HAND", "Card not in hand"],
     ["FOLLOW_LEAD", "Must follow lead"]
 ]);
-
-let hasJoined = false;
 
 let previousTrickEnded = true;
 

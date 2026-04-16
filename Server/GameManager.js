@@ -202,6 +202,8 @@ class GameManager {
     getPublicGameState(forPlayerID) {
         const you = this.players.find(q => q.id === forPlayerID);
 
+        // console.log(this.players);
+
         return {
             roomCode: this.roomCode,
             phase: this.phase,

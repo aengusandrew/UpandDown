@@ -16,25 +16,22 @@ io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
     socket.on('disconnect', () => {
-        console.log('A user disconnected:', socket.id);
-
         const roomCode = socket.roomCode;
         if(!roomCode) return;
 
         const game = rooms.get(roomCode);
         if(!game) return;
 
-        console.log(game.players);
+        const player = game.players.find(p => p.socketID === socket.id);
+        if(!player) return;
 
-        game.players = game.players.filter(p => p.id !== socket.id);
+        player.connected = false;
 
-        console.log('Player ', socket.id, ' left room ', socket.roomCode);
-
-        console.log(game.players);
+        console.log(`Player disconnected`);
 
         for(const player of game.players) {
             console.log(player);
-            io.to(player.id).emit(
+            io.to(player.socketID).emit(
                 'game_state',
                 game.getPublicGameState(player.id),
             );
@@ -46,17 +43,23 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('createRoom', (roomCode, playerName) => {
+    socket.on('createRoom', ({roomCode, playerName, clientID}) => {
         if(rooms.has(roomCode)) {
             socket.emit('game_error', 'ROOM_EXISTS');
             return;
         }
 
+        console.log(playerName);
+
+        socket.clientID = clientID;
+
         const game = new GameManager(roomCode);
         rooms.set(roomCode, game);
 
         game.addPlayer({
-            id: socket.id,
+            id: clientID,
+            socketID: socket.id,
+            connected: true,
             name: playerName,
             hand: [],
             tricksWon: 0,
@@ -64,19 +67,21 @@ io.on('connection', (socket) => {
             score: 0
         });
 
+        // console.log(game.players);
+
         socket.join(roomCode);
         socket.roomCode = roomCode;
 
         socket.emit(
             'game_state',
-            game.getPublicGameState(socket.id),
+            game.getPublicGameState(socket.clientID),
         );
 
-        console.log(`Room ${roomCode} created by ${socket.id}`);
+        console.log(`Room ${roomCode} created by ${socket.clientID}`);
 
     });
 
-    socket.on('joinRoom', (roomCode, playerName) => {
+    socket.on('joinRoom', ({roomCode, playerName, clientID}) => {
         console.log(playerName, "has requested to join ", roomCode);
         const game = rooms.get(roomCode);
         if(!game) {
@@ -89,8 +94,28 @@ io.on('connection', (socket) => {
             return;
         }
 
+        socket.clientID = clientID;
+
+        const existingPlayer = game.players.find(p => p.id === clientID);
+
+        if(existingPlayer) {
+            existingPlayer.socketID = socket.clientID;
+            existingPlayer.connected = true;
+
+            socket.join(roomCode);
+            socket.roomCode = roomCode;
+            socket.clientID = clientID;
+
+            socket.emit('game_state', game.getPublicGameState(existingPlayer.id));
+
+            console.log(`Client ${existingPlayer.id} rejoined room ${roomCode}`);
+            return
+        }
+
         game.addPlayer({
-            id: socket.id,
+            id: clientID,
+            socketID: socket.id,
+            connected: true,
             name: playerName,
             hand: [],
             tricksWon: 0,
@@ -103,17 +128,17 @@ io.on('connection', (socket) => {
 
         socket.emit(
             'game_state',
-            game.getPublicGameState(socket.id)
+            game.getPublicGameState(socket.clientID)
         );
 
         for(const player of game.players) {
-            io.to(player.id).emit(
+            io.to(player.socketID).emit(
                 'game_state',
                 game.getPublicGameState(player.id)
             );
         }
         
-        console.log(`${socket.id} joined room ${roomCode}`);
+        console.log(`${socket.clientID} joined room ${roomCode}`);
     });
 
     socket.on('set_rounds', (rounds) => {
@@ -127,7 +152,7 @@ io.on('connection', (socket) => {
        game.roundNumber = game.totalRounds;
 
        for(const player of game.players) {
-           io.to(player.id).emit('game_state', game.getPublicGameState(player.id));
+           io.to(player.socketID).emit('game_state', game.getPublicGameState(player.id));
        }
 
     });
@@ -139,7 +164,7 @@ io.on('connection', (socket) => {
         const game = rooms.get(roomCode);
         if (!game) return;
 
-        if (socket.id !== game.hostID) {
+        if (socket.clientID !== game.hostID) {
             socket.emit('game_error', 'NOT_HOST');
             return;
         }
@@ -154,7 +179,7 @@ io.on('connection', (socket) => {
         if(result !== "ok") socket.emit('game_error', result);
 
         for (const player of game.players) {
-            io.to(player.id).emit(
+            io.to(player.socketID).emit(
                 'game_state',
                 game.getPublicGameState(player.id)
             );
@@ -172,14 +197,14 @@ io.on('connection', (socket) => {
         const game = rooms.get(roomCode);
         if (!game) return;
 
-        const result = game.handleBid(socket.id, bidValue);
+        const result = game.handleBid(socket.clientID, bidValue);
         if(result === 'error') {
             socket.emit('game_error', 'INVALID_BID');
             return;
         } // TODO: Update error logic
 
         for (const player of game.players) {
-            io.to(player.id).emit(
+            io.to(player.socketID).emit(
                'game_state',
                game.getPublicGameState(player.id)
             );
@@ -188,7 +213,7 @@ io.on('connection', (socket) => {
 
     socket.on('play_card', card => {
 
-        console.log("SOCKET received play_card: ", socket.id, card);
+        console.log("SOCKET received play_card: ", socket.clientID, card);
 
         const roomCode = socket.roomCode;
         if(!roomCode) return;
@@ -196,7 +221,7 @@ io.on('connection', (socket) => {
         const game = rooms.get(roomCode);
         if(!game) return;
 
-        const result = game.handlePlayCard(socket.id, card);
+        const result = game.handlePlayCard(socket.clientID, card);
         console.log("hande_play_card result: ", result);
 
         if(result !== 'ok') {
@@ -205,7 +230,7 @@ io.on('connection', (socket) => {
         }
 
         for(const player of game.players) {
-            io.to(player.id).emit(
+            io.to(player.socketID).emit(
                 'game_state',
                 game.getPublicGameState(player.id)
             );
@@ -229,15 +254,15 @@ io.on('connection', (socket) => {
         const game = rooms.get(roomCode);
         if(!game) return;
 
-        console.log(socket.id, " has asked to play again");
+        console.log(socket.clientID, " has asked to play again");
 
         game.clearHistory();
 
-        game.hostID = socket.id;
+        game.hostID = socket.clientID;
 
-        io.to(socket.id).emit(
+        io.to(socket.clientID).emit(
             'game_state',
-            game.getPublicGameState(socket.id)
+            game.getPublicGameState(socket.clientID)
         );
     })
 });
