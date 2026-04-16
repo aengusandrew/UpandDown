@@ -126,11 +126,6 @@ io.on('connection', (socket) => {
         socket.join(roomCode);
         socket.roomCode = roomCode;
 
-        socket.emit(
-            'game_state',
-            game.getPublicGameState(socket.clientID)
-        );
-
         for(const player of game.players) {
             io.to(player.socketID).emit(
                 'game_state',
@@ -262,7 +257,7 @@ io.on('connection', (socket) => {
 
         io.to(socket.clientID).emit(
             'game_state',
-            game.getPublicGameState(socket.clientID)
+            game.getPublicGameState(socket.id)
         );
     })
 });

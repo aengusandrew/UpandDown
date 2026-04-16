@@ -186,7 +186,7 @@ function renderLobby(state) {
     }).join('')
     }
         </div>
-    `
+    `;
 
     lobbyContent.innerHTML += `
         <div id="sub-player-list">
@@ -203,13 +203,15 @@ function renderLobby(state) {
                 </select>
             </div>
         </div>
-    `
+    `;
+
+    console.log(state.youID);
 
     lobbyContent.innerHTML += `
         <div id="start">
             ${state.canStartGame ? `<button onclick="startGame()" id="start-button">Start Game</button>` : ''}
         </div>
-    `
+    `;
 
     lobbyScreen.appendChild(lobbyContent);
 
