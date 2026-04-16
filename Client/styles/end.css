@@ -2,21 +2,27 @@
     position: absolute;
     inset: 0;
 
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-
     background-image: url("../assets/images/table-background.png");
     background-size: cover;
     background-position: center center;
 }
 
+#end-screen button:hover {
+    background-color: lightblue;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
 #winner {
-    position: absolute;
+    position: relative;
     inset: 0;
 
-    width: 100%;
+    width: 40vw;
     height: 100%;
 
     display: flex;
@@ -60,14 +66,22 @@
     transform: translate(0, -8vh);
 }
 
-#nextGame-buttons {
-    position: absolute;
-}
-
 #quit-game {
-    width: 100%;
+    position: relative;
+    width: 25vw;
+
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
 }
 
 #play-again {
-    width: 100%;
+    position: relative;
+    width: 25vw;
+
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
 }

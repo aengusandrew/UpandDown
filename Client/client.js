@@ -396,11 +396,10 @@ function renderPlay(state) {
 }
 
 function renderEnd(state) {
-    endScreen.innerHTML = '';
 
     const winningPlayer = state.players.find(p => p.id === state.currentTurn);
 
-    const winner = document.createElement('div');
+    const winner = document.getElementById('winner');
     winner.id = 'winner';
 
     winner.innerHTML = `
@@ -408,6 +407,9 @@ function renderEnd(state) {
         <div id="winner-wrapper">
             <img id="winner-icon" src="../assets/images/player-icon-male.png" alt="player icon">
             <strong id="winner-name">${winningPlayer.name}</strong>
+            <div id="scoreboard-button-wrapper">
+                <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
+            </div>
         </div>
     `;
 
@@ -416,26 +418,20 @@ function renderEnd(state) {
     const nextGame = document.createElement('div');
     nextGame.id = 'next-game';
 
-    nextGame.innerHTML = `
-        <div id="nextGame-buttons">
-            <button id="play-again">Play Again</button>
-            <button id="quit-game">Quit</button>
-        </div>
-    `
-
-    endScreen.appendChild(winner);
-
-    endScreen.appendChild(nextGame);
-
     endScreen.onclick = e => {
         const playAgain = e.target.id === 'play-again';
         const quitGame = e.target.id === 'quit-game';
+        const toggleScoreboard = e.target.id === 'scoreboard-button';
 
         if(quitGame)
             window.location.reload();
-
-        if(playAgain)
+        else if(playAgain)
             socket.emit('play-again');
+        else if(toggleScoreboard) {
+            renderScoreboard(state);
+            scoreboard.style.display = 'flex';
+        }
+
     }
 }
 
