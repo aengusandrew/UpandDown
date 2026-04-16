@@ -84,9 +84,8 @@ function renderState(state) {
     }
 }
 
-
 socket.on('game_error', err => {
-    alert(err);
+
 })
 
 function startGame() {
