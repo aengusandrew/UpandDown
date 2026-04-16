@@ -59,8 +59,6 @@
 playing-card {
     width: 80px;
     height: auto;
-
-    border: 1px orange solid;
 }
 
 .hand-card:hover {
@@ -165,7 +163,6 @@ playing-card {
 
     left: 70px;
 
-    border: 1px red solid;
 }
 
 #your-won-tricks {
@@ -183,7 +180,6 @@ playing-card.won-trick-card {
 
     width: 50px;
 
-    border: 1px blue solid;
 }
 
 playing-card.your-won-trick-card {
