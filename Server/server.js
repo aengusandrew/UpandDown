@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
 
     socket.on('createRoom', (roomCode, playerName) => {
         if(rooms.has(roomCode)) {
-            socket.emit('game_error', 'room_exists');
+            socket.emit('game_error', 'ROOM_EXISTS');
             return;
         }
 
@@ -80,12 +80,12 @@ io.on('connection', (socket) => {
         console.log(playerName, "has requested to join ", roomCode);
         const game = rooms.get(roomCode);
         if(!game) {
-            socket.emit('game_error', 'room_not_found');
+            socket.emit('game_error', 'ROOM_DNE');
             return;
         }
 
         if(game.phase !== 'waiting') {
-            socket.emit('game_error', 'game_started');
+            socket.emit('game_error', 'GAME_STARTED');
             return;
         }
 
@@ -140,12 +140,12 @@ io.on('connection', (socket) => {
         if (!game) return;
 
         if (socket.id !== game.hostID) {
-            socket.emit('game_error', 'not_host');
+            socket.emit('game_error', 'NOT_HOST');
             return;
         }
 
         if (game.phase !== 'waiting') {
-            socket.emit('game_error', 'game_already_started');
+            socket.emit('game_error', 'GAME_STARTED');
             return;
         }
 
@@ -174,7 +174,7 @@ io.on('connection', (socket) => {
 
         const result = game.handleBid(socket.id, bidValue);
         if(result === 'error') {
-            socket.emit('game_error', 'invalid_bid');
+            socket.emit('game_error', 'INVALID_BID');
             return;
         } // TODO: Update error logic
 

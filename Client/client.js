@@ -20,6 +20,20 @@ document.getElementById('joinBtn').onclick = () => {
     socket.emit('joinRoom', roomInput.value, nameInput.value);
 };
 
+// Error message map for prettier printout to users
+const errors = new Map([
+    ["ROOM_EXISTS", "Room code already in use"],
+    ["ROOM_DNE", "Room does not exist"],
+    ["GAME_STARTED", "Game already started"],
+    ["NOT_HOST", "You are not the host"],
+    ["INVALID_BID", "Invalid bid"],
+    ["NO_PLAYER", "Player doesn't exist"],
+    ["WRONG_PHASE", "Wrong phase"],
+    ["NOT_TURN", "Not your turn"],
+    ["NOT_IN_HAND", "Card not in hand"],
+    ["FOLLOW_LEAD", "Must follow lead"]
+]);
+
 let hasJoined = false;
 
 let previousTrickEnded = true;
@@ -84,13 +98,13 @@ function renderState(state) {
     }
 }
 
-socket.on('game_error', err => {
+socket.on('game_error', errorCode => {
     const error = document.getElementById('game-error');
     error.style.display = 'flex';
 
     const errorMessage = document.createElement('strong');
     errorMessage.id = 'error-message';
-    errorMessage.textContent = err;
+    errorMessage.textContent = errors.get(errorCode);
 
     error.appendChild(errorMessage);
 

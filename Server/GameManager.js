@@ -49,10 +49,10 @@ class GameManager {
 
         const player = this.players.find(p => p.id === playerID);
 
-        if(!player) return 'no_player';
-        if(this.phase !== 'bidding') return 'wrong_phase';
-        if(this.players[this.playerIndex].id !== playerID) return 'not_turn';
-        if(bidValue < 0 || bidValue > this.roundNumber) return 'invalid_bid';
+        if(!player) return 'NO_PLAYER';
+        if(this.phase !== 'bidding') return 'WRONG_PHASE';
+        if(this.players[this.playerIndex].id !== playerID) return 'NOT_TURN';
+        if(bidValue < 0 || bidValue > this.roundNumber) return 'INVALID_BID';
 
         player.bid = bidValue;
 
@@ -76,18 +76,18 @@ class GameManager {
 
         const player = this.players.find(p => p.id === playerID);
 
-        if(!player) return 'player_not_found';
-        if(this.phase !== 'playing') return 'wrong_phase';
-        if(this.players.indexOf(player) !== this.playerIndex) return 'not_your_turn';
+        if(!player) return 'NO_PLAYER';
+        if(this.phase !== 'playing') return 'WRONG_PHASE';
+        if(this.players.indexOf(player) !== this.playerIndex) return 'NOT_TURN';
 
         const cardIndex = player.hand.findIndex(
             c => c.suit === card.suit && c.value === card.value
         );
-        if (cardIndex === -1) return 'not_in_hand'; // Player does not have the card they attempted to play
+        if (cardIndex === -1) return 'NOT_IN_HAND'; // Player does not have the card they attempted to play
 
         if(this.trickCards.length > 0) {
             const leadSuit = this.trickCards[0].card.suit;
-            if(player.hand.some(c => c.suit === leadSuit) && card.suit !== leadSuit) return 'follow_lead';
+            if(player.hand.some(c => c.suit === leadSuit) && card.suit !== leadSuit) return 'FOLLOW_LEAD';
         }
 
         player.hand.splice(cardIndex, 1);
