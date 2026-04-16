@@ -295,7 +295,7 @@ function renderPlay(state) {
 
         const wonTrick = document.createElement('div');
         wonTrick.classList.add('won-trick-card-wrapper', 'table');
-        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='right: ${cardOffset}px'></playing-card>`;
+        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='right: ${cardOffset}px; width: 30px;'></playing-card>`;
         yourWonTricks.appendChild(wonTrick);
     }
 
@@ -480,7 +480,7 @@ function renderScoreboard(state) {
 
     scoreboard.appendChild(closeBoardMessage);
 
-    scoreboard.onclick = e => {
+    scoreboard.onclick = () => {
         scoreboard.style.display = 'none';
     }
 }
@@ -512,17 +512,16 @@ function animateTrickToWinner(state, trickCards) {
 
         document.body.appendChild(card);
 
-        card.style.position = 'fixed';
+        card.style.position = 'absolute';
         card.style.left = cardRect.left + 'px';
         card.style.top = cardRect.top + 'px';
         card.style.transition = 'all 0.5s ease-in-out';
         card.style.zIndex = 9999;
 
-        // TODO: fix alignment for cards to players and rotation for your player wins
         requestAnimationFrame(() => {
-            card.style.left = (lastCardRect.left + lastCardRect.width / 2 - cardRect.width / 2) + 'px';
+            card.style.left = (lastCardRect.left + lastCardRect.width / 2 - cardRect.width / 2 + 1.5) + 'px';
             card.style.top = (lastCardRect.top + lastCardRect.height / 2 - cardRect.height / 2) + 'px';
-            card.style.transform = 'scale(0.4) rotate(90deg)';
+            card.style.transform = 'scale(0.35) rotate(90deg)';
         });
 
         // Flip cards
@@ -536,7 +535,7 @@ function animateTrickToWinner(state, trickCards) {
             card.setAttribute('rank', '0');
             card.removeAttribute('cid');
 
-            card.style.transform = 'scaleX(1) scale(0.4) rotate(90deg)';
+            card.style.transform = 'scaleX(1) scale(0.35) rotate(90deg)';
         }, 800 + index * 60);
 
         setTimeout(() => {
