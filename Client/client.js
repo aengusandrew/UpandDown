@@ -342,7 +342,10 @@ function renderPlay(state) {
         for(let i = 0; i < player.tricksWon; i++) {
             const wonTrick = document.createElement('div');
             wonTrick.classList.add('won-trick-card-wrapper', 'table');
-            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style='top: ${i*(5)}px'></playing-card>`;
+            wonTrick.style.position = 'absolute';
+            wonTrick.style.top = `${5 * i}px`;
+            wonTrick.style.transform = 'rotate(90deg)';
+            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table'></playing-card>`;
             wonTricks.appendChild(wonTrick);
         }
         div.appendChild(wonTricks);
