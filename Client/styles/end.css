@@ -66,19 +66,10 @@
     transform: translate(0, -8vh);
 }
 
-#quit-game {
+#quit-game, #play-again {
     position: relative;
-    width: 25vw;
-
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none;
-}
-
-#play-again {
-    position: relative;
-    width: 25vw;
+    width: 20vw;
+    height: 8vh;
 
     padding: 10px;
     font-size: 16px;
