@@ -85,7 +85,14 @@ function renderState(state) {
 }
 
 socket.on('game_error', err => {
+    const error = document.getElementById('game-error');
+    error.style.display = 'flex';
 
+    const errorMessage = document.createElement('strong');
+    errorMessage.id = 'error-message';
+    errorMessage.textContent = err;
+
+    error.appendChild(errorMessage);
 })
 
 function startGame() {
