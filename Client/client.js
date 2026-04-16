@@ -96,7 +96,7 @@ socket.on('game_error', err => {
 
     setTimeout(() =>{
         error.style.display = 'none';
-        error.innerHTML = '';
+        error.removeChild(error.lastElementChild);
     }, 2000);
 })
 
