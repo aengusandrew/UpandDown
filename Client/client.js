@@ -297,7 +297,7 @@ function renderPlay(state) {
         wonTrick.style.position = 'absolute';
         wonTrick.style.right = `${cardOffset}px`;
         wonTrick.classList.add('won-trick-card-wrapper', 'table');
-        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='width: 30px;'></playing-card>`;
+        // wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='width: 30px;'></playing-card>`;
         yourWonTricks.appendChild(wonTrick);
     }
 
@@ -347,7 +347,7 @@ function renderPlay(state) {
             wonTrick.style.position = 'absolute';
             wonTrick.style.top = `${5 * i}px`;
             wonTrick.style.transform = 'rotate(90deg)';
-            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
+            // wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
             wonTricks.appendChild(wonTrick);
         }
         div.appendChild(wonTricks);
@@ -547,7 +547,7 @@ function animateTrickToWinner(state, trickCards) {
         }, 800 + index * 60);
 
         setTimeout(() => {
-            card.remove();
+            // card.remove();
         }, 1200 + index * 60);
     })
 }
