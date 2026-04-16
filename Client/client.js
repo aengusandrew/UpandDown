@@ -523,9 +523,10 @@ function animateTrickToWinner(state, trickCards) {
         requestAnimationFrame(() => {
             card.style.left = (lastCardRect.left + lastCardRect.width / 2 - cardRect.width / 2 + 1.5) + 'px';
             card.style.top = (lastCardRect.top + lastCardRect.height / 2 - cardRect.height / 2) + 'px';
-            card.style.transform = 'scale(0.35)';
             if(winnerID !== state.youID) {
-                card.style.transform = 'scale(0.35) rotate(90deg)';
+                card.style.transform = 'scale(0.375) rotate(90deg)';
+            } else {
+                card.style.transform = 'scale(0.375)';
             }
         });
 
@@ -540,9 +541,10 @@ function animateTrickToWinner(state, trickCards) {
             card.setAttribute('rank', '0');
             card.removeAttribute('cid');
 
-            card.style.transform = 'scaleX(1) scale(0.35)';
             if(winnerID !== state.youID) {
-                card.style.transform = 'scaleX(1) scale(0.35) rotate(90deg)';
+                card.style.transform = 'scaleX(1) scale(0.375) rotate(90deg)';
+            } else {
+                card.style.transform = 'scaleX(1) scale(0.375)';
             }
         }, 800 + index * 60);
 
