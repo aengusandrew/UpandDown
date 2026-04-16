@@ -172,7 +172,9 @@ playing-card {
     justify-content: center;
     align-items: center;
 
-    top: -30px;
+    border: 1px red solid;
+
+    top: -10px;
 }
 
 playing-card.won-trick-card {
