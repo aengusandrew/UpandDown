@@ -93,6 +93,11 @@ socket.on('game_error', err => {
     errorMessage.textContent = err;
 
     error.appendChild(errorMessage);
+
+    setTimeout(() =>{
+        error.style.display = 'none';
+        error.innerHTML = '';
+    }, 2000);
 })
 
 function startGame() {
