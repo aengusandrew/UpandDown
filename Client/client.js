@@ -25,31 +25,10 @@ let hasJoined = false;
 let previousTrickEnded = true;
 
 if(DEV_MODE) {
-    state = getMockState('playing')
 
-    switch(state.phase) {
-        case 'waiting':
-            lobbyScreen.style.display = 'block';
-            titleScreen.style.display = 'none';
-            endScreen.style.display = 'none';
-            renderLobby(state);
-            break;
-        case 'playing':
-        case 'bidding':
-            lobbyScreen.style.display = 'none';
-            gameScreen.style.display = 'block';
-            endScreen.style.display = 'none';
-            renderPlay(state);
-            break;
-        case 'scoring':
-            lobbyScreen.style.display = 'none';
-            gameScreen.style.display = 'none';
-            endScreen.style.display = 'block';
-            renderEnd(state);
-            break;
-        default:
-            break;
-    }
+    state = getMockState('playing')
+    renderState(state);
+
 } else {
     socket.on('game_state', state => {
         if(previousTrickEnded === false && state.trickEnded === true) {
