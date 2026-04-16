@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -345,7 +345,7 @@ function renderPlay(state) {
             wonTrick.style.position = 'absolute';
             wonTrick.style.top = `${5 * i}px`;
             wonTrick.style.transform = 'rotate(90deg)';
-            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table'></playing-card>`;
+            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
             wonTricks.appendChild(wonTrick);
         }
         div.appendChild(wonTricks);
@@ -503,7 +503,9 @@ function animateTrickToWinner(state, trickCards) {
 
     if(!stackEl) return;
 
-    const stackRect = stackEl.getBoundingClientRect();
+    const lastCardEl = stackEl.lastElementChild;
+
+    const lastCardRect = lastCardEl.getBoundingClientRect();
 
     trickCards.forEach((card, index) => {
         const cardRect = card.getBoundingClientRect();
@@ -518,8 +520,8 @@ function animateTrickToWinner(state, trickCards) {
 
         // TODO: fix alignment for cards to players and rotation for your player wins
         requestAnimationFrame(() => {
-            card.style.left = (stackRect.left + stackRect.width / 2 - cardRect.width / 2 + 25) + 'px';
-            card.style.top = (stackRect.top + stackRect.height / 2 - cardRect.height / 2 + 30) + 'px';
+            card.style.left = (lastCardRect.left + lastCardRect.width / 2 - cardRect.width / 2) + 'px';
+            card.style.top = (lastCardRect.top + lastCardRect.height / 2 - cardRect.height / 2) + 'px';
             card.style.transform = 'scale(0.4) rotate(90deg)';
         });
 
