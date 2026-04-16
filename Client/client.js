@@ -291,11 +291,13 @@ function renderPlay(state) {
 
     // TODO: Implement that a won trick card does not appear until after the below animation plays
     for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
-        const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 25 + 5*i;
+        const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 10 + 5*i;
 
         const wonTrick = document.createElement('div');
+        wonTrick.style.position = 'absolute';
+        wonTrick.style.right = `${cardOffset}px`;
         wonTrick.classList.add('won-trick-card-wrapper', 'table');
-        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='right: ${cardOffset}px'></playing-card>`;
+        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='width: 30px;'></playing-card>`;
         yourWonTricks.appendChild(wonTrick);
     }
 
@@ -342,7 +344,10 @@ function renderPlay(state) {
         for(let i = 0; i < player.tricksWon; i++) {
             const wonTrick = document.createElement('div');
             wonTrick.classList.add('won-trick-card-wrapper', 'table');
-            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style='top: ${i*(5)}px'></playing-card>`;
+            wonTrick.style.position = 'absolute';
+            wonTrick.style.top = `${5 * i}px`;
+            wonTrick.style.transform = 'rotate(90deg)';
+            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
             wonTricks.appendChild(wonTrick);
         }
         div.appendChild(wonTricks);
@@ -477,7 +482,7 @@ function renderScoreboard(state) {
 
     scoreboard.appendChild(closeBoardMessage);
 
-    scoreboard.onclick = e => {
+    scoreboard.onclick = () => {
         scoreboard.style.display = 'none';
     }
 }
@@ -500,24 +505,29 @@ function animateTrickToWinner(state, trickCards) {
 
     if(!stackEl) return;
 
-    const stackRect = stackEl.getBoundingClientRect();
+    const lastCardEl = stackEl.lastElementChild;
+
+    const lastCardRect = lastCardEl.getBoundingClientRect();
 
     trickCards.forEach((card, index) => {
         const cardRect = card.getBoundingClientRect();
 
         document.body.appendChild(card);
 
-        card.style.position = 'fixed';
+        card.style.position = 'absolute';
         card.style.left = cardRect.left + 'px';
         card.style.top = cardRect.top + 'px';
         card.style.transition = 'all 0.5s ease-in-out';
         card.style.zIndex = 9999;
 
-        // TODO: fix alignment for cards to players and rotation for your player wins
         requestAnimationFrame(() => {
-            card.style.left = (stackRect.left + stackRect.width / 2 - cardRect.width / 2 + 25) + 'px';
-            card.style.top = (stackRect.top + stackRect.height / 2 - cardRect.height / 2 + 30) + 'px';
-            card.style.transform = 'scale(0.4) rotate(90deg)';
+            card.style.left = (lastCardRect.left + lastCardRect.width / 2 - cardRect.width / 2 + 1.5) + 'px';
+            card.style.top = (lastCardRect.top + lastCardRect.height / 2 - cardRect.height / 2) + 'px';
+            if(winnerID !== state.youID) {
+                card.style.transform = 'scale(0.375) rotate(90deg)';
+            } else {
+                card.style.transform = 'scale(0.375)';
+            }
         });
 
         // Flip cards
@@ -531,7 +541,11 @@ function animateTrickToWinner(state, trickCards) {
             card.setAttribute('rank', '0');
             card.removeAttribute('cid');
 
-            card.style.transform = 'scaleX(1) scale(0.4) rotate(90deg)';
+            if(winnerID !== state.youID) {
+                card.style.transform = 'scaleX(1) scale(0.375) rotate(90deg)';
+            } else {
+                card.style.transform = 'scaleX(1) scale(0.375)';
+            }
         }, 800 + index * 60);
 
         setTimeout(() => {

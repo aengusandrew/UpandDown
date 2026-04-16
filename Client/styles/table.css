@@ -57,10 +57,8 @@
 }
 
 playing-card {
-    width: 100px;
+    width: 80px;
     height: auto;
-    padding: 10px;
-    border-radius: 10px;
 }
 
 .hand-card:hover {
@@ -163,8 +161,8 @@ playing-card {
     justify-content: center;
     align-items: center;
 
-    top: 10px;
-    left: 40px;
+    left: 70px;
+
 }
 
 #your-won-tricks {
@@ -174,20 +172,20 @@ playing-card {
     justify-content: center;
     align-items: center;
 
-    top: -30px;
+    border: 1px red solid;
+
+    top: 10px;
 }
 
 playing-card.won-trick-card {
-    position: absolute;
-    transform: rotate(90deg);
+    position: relative;
 
     width: 50px;
+
 }
 
 playing-card.your-won-trick-card {
-    position: absolute;
-
-    transform: translate(50%, 0);
+    position: relative;
 
     width: 50px;
 }

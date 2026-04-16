@@ -3,6 +3,8 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: LuckiestGuy, serif;
+
+    overflow: hidden;
 }
 
 #app {
