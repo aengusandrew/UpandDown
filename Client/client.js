@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -291,12 +291,13 @@ function renderPlay(state) {
 
     // TODO: Implement that a won trick card does not appear until after the below animation plays
     for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
-        const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 25 + 5*i;
+        const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 10 + 5*i;
 
         const wonTrick = document.createElement('div');
         wonTrick.style.position = 'absolute';
+        wonTrick.style.right = `${cardOffset}px`;
         wonTrick.classList.add('won-trick-card-wrapper', 'table');
-        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='right: ${cardOffset}px; width: 30px;'></playing-card>`;
+        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='width: 30px;'></playing-card>`;
         yourWonTricks.appendChild(wonTrick);
     }
 

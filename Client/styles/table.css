@@ -187,8 +187,6 @@ playing-card.won-trick-card {
 playing-card.your-won-trick-card {
     position: relative;
 
-    transform: translate(50%, 0);
-
     width: 50px;
 }
 
