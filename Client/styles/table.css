@@ -174,7 +174,7 @@ playing-card {
 
     border: 1px red solid;
 
-    top: -10px;
+    top: 10px;
 }
 
 playing-card.won-trick-card {
@@ -185,7 +185,7 @@ playing-card.won-trick-card {
 }
 
 playing-card.your-won-trick-card {
-    position: absolute;
+    position: relative;
 
     transform: translate(50%, 0);
 

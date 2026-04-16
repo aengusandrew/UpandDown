@@ -1,6 +1,6 @@
 const socket = io();
 
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
@@ -294,6 +294,7 @@ function renderPlay(state) {
         const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 25 + 5*i;
 
         const wonTrick = document.createElement('div');
+        wonTrick.style.position = 'absolute';
         wonTrick.classList.add('won-trick-card-wrapper', 'table');
         wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='right: ${cardOffset}px; width: 30px;'></playing-card>`;
         yourWonTricks.appendChild(wonTrick);
