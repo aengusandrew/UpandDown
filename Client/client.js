@@ -2,6 +2,24 @@ const socket = io();
 
 const DEV_MODE = false;
 
+let clientID = localStorage.getItem("clientID");
+if(!clientID) {
+    clientID = crypto.randomUUID();
+    localStorage.setItem("clientID", clientID);
+}
+
+socket.on('connect', () => {
+    const roomCode = localStorage.getItem('roomCode');
+
+    if (roomCode && clientID) {
+        socket.emit('joinRoom', {
+            roomCode,
+            playerName: nameInput.value,
+            clientID
+        });
+    }
+});
+
 const nameInput = document.getElementById('nameInput');
 const roomInput = document.getElementById('roomInput')
 
@@ -13,11 +31,23 @@ const playTable = document.getElementById('playTable');
 const endScreen = document.getElementById('end-screen');
 
 document.getElementById('createBtn').onclick = () => {
-    socket.emit('createRoom', roomInput.value, nameInput.value)
+    socket.emit('createRoom', {
+        roomCode: roomInput.value,
+        playerName: nameInput.value,
+        clientID
+    });
+
+    localStorage.setItem("roomCode", roomInput.value);
 };
 
 document.getElementById('joinBtn').onclick = () => {
-    socket.emit('joinRoom', roomInput.value, nameInput.value);
+    socket.emit('joinRoom', {
+        roomCode: roomInput.value,
+        playerName: nameInput.value,
+        clientID
+    });
+
+    localStorage.setItem("roomCode", roomInput.value);
 };
 
 // Error message map for prettier printout to users
@@ -33,8 +63,6 @@ const errors = new Map([
     ["NOT_IN_HAND", "Card not in hand"],
     ["FOLLOW_LEAD", "Must follow lead"]
 ]);
-
-let hasJoined = false;
 
 let previousTrickEnded = true;
 
@@ -162,7 +190,7 @@ function renderLobby(state) {
     }).join('')
     }
         </div>
-    `
+    `;
 
     lobbyContent.innerHTML += `
         <div id="sub-player-list">
@@ -179,13 +207,13 @@ function renderLobby(state) {
                 </select>
             </div>
         </div>
-    `
+    `;
 
     lobbyContent.innerHTML += `
         <div id="start">
             ${state.canStartGame ? `<button onclick="startGame()" id="start-button">Start Game</button>` : ''}
         </div>
-    `
+    `;
 
     lobbyScreen.appendChild(lobbyContent);
 
@@ -368,6 +396,11 @@ function renderPlay(state) {
             <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
         </div>`;
 
+    playTable.innerHTML +=
+        `<div id="quit-button-wrapper">
+            <div class="parallelogram" id="quit-button">Quit</div>
+        </div>`
+
     playTable.innerHTML += `
         <div id="trump-card">
             <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
@@ -391,10 +424,17 @@ function renderPlay(state) {
             socket.emit('place_bid', Number(cardB1.dataset.bid));
         }
 
-        const cardS1 = e.target.id === 'scoreboard-button';
-        if(cardS1) {
+        const scoreboardToggle = e.target.id === 'scoreboard-button';
+        if(scoreboardToggle) {
             renderScoreboard(state);
             scoreboard.style.display = 'flex';
+        }
+
+        const quitGame = e.target.id === 'quit-button';
+        if(quitGame) {
+            socket.emit('quit-game');
+            localStorage.removeItem('roomCode');
+            location.reload();
         }
     }
 }
@@ -427,8 +467,11 @@ function renderEnd(state) {
         const quitGame = e.target.id === 'quit-game';
         const toggleScoreboard = e.target.id === 'scoreboard-button';
 
-        if(quitGame)
-            window.location.reload();
+        if(quitGame) {
+            socket.emit('quit-game');
+            localStorage.removeItem('roomCode');
+            location.reload();
+        }
         else if(playAgain)
             socket.emit('play-again');
         else if(toggleScoreboard) {

@@ -20,9 +20,18 @@
 }
 
 #scoreboard-button {
+    position: absolute;
+
+    left: 0;
 }
 
-#scoreboard-button.parallelogram {
+#quit-button {
+    position: absolute;
+
+    right: 0;
+}
+
+#scoreboard-button.parallelogram, #quit-button.parallelogram {
     margin: 5px;
 
     display: flex;
@@ -38,7 +47,7 @@
     font-size: 25px;
 }
 
-#scoreboard-button:hover {
+#scoreboard-button:hover, #quit-button:hover {
     cursor: pointer;
 }
 
@@ -170,8 +179,6 @@ playing-card {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    border: 1px red solid;
 
     top: 10px;
 }

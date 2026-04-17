@@ -18,7 +18,9 @@ class GameManager {
     }
 
     addPlayer(Player) {
-        if(this.players.length === 0) this.hostID = Player.id;
+        if(this.players.length === 0) {
+            this.hostID = Player.id;
+        }
         this.players.push(Player);
     }
     
@@ -231,7 +233,7 @@ class GameManager {
                 this.phase === 'waiting' &&
                 forPlayerID === this.hostID &&
                 this.players.length >=2 &&
-                this.roundNumber,
+                this.roundNumber !== null,
 
             canBid:
             this.phase === 'bidding' &&
