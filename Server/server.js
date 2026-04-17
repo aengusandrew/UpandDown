@@ -15,7 +15,6 @@ app.use(express.static(path.join(__dirname, '..', 'Client')));
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
-    // TODO: Implement quit game vs disconnect
     socket.on('disconnect', () => {
         const roomCode = socket.roomCode;
         if(!roomCode) return;
@@ -259,6 +258,35 @@ io.on('connection', (socket) => {
             'game_state',
             game.getPublicGameState(socket.id)
         );
+    })
+
+    socket.on('quit-game', () => {
+        const roomCode = socket.roomCode;
+        if(!roomCode) return;
+
+        const game = rooms.get(roomCode);
+        if(!game) return;
+
+        const playerIndex = game.players.findIndex(p => p.id === socket.clientID);
+        if(playerIndex === -1) return;
+
+        game.players.splice(playerIndex, 1);
+
+        console.log(`Player ${socket.clientID} has left the game`);
+
+        socket.leave(roomCode);
+
+        for(const player of game.players) {
+            io.to(player).emit(
+                'game_state',
+                game.getPublicGameState(player.id)
+            );
+        }
+
+        if(game.players.length === 0) {
+            rooms.delete(roomCode);
+            console.log(`Room ${roomCode} pruned for emptiness`);
+        }
     })
 });
 

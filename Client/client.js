@@ -455,8 +455,11 @@ function renderEnd(state) {
         const quitGame = e.target.id === 'quit-game';
         const toggleScoreboard = e.target.id === 'scoreboard-button';
 
-        if(quitGame)
-            window.location.reload();
+        if(quitGame) {
+            socket.emit('quit-game');
+            localStorage.removeItem('roomCode');
+            location.reload();
+        }
         else if(playAgain)
             socket.emit('play-again');
         else if(toggleScoreboard) {
