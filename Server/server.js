@@ -89,11 +89,6 @@ io.on('connection', (socket) => {
             return;
         }
 
-        if(game.phase !== 'waiting') {
-            socket.emit('game_error', 'GAME_STARTED');
-            return;
-        }
-
         socket.clientID = clientID;
 
         const existingPlayer = game.players.find(p => p.id === clientID);
