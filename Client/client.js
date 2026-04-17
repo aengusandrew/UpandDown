@@ -36,6 +36,8 @@ document.getElementById('createBtn').onclick = () => {
         playerName: nameInput.value,
         clientID
     });
+
+    localStorage.setItem("roomCode", roomInput.value);
 };
 
 document.getElementById('joinBtn').onclick = () => {
@@ -44,6 +46,8 @@ document.getElementById('joinBtn').onclick = () => {
         playerName: nameInput.value,
         clientID
     });
+
+    localStorage.setItem("roomCode", roomInput.value);
 };
 
 // Error message map for prettier printout to users
@@ -204,8 +208,6 @@ function renderLobby(state) {
             </div>
         </div>
     `;
-
-    console.log(state.youID);
 
     lobbyContent.innerHTML += `
         <div id="start">
