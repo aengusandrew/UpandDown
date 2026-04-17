@@ -396,6 +396,11 @@ function renderPlay(state) {
             <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
         </div>`;
 
+    playTable.innerHTML +=
+        `<div id="quit-button-wrapper">
+            <div class="parallelogram" id="quit-button">Quit</div>
+        </div>`
+
     playTable.innerHTML += `
         <div id="trump-card">
             <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
@@ -419,10 +424,17 @@ function renderPlay(state) {
             socket.emit('place_bid', Number(cardB1.dataset.bid));
         }
 
-        const cardS1 = e.target.id === 'scoreboard-button';
-        if(cardS1) {
+        const scoreboardToggle = e.target.id === 'scoreboard-button';
+        if(scoreboardToggle) {
             renderScoreboard(state);
             scoreboard.style.display = 'flex';
+        }
+
+        const quitGame = e.target.id === 'quit-button';
+        if(quitGame) {
+            socket.emit('quit-game');
+            localStorage.removeItem('roomCode');
+            location.reload();
         }
     }
 }
