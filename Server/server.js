@@ -94,14 +94,19 @@ io.on('connection', (socket) => {
         const existingPlayer = game.players.find(p => p.id === clientID);
 
         if(existingPlayer) {
-            existingPlayer.socketID = socket.clientID;
+            existingPlayer.socketID = socket.id;
             existingPlayer.connected = true;
 
             socket.join(roomCode);
             socket.roomCode = roomCode;
             socket.clientID = clientID;
 
-            socket.emit('game_state', game.getPublicGameState(existingPlayer.id));
+            for(const player of game.players) {
+                io.to(player.socketID).emit(
+                    'game_state',
+                    game.getPublicGameState(player.id)
+                )
+            }
 
             console.log(`Client ${existingPlayer.id} rejoined room ${roomCode}`);
             return
