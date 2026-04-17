@@ -15,6 +15,7 @@ app.use(express.static(path.join(__dirname, '..', 'Client')));
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
+    // TODO: Implement quit game vs disconnect
     socket.on('disconnect', () => {
         const roomCode = socket.roomCode;
         if(!roomCode) return;
@@ -27,10 +28,9 @@ io.on('connection', (socket) => {
 
         player.connected = false;
 
-        console.log(`Player disconnected`);
+        console.log(`Player ${player.id} disconnected`);
 
         for(const player of game.players) {
-            console.log(player);
             io.to(player.socketID).emit(
                 'game_state',
                 game.getPublicGameState(player.id),

@@ -20,7 +20,6 @@ class GameManager {
     addPlayer(Player) {
         if(this.players.length === 0) {
             this.hostID = Player.id;
-            console.log('hostID set to ', Player.id);
         }
         this.players.push(Player);
     }
@@ -204,8 +203,6 @@ class GameManager {
 
     getPublicGameState(forPlayerID) {
         const you = this.players.find(q => q.id === forPlayerID);
-
-        console.log(forPlayerID);
 
         return {
             roomCode: this.roomCode,
