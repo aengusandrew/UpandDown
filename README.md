@@ -36,7 +36,7 @@ b. If a player throws a card of the **Trump** suit, they automatically win the *
 
 The 3 different game types alter how a player is rewarded for making their bid.
 
-### +10
+### +10 *In Development*
 The **+10** game type simply gives each player a 10 point bonus for making their bid. i.e. a player who bid 1 and got one (1/1) will receive 11 points. 1 for their trick, and 10 bonus.
 
 *Playing +10 is an inarguable classic. The fault of this gamemode is a single lost bid can result in effectively removing oneself from competition, as the amount of tricks one may obtain in future rounds will only very slowly make up what they lost in losing the 10 bonus points for having made their bid.*
@@ -46,10 +46,10 @@ The **+5** game type is the same concept as **+10**, each player gets a 5 point 
 
 *Playing +5 seeks only to solve the issues in +10, in a +5 game, a player who loses their bid generally only needs to play a few rounds aggressively bidding, and can make up the 5 bonus points they lost in their missed bids.*
 
-### JDVII
+### JDVII *In Development*
 **JDVII** (Said "Jay-Dee Seven") is a more complex scoring method in which a player is disincentivized to bid 0 throughout the game. In this game mode a player receives a 10 point bonus for making their bid, unless that bid was zero, in which case they receive a 7 point bonus.
 
-*This gamemode has a namesake who will not be mentioned here. However, any experienced player will quickly learn that with a little skill and forethought, it is easy to consistently bid 0 unless a player has truly unloseable cards (aces or face cards of the trump suit). Although this is smart strategizing, and those who start with the more traditional scoring methods will quickly see its benefit, it can lead to a less exciting game in a room full of experienced players. Playing JDVII strongly incentivizes bidding more aggressively.*
+*Any experienced player will quickly learn that with a little skill and forethought, it is easy to consistently bid 0 unless a player has truly unloseable cards (aces or face cards of the trump suit). Although this is smart strategizing, and those who start with the more traditional scoring methods will quickly see its benefit, it can lead to a less exciting game in a room full of experienced players. Playing JDVII strongly incentivizes bidding more aggressively.*
 
 <br>
 <hr>
