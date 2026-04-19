@@ -277,8 +277,13 @@ function renderPlay(state) {
     const handSize = state.yourHand.length;
     const spread = 30;
 
-    you.innerHTML = `<div id="hand">
-            ${state.yourHand.map((card, i) => {
+
+    const hand = document.createElement('div');
+    hand.id = "hand";
+
+
+    hand.innerHTML = 
+      `${state.yourHand.map((card, i) => {
         const mustFollow = leadSuit && hasLeadSuit;
         const isPlayable =
             state.phase === 'bidding' ||
@@ -307,11 +312,12 @@ function renderPlay(state) {
                     ></playing-card>
                 </div>
                 `;
-    }).join('')}
-        </div>`
+    }).join('')}`
+
+    you.appendChild(hand); 
 
     if(state.canBid) you.innerHTML +=`
-        <div id="bidding">
+        <div id="bid-buttons">
             ${Array.from({length: state.roundNumber + 1}, (_, i) => `
                     <button class="bid-button" data-bid="${i}">${i}</button>
                 `).join('')}
