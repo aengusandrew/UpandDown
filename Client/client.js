@@ -227,7 +227,100 @@ function renderLobby(state) {
 
 }
 
+function renderPlayers(state) {
+  const playersDiv = document.getElementById("players-wrapper");
+
+  const youIndex = state.players.findIndex(p=> p.id === state.youID);
+
+  // Put players in order so you are always at the bottom
+  const orderedPlayers = [
+      ...state.players.slice(youIndex + 1),
+      ...state.players.slice(0, youIndex)
+  ];
+
+  const radius = 40;
+  const centerX = 50
+  const centerY = 50;
+
+  orderedPlayers.forEach((player,i) => {
+
+      const phi = ((i+1)/state.players.length) * 2 * Math.PI + Math.PI/2;
+
+      const x = centerX + radius * Math.cos(phi);
+      const y = centerY + radius * Math.sin(phi);
+
+      let playerDiv = playersDiv.querySelector(`[data-player-id="${player.id}"]`);
+
+      if(!playerDiv) {
+        playerDiv = document.createElement('div');
+        playerDiv.className = 'player';
+
+        playerDiv.dataset.playerId = player.id;
+
+        playerDiv.style.position = 'absolute';
+        playerDiv.style.left = `${x}%`;
+        playerDiv.style.top = `${y}%`;
+        playerDiv.style.transform = 'translate(-50%, -50%)';
+
+        playerDiv.innerHTML += `
+            <img class="player-icon" src="../assets/images/player-icon-male.png" alt="player-icon">
+            <strong class="player-name table">${player.name}</strong>
+        `;
+
+        if(player.bid)
+            playerDiv.innerHTML += `
+            <div class="player-bid-wrapper">
+                <strong class="player-bid table">${player.bid}</strong>
+            </div>
+            `;
+
+        const wonTricks = document.createElement('div');
+        wonTricks.classList.add('won-tricks', 'table');
+
+        for(let i = 0; i < player.tricksWon; i++) {
+            const wonTrick = document.createElement('div');
+            wonTrick.classList.add('won-trick-card-wrapper', 'table');
+            wonTrick.style.position = 'absolute';
+            wonTrick.style.top = `${5 * i}px`;
+            wonTrick.style.transform = 'rotate(90deg)';
+            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
+            wonTricks.appendChild(wonTrick);
+        }
+        playerDiv.appendChild(wonTricks);
+      }
+
+      if(player.id === state.currentTurn) {
+          playerDiv.style.filter = 'drop-shadow(0 0 30px white)';
+      }
+
+      playersDiv.appendChild(playerDiv);
+  });
+
+
+}
+
+function renderTrick(state) {
+    const trick = document.getElementById("trick-cards");
+    if(state.trickCards.length !== 0) {
+        trick.innerHTML = `
+            ${trickToRender.map(t => `
+                <div>
+                    <playing-card id="trick-card" cid="${toCID(t.card)}"></playing-card>
+                </div>
+            `).join('')}`;
+    }
+}
+
+function renderYou(state) {
+
+}
+
 function renderPlay(state) {
+
+  renderPlayers(state); //Render the other players in the game
+  renderTrick(state); //Render the current trick cards
+  renderYou(state); //Render all elements specific to you (bid buttons, hand, won tricks)
+
     const leadSuit =
         state.trickEnded === false
             ? state.trickCards[0].card.suit :
@@ -243,30 +336,7 @@ function renderPlay(state) {
     const players = state.players;
     const numPlayers = players.length;
 
-    const youIndex = players.findIndex(p=> p.id === state.youID);
-
-    // Put players in order so you are always at the bottom
-    const orderedPlayers = [
-        ...players.slice(youIndex + 1),
-        ...players.slice(0, youIndex)
-    ];
-
-
-    playTable.innerHTML = '';
-
-
-    if(state.trickCards.length !== 0) {
-        const trick = document.createElement('div');
-        trick.id = "trick-area";
-        trick.innerHTML = `
-            ${trickToRender.map(t => `
-                <div>
-                    <playing-card cid="${toCID(t.card)}"></playing-card>
-                </div>
-            `).join('')}`;
-        playTable.appendChild(trick);
-    }
-
+//   playTable.innerHTML = '';
 
     const you = document.createElement('div');
     you.id = "your-player"
@@ -277,10 +347,8 @@ function renderPlay(state) {
     const handSize = state.yourHand.length;
     const spread = 30;
 
-
     const hand = document.createElement('div');
     hand.id = "hand";
-
 
     hand.innerHTML = 
       `${state.yourHand.map((card, i) => {
@@ -327,6 +395,8 @@ function renderPlay(state) {
     const yourWonTricks = document.createElement('div');
     yourWonTricks.id = 'your-won-tricks';
 
+    const youIndex = state.players.findIndex(p => p.id === state.youID);
+
     // TODO: Implement that a won trick card does not appear until after the below animation plays
     for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
         const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 10 + 5*i;
@@ -342,60 +412,6 @@ function renderPlay(state) {
     you.appendChild(yourWonTricks);
 
     playTable.appendChild(you);
-
-    const radius = 40;
-    const centerX = 50
-    const centerY = 50;
-
-    orderedPlayers.forEach((player,i) => {
-        const phi = ((i+1)/numPlayers) * 2 * Math.PI + Math.PI/2;
-
-        const x = centerX + radius * Math.cos(phi);
-        const y = centerY + radius * Math.sin(phi);
-
-        const div = document.createElement('div');
-        div.className = 'player';
-
-        div.dataset.playerId = player.id;
-
-        div.style.position = 'absolute';
-        div.style.left = `${x}%`;
-        div.style.top = `${y}%`;
-        div.style.transform = 'translate(-50%, -50%)';
-
-        div.innerHTML += `
-            <img class="player-icon" src="../assets/images/player-icon-male.png" alt="player-icon">
-            <strong class="player-name table">${player.name}</strong>
-        `;
-
-        if(player.bid)
-            div.innerHTML += `
-            <div class="player-bid-wrapper">
-                <strong class="player-bid table">${player.bid}</strong>
-            </div>
-            
-            `
-
-        const wonTricks = document.createElement('div');
-        wonTricks.classList.add('won-tricks', 'table');
-
-        for(let i = 0; i < player.tricksWon; i++) {
-            const wonTrick = document.createElement('div');
-            wonTrick.classList.add('won-trick-card-wrapper', 'table');
-            wonTrick.style.position = 'absolute';
-            wonTrick.style.top = `${5 * i}px`;
-            wonTrick.style.transform = 'rotate(90deg)';
-            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
-            wonTricks.appendChild(wonTrick);
-        }
-        div.appendChild(wonTricks);
-
-        if(player.id === state.currentTurn) {
-            div.style.filter = 'drop-shadow(0 0 30px white)';
-        }
-
-        playTable.appendChild(div);
-    });
 
     playTable.innerHTML +=
         `<div id="scoreboard-button-wrapper">
