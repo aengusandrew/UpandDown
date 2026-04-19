@@ -312,15 +312,6 @@ function renderTrick(state) {
 }
 
 function renderYou(state) {
-
-}
-
-function renderPlay(state) {
-
-  renderPlayers(state); //Render the other players in the game
-  renderTrick(state); //Render the current trick cards
-  renderYou(state); //Render all elements specific to you (bid buttons, hand, won tricks)
-
     const leadSuit =
         state.trickEnded === false
             ? state.trickCards[0].card.suit :
@@ -336,10 +327,7 @@ function renderPlay(state) {
     const players = state.players;
     const numPlayers = players.length;
 
-//   playTable.innerHTML = '';
-
-    const you = document.createElement('div');
-    you.id = "your-player"
+    const you = document.getElementById("your-player");
 
     you.dataset.playerId = state.youID;
 
@@ -347,8 +335,7 @@ function renderPlay(state) {
     const handSize = state.yourHand.length;
     const spread = 30;
 
-    const hand = document.createElement('div');
-    hand.id = "hand";
+    const hand = document.getElementById("your-hand");
 
     hand.innerHTML = 
       `${state.yourHand.map((card, i) => {
@@ -382,18 +369,12 @@ function renderPlay(state) {
                 `;
     }).join('')}`
 
-    you.appendChild(hand); 
+    const bidButtons = document.getElementById("bid-buttons");
+    bidButtons.innerHTML = 
+      `${Array.from({length: state.roundNumber + 1}, (_, i) => 
+      `button class="bid-button" data-bid="${i}">${i}</button>`).join('')}`;
 
-    if(state.canBid) you.innerHTML +=`
-        <div id="bid-buttons">
-            ${Array.from({length: state.roundNumber + 1}, (_, i) => `
-                    <button class="bid-button" data-bid="${i}">${i}</button>
-                `).join('')}
-        </div>
-            `;
-
-    const yourWonTricks = document.createElement('div');
-    yourWonTricks.id = 'your-won-tricks';
+    const yourWonTricks = document.getElementById("your-won-tricks");
 
     const youIndex = state.players.findIndex(p => p.id === state.youID);
 
@@ -409,56 +390,60 @@ function renderPlay(state) {
         yourWonTricks.appendChild(wonTrick);
     }
 
-    you.appendChild(yourWonTricks);
+}
 
-    playTable.appendChild(you);
+function renderPlay(state) {
 
-    playTable.innerHTML +=
-        `<div id="scoreboard-button-wrapper">
-            <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
-        </div>`;
+  renderPlayers(state);
+  renderTrick(state);
+  renderYou(state);
 
-    playTable.innerHTML +=
-        `<div id="quit-button-wrapper">
-            <div class="parallelogram" id="quit-button">Quit</div>
-        </div>`
+  playTable.innerHTML +=
+      `<div id="scoreboard-button-wrapper">
+          <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
+      </div>`;
 
-    playTable.innerHTML += `
-        <div id="trump-card">
-            <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
-        </div>
-    `
+  playTable.innerHTML +=
+      `<div id="quit-button-wrapper">
+          <div class="parallelogram" id="quit-button">Quit</div>
+      </div>`
 
-    playTable.onclick = e => {
-        const cardE1 = e.target.closest('[data-suit][data-value]');
+  playTable.innerHTML += `
+      <div id="trump-card">
+          <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
+      </div>
+  `
 
-        if (cardE1 && state.phase === "playing") {
-            socket.emit('play_card', {
-                suit: cardE1.dataset.suit,
-                value: cardE1.dataset.value
-            });
-            return;
-        }
+  playTable.onclick = e => {
+      const cardE1 = e.target.closest('[data-suit][data-value]');
 
-        const cardB1 = e.target.closest('[data-bid]');
+      if (cardE1 && state.phase === "playing") {
+          socket.emit('play_card', {
+              suit: cardE1.dataset.suit,
+              value: cardE1.dataset.value
+          });
+          return;
+      }
 
-        if (cardB1 && state.phase === "bidding") {
-            socket.emit('place_bid', Number(cardB1.dataset.bid));
-        }
+      const cardB1 = e.target.closest('[data-bid]');
 
-        const scoreboardToggle = e.target.id === 'scoreboard-button';
-        if(scoreboardToggle) {
-            renderScoreboard(state);
-            scoreboard.style.display = 'flex';
-        }
+      if (cardB1 && state.phase === "bidding") {
+          socket.emit('place_bid', Number(cardB1.dataset.bid));
+      }
 
-        const quitGame = e.target.id === 'quit-button';
-        if(quitGame) {
-            socket.emit('quit-game');
-            localStorage.removeItem('roomCode');
-            location.reload();
-        }
-    }
+      const scoreboardToggle = e.target.id === 'scoreboard-button';
+      if(scoreboardToggle) {
+          renderScoreboard(state);
+          scoreboard.style.display = 'flex';
+      }
+
+      const quitGame = e.target.id === 'quit-button';
+      if(quitGame) {
+          socket.emit('quit-game');
+          localStorage.removeItem('roomCode');
+          location.reload();
+      }
+  }
 }
 
 function renderEnd(state) {
