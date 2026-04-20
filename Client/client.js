@@ -369,26 +369,31 @@ function renderYou(state) {
                 `;
     }).join('')}`
 
-    const bidButtons = document.getElementById("bid-buttons");
+  const bidButtons = document.getElementById("bid-buttons");
+
+  if(state.canBid) {
     bidButtons.innerHTML = 
-      `${Array.from({length: state.roundNumber + 1}, (_, i) => 
-      `button class="bid-button" data-bid="${i}">${i}</button>`).join('')}`;
+    `${Array.from({length: state.roundNumber + 1}, (_, i) => 
+    `<button class="bid-button" data-bid="${i}">${i}</button>`).join('')}`;
+  } else {
+  bidButtons.innerHTML = '';
+  }
+  
+  const yourWonTricks = document.getElementById("your-won-tricks");
 
-    const yourWonTricks = document.getElementById("your-won-tricks");
+  const youIndex = state.players.findIndex(p => p.id === state.youID);
 
-    const youIndex = state.players.findIndex(p => p.id === state.youID);
+  // TODO: Implement that a won trick card does not appear until after the below animation plays
+  for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
+      const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 10 + 5*i;
 
-    // TODO: Implement that a won trick card does not appear until after the below animation plays
-    for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
-        const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 10 + 5*i;
-
-        const wonTrick = document.createElement('div');
-        wonTrick.style.position = 'absolute';
-        wonTrick.style.right = `${cardOffset}px`;
-        wonTrick.classList.add('won-trick-card-wrapper', 'table');
-        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='width: 30px;'></playing-card>`;
-        yourWonTricks.appendChild(wonTrick);
-    }
+      const wonTrick = document.createElement('div');
+      wonTrick.style.position = 'absolute';
+      wonTrick.style.right = `${cardOffset}px`;
+      wonTrick.classList.add('won-trick-card-wrapper', 'table');
+      wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='width: 30px;'></playing-card>`;
+      yourWonTricks.appendChild(wonTrick);
+  }
 
 }
 
