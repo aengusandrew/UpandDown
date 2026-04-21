@@ -51,7 +51,7 @@
     cursor: pointer;
 }
 
-#hand {
+#your-hand {
     position: absolute;
     min-height: 50px;
     display: flex;
@@ -74,7 +74,7 @@ playing-card {
     transform: scale(1.1);
 }
 
-#bidding {
+#bid-buttons {
     position: absolute;
     display: flex;
     left: 50%;
@@ -196,7 +196,7 @@ playing-card.your-won-trick-card {
 }
 
 
-#trick-area {
+#trick-cards {
     position: absolute;
     top: 50%;
     left: 50%;

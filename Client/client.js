@@ -300,6 +300,7 @@ function renderPlayers(state) {
 }
 
 function renderTrick(state) {
+    const trickToRender = state.trickCards;
     const trick = document.getElementById("trick-cards");
     if(state.trickCards.length !== 0) {
         trick.innerHTML = `
@@ -320,9 +321,6 @@ function renderYou(state) {
     const hasLeadSuit =
         leadSuit &&
         state.yourHand.some(c => c.suit === leadSuit);
-
-    const trickToRender =
-        state.trickCards;
 
     const players = state.players;
     const numPlayers = players.length;
