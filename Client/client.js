@@ -78,7 +78,7 @@ if(DEV_MODE) {
 
             requestAnimationFrame(() => {
                 const existingCards = Array.from(
-                    document.querySelectorAll("#trick-area playing-card")
+                    document.querySelectorAll("#trick-cards playing-card")
                 );
 
                 animateTrickToWinner(state, existingCards);
