@@ -390,6 +390,8 @@ function renderYou(state) {
 
   const youIndex = state.players.findIndex(p => p.id === state.youID);
 
+  if(state.players[youIndex].tricksWon === 0) yourWonTricks.replaceChildren();
+
   // TODO: Implement that a won trick card does not appear until after the below animation plays
   for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
       const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 10 + 5*i;
