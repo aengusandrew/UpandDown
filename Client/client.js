@@ -284,6 +284,8 @@ function renderPlayers(state) {
         wonTricks.classList.add('won-tricks', 'table');
       }
 
+      if(wonTricks && player.tricksWon === 0) wonTricks.replaceChildren();
+
       for(let i = 0; i < player.tricksWon; i++) {
           const wonTrick = document.createElement('div');
           wonTrick.classList.add('won-trick-card-wrapper', 'table');
