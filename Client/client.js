@@ -276,10 +276,14 @@ function renderPlayers(state) {
 
       }
 
-      const wonTricks = document.createElement('div');
-      wonTricks.classList.add('won-tricks', 'table');
+      let wonTricks = playerDiv.querySelector('.won-tricks');
 
-      console.log(player.tricksWon);
+      if(!wonTricks) {
+        console.log("Won-tricks didn't exist yet!");
+        wonTricks = document.createElement('div');
+        wonTricks.classList.add('won-tricks', 'table');
+      }
+
       for(let i = 0; i < player.tricksWon; i++) {
           const wonTrick = document.createElement('div');
           wonTrick.classList.add('won-trick-card-wrapper', 'table');
