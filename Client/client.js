@@ -274,20 +274,23 @@ function renderPlayers(state) {
             </div>
             `;
 
-        const wonTricks = document.createElement('div');
-        wonTricks.classList.add('won-tricks', 'table');
-
-        for(let i = 0; i < player.tricksWon; i++) {
-            const wonTrick = document.createElement('div');
-            wonTrick.classList.add('won-trick-card-wrapper', 'table');
-            wonTrick.style.position = 'absolute';
-            wonTrick.style.top = `${5 * i}px`;
-            wonTrick.style.transform = 'rotate(90deg)';
-            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
-            wonTricks.appendChild(wonTrick);
-        }
-        playerDiv.appendChild(wonTricks);
       }
+
+      const wonTricks = document.createElement('div');
+      wonTricks.classList.add('won-tricks', 'table');
+
+      console.log(player.tricksWon);
+      for(let i = 0; i < player.tricksWon; i++) {
+          const wonTrick = document.createElement('div');
+          wonTrick.classList.add('won-trick-card-wrapper', 'table');
+          wonTrick.style.position = 'absolute';
+          wonTrick.style.top = `${5 * i}px`;
+          wonTrick.style.transform = 'rotate(90deg)';
+          wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
+          wonTricks.appendChild(wonTrick);
+      }
+
+      playerDiv.appendChild(wonTricks);
 
       if(player.id === state.currentTurn) {
           playerDiv.style.filter = 'drop-shadow(0 0 30px white)';
@@ -542,69 +545,71 @@ function renderScoreboard(state) {
 
 function animateTrickToWinner(state, trickCards) {
 
-    if(!trickCards.length) return;
+  if(!trickCards.length) return;
 
-    const winnerID = state.currentTurn;
-    const winnerEl = document.querySelector(`[data-player-id="${winnerID}"]`);
-    if(!winnerEl) return;
+  const winnerID = state.currentTurn;
+  const winnerEl = document.querySelector(`[data-player-id="${winnerID}"]`);
+  if(!winnerEl) return;
 
-    let stackEl;
+  let stackEl;
 
-    if(winnerID === state.youID) {
-        stackEl = winnerEl.querySelector('#your-won-tricks');
-    } else {
-        stackEl = winnerEl.querySelector('.won-tricks');
-    }
+  if(winnerID === state.youID) {
+      stackEl = winnerEl.querySelector('#your-won-tricks');
+  } else {
+      stackEl = winnerEl.querySelector('.won-tricks');
+  }
 
-    if(!stackEl) return;
+  if(!stackEl) return;
 
-    const lastCardEl = stackEl.lastElementChild;
+  let lastCardEl = stackEl.lastElementChild;
 
-    const lastCardRect = lastCardEl.getBoundingClientRect();
+  if(!lastCardEl) lastCardEl = stackEl;
 
-    trickCards.forEach((card, index) => {
-        const cardRect = card.getBoundingClientRect();
+  const lastCardRect = lastCardEl.getBoundingClientRect();
 
-        document.body.appendChild(card);
+  trickCards.forEach((card, index) => {
+      const cardRect = card.getBoundingClientRect();
 
-        card.style.position = 'absolute';
-        card.style.left = cardRect.left + 'px';
-        card.style.top = cardRect.top + 'px';
-        card.style.transition = 'all 0.5s ease-in-out';
-        card.style.zIndex = 9999;
+      document.body.appendChild(card);
 
-        requestAnimationFrame(() => {
-            card.style.left = (lastCardRect.left + lastCardRect.width / 2 - cardRect.width / 2 + 1.5) + 'px';
-            card.style.top = (lastCardRect.top + lastCardRect.height / 2 - cardRect.height / 2) + 'px';
-            if(winnerID !== state.youID) {
-                card.style.transform = 'scale(0.375) rotate(90deg)';
-            } else {
-                card.style.transform = 'scale(0.375)';
-            }
-        });
+      card.style.position = 'absolute';
+      card.style.left = cardRect.left + 'px';
+      card.style.top = cardRect.top + 'px';
+      card.style.transition = 'all 0.5s ease-in-out';
+      card.style.zIndex = 9999;
 
-        // Flip cards
-        setTimeout(() => {
-            card.style.transition = 'transform 0.2s';
-            card.style.transform = 'scaleX(0)';
-        }, 650 + index * 60);
+      requestAnimationFrame(() => {
+          card.style.left = (lastCardRect.left + lastCardRect.width / 2 - cardRect.width / 2 + 1.5) + 'px';
+          card.style.top = (lastCardRect.top + lastCardRect.height / 2 - cardRect.height / 2) + 'px';
+          if(winnerID !== state.youID) {
+              card.style.transform = 'scale(0.375) rotate(90deg)';
+          } else {
+              card.style.transform = 'scale(0.375)';
+          }
+      });
 
-        setTimeout(() => {
-            card.setAttribute('backcolor', 'red');
-            card.setAttribute('rank', '0');
-            card.removeAttribute('cid');
+      // Flip cards
+      setTimeout(() => {
+          card.style.transition = 'transform 0.2s';
+          card.style.transform = 'scaleX(0)';
+      }, 650 + index * 60);
 
-            if(winnerID !== state.youID) {
-                card.style.transform = 'scaleX(1) scale(0.375) rotate(90deg)';
-            } else {
-                card.style.transform = 'scaleX(1) scale(0.375)';
-            }
-        }, 800 + index * 60);
+      setTimeout(() => {
+          card.setAttribute('backcolor', 'red');
+          card.setAttribute('rank', '0');
+          card.removeAttribute('cid');
 
-        setTimeout(() => {
-            card.remove();
-        }, 1200 + index * 60);
-    })
+          if(winnerID !== state.youID) {
+              card.style.transform = 'scaleX(1) scale(0.375) rotate(90deg)';
+          } else {
+              card.style.transform = 'scaleX(1) scale(0.375)';
+          }
+      }, 800 + index * 60);
+
+      setTimeout(() => {
+          card.remove();
+      }, 1200 + index * 60);
+  })
 }
 
 function getMockState(type) {
