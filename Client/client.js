@@ -30,6 +30,8 @@ const scoreboard = document.getElementById('scoreboard');
 const playTable = document.getElementById('playTable');
 const endScreen = document.getElementById('end-screen');
 
+let currentState = null;
+
 document.getElementById('createBtn').onclick = () => {
     socket.emit('createRoom', {
         roomCode: roomInput.value,
@@ -72,33 +74,34 @@ if(DEV_MODE) {
     renderState(state);
 
 } else {
-    socket.on('game_state', state => {
-        if(previousTrickEnded === false && state.trickEnded === true) {
-            renderState(state);
+  socket.on('game_state', state => {
+    currentState = state;
+    if(previousTrickEnded === false && state.trickEnded === true) {
+      renderState(state);
 
-            requestAnimationFrame(() => {
-                const existingCards = Array.from(
-                    document.querySelectorAll("#trick-area playing-card")
-                );
+      requestAnimationFrame(() => {
+        const existingCards = Array.from(
+            document.querySelectorAll("#trick-cards playing-card")
+        );
 
-                animateTrickToWinner(state, existingCards);
+        animateTrickToWinner(state, existingCards);
 
-                setTimeout(() => {
-                    // Clear trickCards for rendering purposes
-                    const cleanState = {
-                        ...state,
-                        trickCards: []
-                    };
-                    renderState(cleanState);
-                }, 1000);
-            })
+        setTimeout(() => {
+            // Clear trickCards for rendering purposes
+            const cleanState = {
+                ...state,
+                trickCards: []
+            };
+            renderState(cleanState);
+        }, 1000);
+      })
 
-        } else {
-            renderState(state);
-        }
+    } else {
+        renderState(state);
+    }
 
-        previousTrickEnded = state.trickEnded;
-    });
+    previousTrickEnded = state.trickEnded;
+  });
 }
 
 function renderState(state) {
@@ -227,7 +230,107 @@ function renderLobby(state) {
 
 }
 
-function renderPlay(state) {
+function renderPlayers(state) {
+  const playersDiv = document.getElementById("players-wrapper");
+
+  const youIndex = state.players.findIndex(p=> p.id === state.youID);
+
+  // Put players in order so you are always at the bottom
+  const orderedPlayers = [
+      ...state.players.slice(youIndex + 1),
+      ...state.players.slice(0, youIndex)
+  ];
+
+  const radius = 40;
+  const centerX = 50
+  const centerY = 50;
+
+  const existingPlayers = playersDiv.querySelectorAll("[data-player-id");
+  existingPlayers.forEach(el => {
+    if(!state.players.some(p => p.id === el.dataset.playerId)) el.remove();
+  });
+
+
+
+  orderedPlayers.forEach((player,i) => {
+
+      const phi = ((i+1)/state.players.length) * 2 * Math.PI + Math.PI/2;
+
+      const x = centerX + radius * Math.cos(phi);
+      const y = centerY + radius * Math.sin(phi);
+
+      let playerDiv = playersDiv.querySelector(`[data-player-id="${player.id}"]`);
+
+      if(!playerDiv) {
+        playerDiv = document.createElement('div');
+        playerDiv.className = 'player';
+
+        playerDiv.dataset.playerId = player.id;
+
+        playerDiv.style.position = 'absolute';
+        playerDiv.style.left = `${x}%`;
+        playerDiv.style.top = `${y}%`;
+        playerDiv.style.transform = 'translate(-50%, -50%)';
+
+        playerDiv.innerHTML += `
+            <img class="player-icon" src="../assets/images/player-icon-male.png" alt="player-icon">
+            <strong class="player-name table">${player.name}</strong>
+        `;
+
+        if(player.bid)
+            playerDiv.innerHTML += `
+            <div class="player-bid-wrapper">
+                <strong class="player-bid table">${player.bid}</strong>
+            </div>
+            `;
+
+      }
+
+      let wonTricks = playerDiv.querySelector('.won-tricks');
+
+      if(!wonTricks) {
+        wonTricks = document.createElement('div');
+        wonTricks.classList.add('won-tricks', 'table');
+      }
+
+      wonTricks.replaceChildren();
+
+      for(let i = 0; i < player.tricksWon; i++) {
+          const wonTrick = document.createElement('div');
+          wonTrick.classList.add('won-trick-card-wrapper', 'table');
+          wonTrick.style.position = 'absolute';
+          wonTrick.style.top = `${5 * i}px`;
+          wonTrick.style.transform = 'rotate(90deg)';
+          wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
+          wonTricks.appendChild(wonTrick);
+      }
+
+      playerDiv.appendChild(wonTricks);
+
+      if(player.id === state.currentTurn) {
+          playerDiv.style.filter = 'drop-shadow(0 0 30px white)';
+      }
+
+      playersDiv.appendChild(playerDiv);
+  });
+
+
+}
+
+function renderTrick(state) {
+    const trickToRender = state.trickCards;
+    const trick = document.getElementById("trick-cards");
+    if(state.trickCards.length !== 0) {
+        trick.innerHTML = `
+            ${trickToRender.map(t => `
+                <div>
+                    <playing-card id="trick-card" cid="${toCID(t.card)}"></playing-card>
+                </div>
+            `).join('')}`;
+    }
+}
+
+function renderYou(state) {
     const leadSuit =
         state.trickEnded === false
             ? state.trickCards[0].card.suit :
@@ -237,39 +340,10 @@ function renderPlay(state) {
         leadSuit &&
         state.yourHand.some(c => c.suit === leadSuit);
 
-    const trickToRender =
-        state.trickCards;
-
     const players = state.players;
     const numPlayers = players.length;
 
-    const youIndex = players.findIndex(p=> p.id === state.youID);
-
-    // Put players in order so you are always at the bottom
-    const orderedPlayers = [
-        ...players.slice(youIndex + 1),
-        ...players.slice(0, youIndex)
-    ];
-
-
-    playTable.innerHTML = '';
-
-
-    if(state.trickCards.length !== 0) {
-        const trick = document.createElement('div');
-        trick.id = "trick-area";
-        trick.innerHTML = `
-            ${trickToRender.map(t => `
-                <div>
-                    <playing-card cid="${toCID(t.card)}"></playing-card>
-                </div>
-            `).join('')}`;
-        playTable.appendChild(trick);
-    }
-
-
-    const you = document.createElement('div');
-    you.id = "your-player"
+    const you = document.getElementById("your-player");
 
     you.dataset.playerId = state.youID;
 
@@ -277,8 +351,10 @@ function renderPlay(state) {
     const handSize = state.yourHand.length;
     const spread = 30;
 
-    you.innerHTML = `<div id="hand">
-            ${state.yourHand.map((card, i) => {
+    const hand = document.getElementById("your-hand");
+
+    hand.innerHTML = 
+      `${state.yourHand.map((card, i) => {
         const mustFollow = leadSuit && hasLeadSuit;
         const isPlayable =
             state.phase === 'bidding' ||
@@ -307,136 +383,129 @@ function renderPlay(state) {
                     ></playing-card>
                 </div>
                 `;
-    }).join('')}
-        </div>`
+    }).join('')}`
 
-    if(state.canBid) you.innerHTML +=`
-        <div id="bidding">
-            ${Array.from({length: state.roundNumber + 1}, (_, i) => `
-                    <button class="bid-button" data-bid="${i}">${i}</button>
-                `).join('')}
-        </div>
-            `;
+  const bidButtons = document.getElementById("bid-buttons");
 
-    const yourWonTricks = document.createElement('div');
-    yourWonTricks.id = 'your-won-tricks';
+  if(state.canBid) {
+    bidButtons.innerHTML = 
+    `${Array.from({length: state.roundNumber + 1}, (_, i) => 
+    `<button class="bid-button" data-bid="${i}">${i}</button>`).join('')}`;
+  } else {
+  bidButtons.innerHTML = '';
+  }
+  
+  const yourWonTricks = document.getElementById("your-won-tricks");
 
-    // TODO: Implement that a won trick card does not appear until after the below animation plays
-    for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
-        const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 10 + 5*i;
+  const youIndex = state.players.findIndex(p => p.id === state.youID);
 
-        const wonTrick = document.createElement('div');
-        wonTrick.style.position = 'absolute';
-        wonTrick.style.right = `${cardOffset}px`;
-        wonTrick.classList.add('won-trick-card-wrapper', 'table');
-        wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='width: 30px;'></playing-card>`;
-        yourWonTricks.appendChild(wonTrick);
-    }
+  yourWonTricks.replaceChildren();
 
-    you.appendChild(yourWonTricks);
+  // TODO: Implement that a won trick card does not appear until after the below animation plays
+  for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
+      const cardOffset = -(state.players[youIndex].tricksWon*5+45)/2 + 10 + 5*i;
 
-    playTable.appendChild(you);
+      const wonTrick = document.createElement('div');
+      wonTrick.style.position = 'absolute';
+      wonTrick.style.right = `${cardOffset}px`;
+      wonTrick.classList.add('won-trick-card-wrapper', 'table');
+      wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='your-won-trick-card table' style='width: 30px;'></playing-card>`;
+      yourWonTricks.appendChild(wonTrick);
+  }
 
-    const radius = 40;
-    const centerX = 50
-    const centerY = 50;
+}
 
-    orderedPlayers.forEach((player,i) => {
-        const phi = ((i+1)/numPlayers) * 2 * Math.PI + Math.PI/2;
+function renderPlay(state) {
 
-        const x = centerX + radius * Math.cos(phi);
-        const y = centerY + radius * Math.sin(phi);
+  renderPlayers(state);
+  renderTrick(state);
+  renderYou(state);
 
-        const div = document.createElement('div');
-        div.className = 'player';
+  const scoreboardButton = document.getElementById("scoreboard-button-wrapper");
+  scoreboardButton.innerHTML = 
+      `<div id="scoreboard-button-wrapper">
+          <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
+      </div>`;
 
-        div.dataset.playerId = player.id;
+  const quitButton = document.getElementById("quit-button-wrapper");
+  quitButton.innerHTML = 
+      `<div id="quit-button-wrapper">
+          <div class="parallelogram" id="quit-button">Quit</div>
+      </div>`;
 
-        div.style.position = 'absolute';
-        div.style.left = `${x}%`;
-        div.style.top = `${y}%`;
-        div.style.transform = 'translate(-50%, -50%)';
+  const trumpCard = document.getElementById("trump-card");
+  trumpCard.innerHTML = 
+      `<div id="trump-card">
+          <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
+      </div>`;
 
-        div.innerHTML += `
-            <img class="player-icon" src="../assets/images/player-icon-male.png" alt="player-icon">
-            <strong class="player-name table">${player.name}</strong>
-        `;
+  playTable.onclick = e => {
+      const cardE1 = e.target.closest('[data-suit][data-value]');
 
-        if(player.bid)
-            div.innerHTML += `
-            <div class="player-bid-wrapper">
-                <strong class="player-bid table">${player.bid}</strong>
-            </div>
-            
-            `
+      if (cardE1 && state.phase === "playing") {
+          socket.emit('play_card', {
+              suit: cardE1.dataset.suit,
+              value: cardE1.dataset.value
+          });
+          return;
+      }
 
-        const wonTricks = document.createElement('div');
-        wonTricks.classList.add('won-tricks', 'table');
+      const cardB1 = e.target.closest('[data-bid]');
 
-        for(let i = 0; i < player.tricksWon; i++) {
-            const wonTrick = document.createElement('div');
-            wonTrick.classList.add('won-trick-card-wrapper', 'table');
-            wonTrick.style.position = 'absolute';
-            wonTrick.style.top = `${5 * i}px`;
-            wonTrick.style.transform = 'rotate(90deg)';
-            wonTrick.innerHTML = `<playing-card rank='0' backcolor='red' class='won-trick-card table' style="width: 30px"></playing-card>`;
-            wonTricks.appendChild(wonTrick);
-        }
-        div.appendChild(wonTricks);
+      if (cardB1 && state.phase === "bidding") {
+          socket.emit('place_bid', Number(cardB1.dataset.bid));
+      }
 
-        if(player.id === state.currentTurn) {
-            div.style.filter = 'drop-shadow(0 0 30px white)';
-        }
+      const scoreboardToggle = e.target.id === 'scoreboard-button';
+      if(scoreboardToggle) {
+          renderScoreboard(state);
+          scoreboard.style.display = 'flex';
+      }
 
-        playTable.appendChild(div);
-    });
+      const quitGame = e.target.id === 'quit-button';
+      if(quitGame) {
+          socket.emit('quit-game');
+          localStorage.removeItem('roomCode');
+          location.reload();
+      }
+  }
+}
 
-    playTable.innerHTML +=
-        `<div id="scoreboard-button-wrapper">
-            <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
-        </div>`;
+playTable.addEventListener('click', (e) => {
+  const card = e.target.closest('[data-suit][data-value]');
+  
+  state = currentState;
 
-    playTable.innerHTML +=
-        `<div id="quit-button-wrapper">
-            <div class="parallelogram" id="quit-button">Quit</div>
-        </div>`
+  if (card && state.phase === "playing") {
+      socket.emit('play_card', {
+          suit: card.dataset.suit,
+          value: card.dataset.value
+      });
+      return;
+  }
 
-    playTable.innerHTML += `
-        <div id="trump-card">
-            <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
-        </div>
-    `
+  const bid = e.target.closest('[data-bid]');
 
-    playTable.onclick = e => {
-        const cardE1 = e.target.closest('[data-suit][data-value]');
+  if (bid && state.phase === "bidding") {
+      socket.emit('place_bid', Number(bid.dataset.bid));
+  }
 
-        if (cardE1 && state.phase === "playing") {
-            socket.emit('play_card', {
-                suit: cardE1.dataset.suit,
-                value: cardE1.dataset.value
-            });
-            return;
-        }
+  const scoreboardToggle = e.target.id === 'scoreboard-button';
+  if(scoreboardToggle) {
+      renderScoreboard(state);
+      scoreboard.style.display = 'flex';
+  }
 
-        const cardB1 = e.target.closest('[data-bid]');
+  const quitGame = e.target.id === 'quit-button';
+  if(quitGame) {
+      socket.emit('quit-game');
+      localStorage.removeItem('roomCode');
+      location.reload();
+  }
+});
 
-        if (cardB1 && state.phase === "bidding") {
-            socket.emit('place_bid', Number(cardB1.dataset.bid));
-        }
+function handlePlayTableClick() {
 
-        const scoreboardToggle = e.target.id === 'scoreboard-button';
-        if(scoreboardToggle) {
-            renderScoreboard(state);
-            scoreboard.style.display = 'flex';
-        }
-
-        const quitGame = e.target.id === 'quit-button';
-        if(quitGame) {
-            socket.emit('quit-game');
-            localStorage.removeItem('roomCode');
-            location.reload();
-        }
-    }
 }
 
 function renderEnd(state) {
@@ -532,69 +601,71 @@ function renderScoreboard(state) {
 
 function animateTrickToWinner(state, trickCards) {
 
-    if(!trickCards.length) return;
+  if(!trickCards.length) return;
 
-    const winnerID = state.currentTurn;
-    const winnerEl = document.querySelector(`[data-player-id="${winnerID}"]`);
-    if(!winnerEl) return;
+  const winnerID = state.currentTurn;
+  const winnerEl = document.querySelector(`[data-player-id="${winnerID}"]`);
+  if(!winnerEl) return;
 
-    let stackEl;
+  let stackEl;
 
-    if(winnerID === state.youID) {
-        stackEl = winnerEl.querySelector('#your-won-tricks');
-    } else {
-        stackEl = winnerEl.querySelector('.won-tricks');
-    }
+  if(winnerID === state.youID) {
+      stackEl = winnerEl.querySelector('#your-won-tricks');
+  } else {
+      stackEl = winnerEl.querySelector('.won-tricks');
+  }
 
-    if(!stackEl) return;
+  if(!stackEl) return;
 
-    const lastCardEl = stackEl.lastElementChild;
+  let lastCardEl = stackEl.lastElementChild;
 
-    const lastCardRect = lastCardEl.getBoundingClientRect();
+  if(!lastCardEl) lastCardEl = stackEl;
 
-    trickCards.forEach((card, index) => {
-        const cardRect = card.getBoundingClientRect();
+  const lastCardRect = lastCardEl.getBoundingClientRect();
 
-        document.body.appendChild(card);
+  trickCards.forEach((card, index) => {
+      const cardRect = card.getBoundingClientRect();
 
-        card.style.position = 'absolute';
-        card.style.left = cardRect.left + 'px';
-        card.style.top = cardRect.top + 'px';
-        card.style.transition = 'all 0.5s ease-in-out';
-        card.style.zIndex = 9999;
+      document.body.appendChild(card);
 
-        requestAnimationFrame(() => {
-            card.style.left = (lastCardRect.left + lastCardRect.width / 2 - cardRect.width / 2 + 1.5) + 'px';
-            card.style.top = (lastCardRect.top + lastCardRect.height / 2 - cardRect.height / 2) + 'px';
-            if(winnerID !== state.youID) {
-                card.style.transform = 'scale(0.375) rotate(90deg)';
-            } else {
-                card.style.transform = 'scale(0.375)';
-            }
-        });
+      card.style.position = 'absolute';
+      card.style.left = cardRect.left + 'px';
+      card.style.top = cardRect.top + 'px';
+      card.style.transition = 'all 0.5s ease-in-out';
+      card.style.zIndex = 9999;
 
-        // Flip cards
-        setTimeout(() => {
-            card.style.transition = 'transform 0.2s';
-            card.style.transform = 'scaleX(0)';
-        }, 650 + index * 60);
+      requestAnimationFrame(() => {
+          card.style.left = (lastCardRect.left + lastCardRect.width / 2 - cardRect.width / 2 + 1.5) + 'px';
+          card.style.top = (lastCardRect.top + lastCardRect.height / 2 - cardRect.height / 2) + 'px';
+          if(winnerID !== state.youID) {
+              card.style.transform = 'scale(0.375) rotate(90deg)';
+          } else {
+              card.style.transform = 'scale(0.375)';
+          }
+      });
 
-        setTimeout(() => {
-            card.setAttribute('backcolor', 'red');
-            card.setAttribute('rank', '0');
-            card.removeAttribute('cid');
+      // Flip cards
+      setTimeout(() => {
+          card.style.transition = 'transform 0.2s';
+          card.style.transform = 'scaleX(0)';
+      }, 650 + index * 60);
 
-            if(winnerID !== state.youID) {
-                card.style.transform = 'scaleX(1) scale(0.375) rotate(90deg)';
-            } else {
-                card.style.transform = 'scaleX(1) scale(0.375)';
-            }
-        }, 800 + index * 60);
+      setTimeout(() => {
+          card.setAttribute('backcolor', 'red');
+          card.setAttribute('rank', '0');
+          card.removeAttribute('cid');
 
-        setTimeout(() => {
-            card.remove();
-        }, 1200 + index * 60);
-    })
+          if(winnerID !== state.youID) {
+              card.style.transform = 'scaleX(1) scale(0.375) rotate(90deg)';
+          } else {
+              card.style.transform = 'scaleX(1) scale(0.375)';
+          }
+      }, 800 + index * 60);
+
+      setTimeout(() => {
+          card.remove();
+      }, 1200 + index * 60);
+  })
 }
 
 function getMockState(type) {
