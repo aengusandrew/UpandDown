@@ -242,6 +242,13 @@ function renderPlayers(state) {
   const centerX = 50
   const centerY = 50;
 
+  const existingPlayers = playersDiv.querySelectorAll("[data-player-id");
+  existingPlayers.forEach(el => {
+    if(!state.players.some(p => p.id === el.dataset.playerId)) el.remove();
+  });
+
+
+
   orderedPlayers.forEach((player,i) => {
 
       const phi = ((i+1)/state.players.length) * 2 * Math.PI + Math.PI/2;
@@ -412,21 +419,23 @@ function renderPlay(state) {
   renderTrick(state);
   renderYou(state);
 
-  playTable.innerHTML +=
+  const scoreboardButton = document.getElementById("scoreboard-button-wrapper");
+  scoreboardButton.innerHTML = 
       `<div id="scoreboard-button-wrapper">
           <div class="parallelogram" id="scoreboard-button">Scoreboard</div>
       </div>`;
 
-  playTable.innerHTML +=
+  const quitButton = document.getElementById("quit-button-wrapper");
+  quitButton.innerHTML = 
       `<div id="quit-button-wrapper">
           <div class="parallelogram" id="quit-button">Quit</div>
-      </div>`
+      </div>`;
 
-  playTable.innerHTML += `
-      <div id="trump-card">
+  const trumpCard = document.getElementById("trump-card");
+  trumpCard.innerHTML = 
+      `<div id="trump-card">
           <playing-card cid="${toCID(state.trumpCard)}"></playing-card>
-      </div>
-  `
+      </div>`;
 
   playTable.onclick = e => {
       const cardE1 = e.target.closest('[data-suit][data-value]');
