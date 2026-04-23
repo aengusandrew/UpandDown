@@ -30,6 +30,8 @@ const scoreboard = document.getElementById('scoreboard');
 const playTable = document.getElementById('playTable');
 const endScreen = document.getElementById('end-screen');
 
+let currentState = null;
+
 document.getElementById('createBtn').onclick = () => {
     socket.emit('createRoom', {
         roomCode: roomInput.value,
@@ -72,33 +74,34 @@ if(DEV_MODE) {
     renderState(state);
 
 } else {
-    socket.on('game_state', state => {
-        if(previousTrickEnded === false && state.trickEnded === true) {
-            renderState(state);
+  socket.on('game_state', state => {
+    currentState = state;
+    if(previousTrickEnded === false && state.trickEnded === true) {
+      renderState(state);
 
-            requestAnimationFrame(() => {
-                const existingCards = Array.from(
-                    document.querySelectorAll("#trick-cards playing-card")
-                );
+      requestAnimationFrame(() => {
+        const existingCards = Array.from(
+            document.querySelectorAll("#trick-cards playing-card")
+        );
 
-                animateTrickToWinner(state, existingCards);
+        animateTrickToWinner(state, existingCards);
 
-                setTimeout(() => {
-                    // Clear trickCards for rendering purposes
-                    const cleanState = {
-                        ...state,
-                        trickCards: []
-                    };
-                    renderState(cleanState);
-                }, 1000);
-            })
+        setTimeout(() => {
+            // Clear trickCards for rendering purposes
+            const cleanState = {
+                ...state,
+                trickCards: []
+            };
+            renderState(cleanState);
+        }, 1000);
+      })
 
-        } else {
-            renderState(state);
-        }
+    } else {
+        renderState(state);
+    }
 
-        previousTrickEnded = state.trickEnded;
-    });
+    previousTrickEnded = state.trickEnded;
+  });
 }
 
 function renderState(state) {
@@ -466,6 +469,43 @@ function renderPlay(state) {
           location.reload();
       }
   }
+}
+
+playTable.addEventListener('click', (e) => {
+  const card = e.target.closest('[data-suit][data-value]');
+  
+  state = currentState;
+
+  if (card && state.phase === "playing") {
+      socket.emit('play_card', {
+          suit: card.dataset.suit,
+          value: card.dataset.value
+      });
+      return;
+  }
+
+  const bid = e.target.closest('[data-bid]');
+
+  if (bid && state.phase === "bidding") {
+      socket.emit('place_bid', Number(bid.dataset.bid));
+  }
+
+  const scoreboardToggle = e.target.id === 'scoreboard-button';
+  if(scoreboardToggle) {
+      renderScoreboard(state);
+      scoreboard.style.display = 'flex';
+  }
+
+  const quitGame = e.target.id === 'quit-button';
+  if(quitGame) {
+      socket.emit('quit-game');
+      localStorage.removeItem('roomCode');
+      location.reload();
+  }
+});
+
+function handlePlayTableClick() {
+
 }
 
 function renderEnd(state) {
