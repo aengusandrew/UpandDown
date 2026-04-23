@@ -286,12 +286,11 @@ function renderPlayers(state) {
       let wonTricks = playerDiv.querySelector('.won-tricks');
 
       if(!wonTricks) {
-        console.log("Won-tricks didn't exist yet!");
         wonTricks = document.createElement('div');
         wonTricks.classList.add('won-tricks', 'table');
       }
 
-      if(wonTricks && player.tricksWon === 0) wonTricks.replaceChildren();
+      wonTricks.replaceChildren();
 
       for(let i = 0; i < player.tricksWon; i++) {
           const wonTrick = document.createElement('div');
@@ -397,7 +396,7 @@ function renderYou(state) {
 
   const youIndex = state.players.findIndex(p => p.id === state.youID);
 
-  if(state.players[youIndex].tricksWon === 0) yourWonTricks.replaceChildren();
+  yourWonTricks.replaceChildren();
 
   // TODO: Implement that a won trick card does not appear until after the below animation plays
   for(let i = 0; i < state.players[youIndex].tricksWon; i++) {
