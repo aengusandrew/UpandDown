@@ -56,6 +56,9 @@ The **+5** game type is the same concept as **+10**, each player gets a 5 point 
 
 ## Progress
 
+### **0.4.1**
+Refactoring done to rendering the play screen. No change to user facing experience.
+
 ### **0.4.0**
 Reconnect handling is now implemented. Because reconnect handling is working you can no longer refresh to leave the game, so quit game buttons have been created for the game screen and reimplemented for the end of the game to now properly disconnect you from the server instead of just refreshing. With this here faithful 0.x.0 version update it is time for real world testing, next few projects are mainly refactoring.
 
